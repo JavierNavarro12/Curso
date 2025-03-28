@@ -1,0 +1,53 @@
+body{
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    background-color: #F3E5D8;
+    justify-content: center;
+}
+#Poster{
+    width: 80%;
+    background-color: white;
+    padding: 30px;
+    margin: 10% auto;
+    border-radius: 30px;
+    max-width: 800px;
+}
+img{
+    width: 100%;
+    border-radius: 5%;
+    height: 70%;
+    box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
+}
+#Preparacion{
+    background-color: #FFF7FC;
+    padding: 5px;
+    border-radius: 10px;
+}
+h3{
+    color: #6A314C;
+}
+h2{
+    color: #7F4A3B;
+}
+ol li::marker {
+    color: #7F4A3B;
+}
+ul li::marker {
+    color: #7F4A3B;
+}
+td{
+    color: #7F4A3B;
+}
+#Tabla{
+    width: 100%;
+    border-collapse: collapse;
+}
+tr:not(:last-child) {
+    border-bottom: 1px solid black;
+}
+th, td {
+    padding: 10px; 
+    text-align: left; 
+}
+li{
+    padding: 10px;
+}
