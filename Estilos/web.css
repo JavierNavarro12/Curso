@@ -1,0 +1,186 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #ffffff, #e6dac9);
+}
+
+header {
+    text-align: center;
+    padding: 20px 0;
+    padding: 0;
+    margin: 0;
+}
+
+#Propietario{
+    align-items: baseline;
+    display: flex;
+    justify-content: center;
+
+}
+#Propietario h1 {
+    font-size: 28px;
+    margin: 0;
+}
+
+#Propietario h3 {
+    font-size: 14px;
+    color: gray;
+    margin: 0;
+}
+#Principal{
+    display: flex;
+}
+.menu {
+    background-color: #00B341;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    height: 30px; 
+    padding: 2px 0; 
+    margin-bottom: 0;
+}
+
+.menu p {
+    margin: 0; 
+    font-size: 14px; 
+    color: white;
+    padding: 2px 8px; 
+}
+
+.menu p:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+}
+
+#Top {
+    text-align: center;
+    background-image: url(../Img/Fondo.avif); 
+    background-size: cover;
+    background-position: center;
+    padding: 50px 20px;
+    color: white;
+    margin-top: 0;
+}
+#Top2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#Top2 img {
+    width: 50px; 
+}
+
+
+#Top h2 {
+    font-size: 26px;
+    margin-bottom: 10px;
+}
+
+#Top img {
+    margin: 10px 0;
+}
+
+#Top button {
+    background-color: #FFA500;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#main {
+    text-align: center;
+    background-color: white;
+    margin: 30px auto 20px auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 80%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+#main h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+#main section {
+    display: inline-block;
+    width: 30%;
+    vertical-align: top;
+    padding: 20px;
+}
+
+#main section img {
+    padding: 15px;
+    width: 100%;
+}
+
+#main p {
+    font-size: 14px;
+    color: gray;
+    padding: 0 10px;
+}
+
+#Formulario {
+    text-align: left;
+    background-color: #333;
+    color: white;
+    padding: 40px;
+    border-radius: 10px;
+    width: 60%;
+    margin: 30px auto;
+}
+
+#Formulario h1,
+#Formulario h2 {
+    text-align: center;
+}
+
+#Formulario label {
+    display: block;
+    margin-top: 10px;
+}
+
+#Formulario input,
+#Formulario textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 5px;
+}
+
+#Formulario input[type="submit"] {
+    background-color: #FFA500;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+    display: block;
+    width: 100px;
+}
+
+#Formulario input[type="submit"]:hover {
+    background-color: #cc8400;
+}
+
+footer {
+    text-align: center;
+    font-size: 12px;
+    padding: 10px;
+    background-color: transparent;
+}
+h2{
+    color: #3ABD7B;
+}
+h3{
+    color: #C37A22;
+}
+
