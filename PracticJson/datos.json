@@ -1,0 +1,60 @@
+{
+  "vuelos": [
+    {
+      "origen": "Nueva York (aeropuerto JFK)",
+      "destino": "Los Ángeles (aeropuerto LAX)",
+      "fecha": "15 de agosto de 2024",
+      "plazas_disponibles": 150,
+      "pasajeros": [
+        {
+          "nombre": "Juan Pérez",
+          "edad": 35,
+          "clase": "business",
+          "asiento": "23A",
+          "bultos_facturados": [
+            {
+              "peso": 20,
+              "costo_adicional": 50,
+              "moneda": "euros"
+            }
+          ]
+        },
+        {
+          "nombre": "María García",
+          "edad": 28,
+          "clase": "turista",
+          "asiento": "12F",
+          "bultos_facturados": []
+        }
+      ]
+    },
+    {
+      "origen": "Madrid (aeropuerto MAD)",
+      "destino": "Barcelona (aeropuerto BCN)",
+      "fecha": "10 de septiembre de 2024",
+      "plazas_disponibles": 200,
+      "pasajeros": [
+        {
+          "nombre": "Carlos Martínez",
+          "edad": 45,
+          "clase": "primera clase",
+          "asiento": "5C",
+          "bultos_facturados": [
+            {
+              "peso": 30,
+              "costo_adicional": 70,
+              "moneda": "dólares"
+            },
+            {
+              "peso": 15,
+              "costo_adicional": 40,
+              "moneda": "dólares"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+  
