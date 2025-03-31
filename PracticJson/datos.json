@@ -3,8 +3,10 @@
     {
       "origen": "Nueva York (aeropuerto JFK)",
       "destino": "Los Ángeles (aeropuerto LAX)",
-      "fecha": "15 de agosto de 2024",
+      "fecha": "15-08-2024",
       "plazas_disponibles": 150,
+      "imagen_origen": "img/jfk.jpg",
+      "imagen_destino": "img/lax.jpg",
       "pasajeros": [
         {
           "nombre": "Juan Pérez",
@@ -13,7 +15,7 @@
           "asiento": "23A",
           "bultos_facturados": [
             {
-              "peso": 20,
+              "peso_kg": 20,
               "costo_adicional": 50,
               "moneda": "euros"
             }
@@ -31,8 +33,10 @@
     {
       "origen": "Madrid (aeropuerto MAD)",
       "destino": "Barcelona (aeropuerto BCN)",
-      "fecha": "10 de septiembre de 2024",
+      "fecha": "10-09-2024",
       "plazas_disponibles": 200,
+      "imagen_origen": "img/mad.jpg",
+      "imagen_destino": "img/bcn.jpg",
       "pasajeros": [
         {
           "nombre": "Carlos Martínez",
@@ -41,12 +45,12 @@
           "asiento": "5C",
           "bultos_facturados": [
             {
-              "peso": 30,
+              "peso_kg": 30,
               "costo_adicional": 70,
               "moneda": "dólares"
             },
             {
-              "peso": 15,
+              "peso_kg": 15,
               "costo_adicional": 40,
               "moneda": "dólares"
             }
@@ -56,5 +60,6 @@
     }
   ]
 }
+
 
   
