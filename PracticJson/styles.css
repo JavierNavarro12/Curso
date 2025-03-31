@@ -21,7 +21,7 @@ body {
 
 h1 {
     text-align: center;
-    color: #2c3e50;
+    color: black;
     margin-bottom: 20px;
 }
 
@@ -30,22 +30,22 @@ h1 {
 }
 
 .vuelo h2 {
-    color: #16a085;
+    color: #a01616;
 }
 
-.table {
+.tabla {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
 }
 
-.table th, .table td {
+.tabla th, .tabla td {
     padding: 10px;
     border: 1px solid #ddd;
     text-align: left;
 }
 
-.table th {
+.tabla th {
     background-color: #f8f8f8;
     font-weight: bold;
 }

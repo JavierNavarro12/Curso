@@ -1,4 +1,4 @@
-// Función para cargar y mostrar los vuelos
+// Función para cargar y mostrar los vuelos (la tuve que buscar )
 document.addEventListener("DOMContentLoaded", function() {
     fetch('datos.json')
         .then(response => response.json())
@@ -20,15 +20,15 @@ document.addEventListener("DOMContentLoaded", function() {
                 vueloDiv.appendChild(plazasDiv);
 
                 // Crear una tabla para los pasajeros
-                const table = document.createElement('table');
-                table.classList.add('table');
-                const tableHeader = document.createElement('thead');
+                const tabla = document.createElement('tabla');
+                tabla.classList.add('tabla');
+                const tablaHeader = document.createElement('thead');
                 const headerRow = document.createElement('tr');
                 headerRow.innerHTML = '<th>Nombre</th><th>Edad</th><th>Clase</th><th>Asiento</th><th>Bultos Facturados</th>';
-                tableHeader.appendChild(headerRow);
-                table.appendChild(tableHeader);
+                tablaHeader.appendChild(headerRow);
+                tabla.appendChild(tablaHeader);
 
-                const tableBody = document.createElement('tbody');
+                const tablaBody = document.createElement('tbody');
                 vuelo.pasajeros.forEach(pasajero => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -38,10 +38,10 @@ document.addEventListener("DOMContentLoaded", function() {
                         <td>${pasajero.asiento}</td>
                         <td>${pasajero.bultos_facturados.length > 0 ? renderBultos(pasajero.bultos_facturados) : 'Ninguno'}</td>
                     `;
-                    tableBody.appendChild(row);
+                    tablaBody.appendChild(row);
                 });
-                table.appendChild(tableBody);
-                vueloDiv.appendChild(table);
+                tabla.appendChild(tablaBody);
+                vueloDiv.appendChild(tabla);
 
                 // Agregar el vuelo al contenedor de vuelos
                 vuelosContainer.appendChild(vueloDiv);
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .catch(error => console.log('Error cargando los datos:', error));
 });
 
-// Función para renderizar los bultos
+// Función para los bultos
 function renderBultos(bultos) {
     return bultos.map(bulto => `
         <div class="bulto">
