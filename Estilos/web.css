@@ -1,4 +1,4 @@
-
+/* Estilos generales */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -13,12 +13,12 @@ header {
     margin: 0;
 }
 
-#Propietario{
+#Propietario {
     align-items: baseline;
     display: flex;
     justify-content: center;
-
 }
+
 #Propietario h1 {
     font-size: 28px;
     margin: 0;
@@ -29,25 +29,27 @@ header {
     color: gray;
     margin: 0;
 }
-#Principal{
+
+#Principal {
     display: flex;
 }
+
 .menu {
     background-color: #00B341;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
     align-items: center;
-    height: 30px; 
-    padding: 2px 0; 
+    height: 30px;
+    padding: 2px 0;
     margin-bottom: 0;
 }
 
 .menu p {
-    margin: 0; 
-    font-size: 14px; 
+    margin: 0;
+    font-size: 14px;
     color: white;
-    padding: 2px 8px; 
+    padding: 2px 8px;
 }
 
 .menu p:hover {
@@ -57,22 +59,23 @@ header {
 
 #Top {
     text-align: center;
-    background-image: url(../Img/Fondo.avif); 
+    background-image: url(../Img/Fondo.avif);
     background-size: cover;
     background-position: center;
     padding: 50px 20px;
     color: white;
     margin-top: 0;
 }
+
 #Top2 {
     display: flex;
     align-items: center;
     justify-content: center;
 }
-#Top2 img {
-    width: 50px; 
-}
 
+#Top2 img {
+    width: 50px;
+}
 
 #Top h2 {
     font-size: 26px;
@@ -177,10 +180,20 @@ footer {
     padding: 10px;
     background-color: transparent;
 }
-h2{
+
+h2 {
     color: #3ABD7B;
 }
-h3{
+
+h3 {
     color: #C37A22;
+}
+
+/* Media Query para pantallas pequeñas */
+@media (max-width: 850px) {
+    #aplicaciones{
+        display: flex;
+        flex-direction: column;
+    }
 }
 
