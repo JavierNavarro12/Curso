@@ -1,0 +1,164 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #008080;
+    color: white;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 3rem;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    background: #004d4d;
+    padding: 0.75rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 500;
+    transition: color 0.3s, transform 0.3s;
+}
+
+nav ul li a {
+    padding-right: 50px; 
+}
+
+nav ul li {
+    margin-right: 10px; 
+}
+
+nav a:hover {
+    color: #ffd700;
+    transform: scale(1.1);
+}
+
+.Principio {
+    background-image: url('../Fotos/dental-bg4.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center center;
+    margin: 0; 
+    padding: 0;
+}
+
+h1 {
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4rem 2rem; 
+    text-align: center;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    margin: 2rem auto;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contact-info h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.contact-info p {
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+}
+
+.contact-info a {
+    color: #008080;
+    font-size: 1.25rem;
+    transition: color 0.3s;
+}
+
+.contact-info a:hover {
+    color: #ffd700;
+}
+
+.contact-form {
+    color: #f4f4f4;
+    width: 80%;
+    max-width: 600px;
+    margin: 2rem auto;
+    background: #00405E;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.contact-form label {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.contact-form input[type="submit"] {
+    background-color: #008080;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 1rem;
+    font-size: 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.contact-form input[type="submit"]:hover {
+    background-color: #006666;
+}
+
+.map-container {
+    text-align: center;
+    margin: 2rem auto;
+}
+
+footer {
+    background-color: #008080;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    margin-top: 0; 
+    border-top: 1px solid transparent;
+    margin: 0;
+}

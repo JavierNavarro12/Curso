@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - Clínica Dental Sonrisa Perfecta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./Estilos/Contacto.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Clínica Dental Sonrisa Perfecta</h1>
+    </header>
+    <nav>
+        <ul id="Enlaces">
+            <li><a href="./index.html">Inicio</a></li>
+            <li><a href="./Servicios.html">Servicios</a></li>
+            <li><a href="./PedirCita.html">Pedir cita</a></li>
+            <li><a href="./Contacto.html">Contacto</a></li>
+        </ul>
+        <ul id="Redes">
+            <li><a href="https://wa.me/34123456789" target="_blank" title="Contáctanos por WhatsApp"><i class="fab fa-whatsapp"></i></a></li>
+            <li><a href="https://www.instagram.com/sonrisaperfecta" target="_blank" title="Síguenos en Instagram"><i class="fab fa-instagram"></i></a></li>
+            <li><a href="https://www.facebook.com/sonrisaperfecta" target="_blank" title="Síguenos en Facebook"><i class="fab fa-facebook"></i></a></li>
+        </ul>
+    </nav>
+
+    <section class="Principio">
+        <section class="contact-info">
+            <h3>Contáctanos</h3>
+            <p><strong>Dirección:</strong> Calle Salud Dental 15, 18005, Granada, España</p>
+            <p><strong>Teléfono:</strong> +34 123 456 789
+                <a href="https://wa.me/34123456789" target="_blank" title="Contáctanos por WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://www.instagram.com/sonrisaperfecta" target="_blank" title="Síguenos en Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.facebook.com/sonrisaperfecta" target="_blank" title="Síguenos en Facebook"><i class="fab fa-facebook"></i></a>
+            </p>
+            <p><strong>Email:</strong> <a href="mailto:info@sonrisaperfecta.com">info@sonrisaperfecta.com</a></p>
+        </section>
+        
+        <section class="form-map-container">
+            <section class="contact-form">
+                <h3>Envíanos un mensaje</h3>
+                <form action="submit_contact.php" method="POST">
+                    <label for="full-name">Nombre Completo:</label>
+                    <input type="text" id="full-name" name="full-name" required>
+
+                    <label for="email">Correo Electrónico:</label>
+                    <input type="email" id="email" name="email" required>
+
+                    <label for="message">Mensaje:</label>
+                    <textarea id="message" name="message" rows="4" required placeholder="Escribe tu mensaje aquí..."></textarea>
+
+                    <input type="submit" value="Enviar Mensaje">
+                    
+                    <button type="button" onclick="history.back()">Volver</button>
+                </form>
+            </section>
+        </section>
+        
+        <div style="text-align: center; margin-top: 2rem; padding-bottom: 3rem;">
+            <button onclick="history.back()" style="padding: 10px 20px; font-size: 16px; color: #fff; background-color: #008080; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">
+                Volver
+            </button>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Clínica Dental Sonrisa Perfecta. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

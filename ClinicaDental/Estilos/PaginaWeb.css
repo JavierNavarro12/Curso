@@ -1,0 +1,116 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #008080;
+    color: white;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 3rem;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    background: #004d4d;
+    padding: 0.75rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 500;
+    transition: color 0.3s, transform 0.3s;
+}
+
+nav ul li a {
+    padding-right: 50px; 
+}
+
+nav ul li {
+    margin-right: 10px; 
+}
+
+nav a:hover {
+    color: #ffd700;
+    transform: scale(1.1);
+}
+
+.Principio {
+    background-image: url('../Fotos/dental-bg.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center center;
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-shadow: 2px 2px 5px #000;
+    text-align: center;
+}
+
+.Principio h2 {
+    font-size: 4rem;
+}
+
+.servicios {
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.servicios h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.servicios-lista {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.servicios-objeto {
+    background: #f4f4f4;
+    padding: 1.5rem;
+    border-radius: 8px;
+    width: 250px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.servicios-objeto i {
+    font-size: 2rem;
+    color: #008080;
+    margin-bottom: 0.5rem;
+}
+
+footer {
+    background: #006666;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+}
