@@ -85,11 +85,13 @@ body {
     padding: 0;
 }
 
+
 header {
     background-color: #008080;
     color: white;
     padding: 1rem 0;
     text-align: center;
+    margin: 0;
 }
 
 header h1 {
@@ -104,6 +106,7 @@ nav {
     background: #004d4d;
     padding: 0.75rem 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 0;
 }
 
 nav ul {
@@ -134,7 +137,7 @@ nav a:hover {
 }
 
 .Principio {
-    background-image: url('../Fotos/dental-bg4.jpg');
+    background-image: url('../img/ca33cd05-07d4-4b9f-9d4c-b60b7423568d.jpg');
     background-size: cover;
     background-attachment: fixed;
     background-position: center center;
