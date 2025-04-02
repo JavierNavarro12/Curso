@@ -3,7 +3,16 @@
     padding: 0;
     box-sizing: border-box;
 }
-
+/* Añade esto al principio de cada archivo */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #004d4d;
+    padding: 0.75rem 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #f4f4f4;
@@ -148,4 +157,62 @@ footer {
     margin-top: 0; 
     border-top: 1px solid transparent;
     margin: 0;
+}
+/* Estilos responsivos para el menú de navegación */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0.75rem 1rem;
+        position: relative;
+    }
+    
+    #Enlaces {
+        flex-direction: column;
+        width: 100%;
+        display: none;
+        gap: 0;
+    }
+    
+    #Enlaces.active {
+        display: flex;
+    }
+    
+    #Redes {
+        margin-top: 1rem;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    nav ul li {
+        margin: 0;
+        width: 100%;
+    }
+    
+    nav ul li a {
+        padding: 10px 0;
+        display: block;
+        text-align: center;
+        padding-right: 0;
+    }
+    
+    .menu-toggle {
+        display: block;
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+}
+
+@media (min-width: 769px) {
+    .menu-toggle {
+        display: none;
+    }
+    
+    #Enlaces {
+        display: flex !important;
+    }
 }

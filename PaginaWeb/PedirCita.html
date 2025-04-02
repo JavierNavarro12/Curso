@@ -14,6 +14,9 @@
         <h1>Óptica Visión Javi</h1>
     </header>
     <nav>
+        <div class="menu-toggle" id="mobile-menu">
+            <i class="fas fa-bars"></i>
+        </div>
         <ul id="Enlaces">
             <li>
                 <a href="./index.html">Inicio</a>
@@ -78,5 +81,25 @@
     <footer>
         <p>&copy; 2025 Óptica Visión Javi. Todos los derechos reservados.</p>
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('mobile-menu');
+            const enlaces = document.getElementById('Enlaces');
+            
+            menuToggle.addEventListener('click', function() {
+                enlaces.classList.toggle('active');
+            });
+            
+            // Cerrar menú al hacer clic en un enlace (opcional)
+            const navLinks = document.querySelectorAll('#Enlaces a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        enlaces.classList.remove('active');
+                    }
+                });
+            });
+        });
+        </script>
 </body>
 </html>
