@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego: Atrapa el Cuadrado</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        #gameArea {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            border: 2px solid black;
+            margin: auto;
+            overflow: hidden;
+        }
+        #square {
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            position: absolute;
+            cursor: pointer;
+        }
+        p { font-size: 18px; }
+    </style>
+</head>
+<body>
+    <h1>Atrapa el Cuadrado</h1>
+    <p>Puntuación: <span id="score">0</span></p>
+    <div id="gameArea">
+        <div id="square" onclick="increaseScore()"></div>
+    </div>
+    
+    <script>
+        let score = 0;
+        let speed = 1000;
+        const square = document.getElementById('square');
+        const gameArea = document.getElementById('gameArea');
+        
+        function moveSquare() {
+            let maxX = gameArea.clientWidth - square.clientWidth;
+            let maxY = gameArea.clientHeight - square.clientHeight;
+            
+            let randomX = Math.floor(Math.random() * maxX);
+            let randomY = Math.floor(Math.random() * maxY);
+            
+            square.style.left = randomX + 'px';
+            square.style.top = randomY + 'px';
+        }
+        
+        function increaseScore() {
+            score++;
+            document.getElementById('score').textContent = score;
+            speed = Math.max(300, speed - 50);
+            clearInterval(gameLoop);
+            gameLoop = setInterval(moveSquare, speed);
+            moveSquare();
+        }
+        
+        let gameLoop = setInterval(moveSquare, speed);
+    </script>
+</body>
+</html>
