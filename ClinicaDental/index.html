@@ -5,6 +5,7 @@
     <title>Clínica Dental Sonrisa Perfecta</title>
     <link rel="stylesheet" href="./Estilos/PaginaWeb.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -13,6 +14,9 @@
         <h1>Clínica Dental Sonrisa Perfecta</h1>
     </header>
     <nav>
+        <div class="menu-toggle" id="mobile-menu">
+            <i class="fas fa-bars"></i>
+        </div>
         <ul id="Enlaces">
             <li><a href="./index.html">Inicio</a></li>
             <li><a href="./Servicios.html">Servicios</a></li>
@@ -53,5 +57,25 @@
     <footer>
         <p>&copy; 2025 Clínica Dental Sonrisa Perfecta. Todos los derechos reservados.</p>
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('mobile-menu');
+            const enlaces = document.getElementById('Enlaces');
+            
+            menuToggle.addEventListener('click', function() {
+                enlaces.classList.toggle('active');
+            });
+            
+            // Cerrar menú al hacer clic en un enlace (opcional)
+            const navLinks = document.querySelectorAll('#Enlaces a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        enlaces.classList.remove('active');
+                    }
+                });
+            });
+        });
+        </script>
 </body>
 </html>
