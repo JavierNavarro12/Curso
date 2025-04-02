@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego: Evita los Obstáculos</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        #gameArea {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            border: 2px solid black;
+            margin: auto;
+            overflow: hidden;
+            background-color: lightgray;
+        }
+        #player {
+            width: 40px;
+            height: 40px;
+            background-color: blue;
+            position: absolute;
+            bottom: 10px;
+            left: 180px;
+        }
+        .obstacle {
+            width: 40px;
+            height: 40px;
+            background-color: red;
+            position: absolute;
+            top: 0;
+        }
+        p { font-size: 18px; }
+    </style>
+</head>
+<body>
+    <h1>Evita los Obstáculos</h1>
+    <p>Puntuación: <span id="score">0</span> | Nivel: <span id="level">1</span></p>
+    <div id="gameArea">
+        <div id="player"></div>
+    </div>
+    
+    <script>
+        let player = document.getElementById('player');
+        let gameArea = document.getElementById('gameArea');
+        let score = 0;
+        let level = 1;
+        let gameOver = false;
+        let obstacleSpeed = 5;
+        let obstacleInterval = 1000;
+
+        document.addEventListener('keydown', function(event) {
+            if (gameOver) return;
+            let left = parseInt(window.getComputedStyle(player).getPropertyValue('left'));
+            if (event.key === 'ArrowLeft' && left > 0) {
+                player.style.left = left - 20 + 'px';
+            } else if (event.key === 'ArrowRight' && left < 360) {
+                player.style.left = left + 20 + 'px';
+            }
+        });
+        
+        function createObstacle() {
+            if (gameOver) return;
+            let obstacle = document.createElement('div');
+            obstacle.classList.add('obstacle');
+            obstacle.style.left = Math.floor(Math.random() * 360) + 'px';
+            gameArea.appendChild(obstacle);
+            
+            let fallInterval = setInterval(function() {
+                let obstacleTop = parseInt(window.getComputedStyle(obstacle).getPropertyValue('top'));
+                if (obstacleTop > 360) {
+                    clearInterval(fallInterval);
+                    gameArea.removeChild(obstacle);
+                    score++;
+                    document.getElementById('score').textContent = score;
+                    
+                    if (score % 10 === 0) {
+                        level++;
+                        document.getElementById('level').textContent = level;
+                        obstacleSpeed += 1;
+                        obstacleInterval = Math.max(400, obstacleInterval - 100);
+                        restartGameLoop();
+                    }
+                } else {
+                    obstacle.style.top = obstacleTop + obstacleSpeed + 'px';
+                }
+                
+                let playerLeft = parseInt(window.getComputedStyle(player).getPropertyValue('left'));
+                let obstacleLeft = parseInt(window.getComputedStyle(obstacle).getPropertyValue('left'));
+                
+                if (obstacleTop > 320 && obstacleLeft >= playerLeft && obstacleLeft < playerLeft + 40) {
+                    alert('¡Game Over! Puntuación: ' + score + ' | Nivel: ' + level);
+                    gameOver = true;
+                    location.reload();
+                }
+            }, 50);
+        }
+        
+        let gameLoop = setInterval(createObstacle, obstacleInterval);
+        function restartGameLoop() {
+            clearInterval(gameLoop);
+            gameLoop = setInterval(createObstacle, obstacleInterval);
+        }
+    </script>
+</body>
+</html>
