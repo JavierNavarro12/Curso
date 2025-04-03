@@ -170,11 +170,15 @@
 
         function checkMatch() {
             const [firstCard, secondCard] = flippedCards;
+            const timeBonus = Math.max(1, 10 - Math.floor(timer / 5));
+            const points = 10 * timeBonus;
+            
             if (firstCard.dataset.image === secondCard.dataset.image) {
                 matchedCards.push(firstCard, secondCard);
-                score += 10;
+                score += points;
                 scoreDisplay.textContent = `Puntuación: ${score}`;
                 flippedCards = [];
+
                 if (matchedCards.length === imagesArray.length) {
                     clearInterval(timerInterval);
                     alert(`¡Has ganado! Tu puntuación final es: ${score} puntos`);
@@ -215,3 +219,4 @@
     </script>
 </body>
 </html>
+
