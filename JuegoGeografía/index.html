@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Geografía</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: white;
+            color: white;
+            padding: 50px;
+        }
+        .container {
+            background: white;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            margin: auto;
+        }
+        input, button {
+            margin-top: 10px;
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #005f73;
+        }
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        #final-score {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        #restart-button {
+            background-color: #ff6347;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="question">Pregunta aquí</h2>
+        <input type="text" id="answer" placeholder="Escribe tu respuesta" onkeypress="checkEnter(event)">
+        <button onclick="checkAnswer()">Responder</button>
+        <p id="feedback" class="feedback"></p>
+        <p id="final-score"></p>
+        <button id="restart-button" onclick="restartGame()">Reiniciar Juego</button>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "¿Cuál es la capital de Francia?", answer: "paris" },
+            { question: "¿Cuál es la capital de Italia?", answer: "roma" },
+            { question: "¿Cuál es la capital de Japón?", answer: "tokio" },
+            { question: "¿Cuál es la capital de España?", answer: "madrid" },
+            { question: "¿Cuál es la capital de Alemania?", answer: "berlin" },
+            { question: "¿Cuál es la capital de Argentina?", answer: "buenos aires" },
+            { question: "¿Cuál es la capital de Rusia?", answer: "moscu" },
+            { question: "¿Cuál es la capital de China?", answer: "pekin" },
+            { question: "¿Cuál es la capital de México?", answer: "ciudad de mexico" },
+            { question: "¿Cuál es la capital de Canadá?", answer: "ottawa" },
+            { question: "¿Cuál es la capital de Brasil?", answer: "brasilia" },
+            { question: "¿Cuál es la capital de Estados Unidos?", answer: "washington" },
+            { question: "¿Cuál es la capital de Egipto?", answer: "el cairo" },
+            { question: "¿Cuál es la capital de India?", answer: "nueva delhi" },
+            { question: "¿Cuál es la capital de Australia?", answer: "canberra" },
+            { question: "¿Cuál es la capital de Reino Unido?", answer: "londres" },
+            { question: "¿Cuál es la capital de Perú?", answer: "lima" },
+            { question: "¿Cuál es la capital de Venezuela?", answer: "caracas" },
+            { question: "¿Cuál es la capital de Chile?", answer: "santiago" },
+            { question: "¿Cuál es la capital de Colombia?", answer: "bogotá" },
+            { question: "¿Cuál es la capital de Uruguay?", answer: "montevideo" },
+            { question: "¿Cuál es la capital de Ecuador?", answer: "quito" },
+            { question: "¿Cuál es la capital de Paraguay?", answer: "asunción" },
+            { question: "¿Cuál es la capital de Bolivia?", answer: "sucre" },
+            { question: "¿Cuál es la capital de Sudáfrica?", answer: "pretoria" },
+            { question: "¿Cuál es la capital de Noruega?", answer: "oslo" },
+            { question: "¿Cuál es la capital de Suecia?", answer: "estocolmo" },
+            { question: "¿Cuál es la capital de Dinamarca?", answer: "copenhague" },
+            { question: "¿Cuál es la capital de Finlandia?", answer: "helsinki" },
+            { question: "¿Cuál es la capital de Islandia?", answer: "reikiavik" },
+            { question: "¿Cuál es la capital de Turquía?", answer: "ankara" },
+            { question: "¿Cuál es la capital de Grecia?", answer: "atenas" },
+            { question: "¿Cuál es el país más grande del mundo?", answer: "rusia" },
+            { question: "¿En qué continente está Brasil?", answer: "america" },
+            { question: "¿Cuál es el océano más grande?", answer: "pacifico" },
+            { question: "¿Qué país tiene forma de bota?", answer: "italia" },
+            { question: "¿Cuál es el río más largo del mundo?", answer: "amazonas" },
+            { question: "¿En qué país se encuentra la Gran Muralla?", answer: "china" },
+            { question: "¿Cuál es el desierto más grande del mundo?", answer: "sahara" },
+            { question: "¿En qué océano está la isla de Madagascar?", answer: "indico" },
+            { question: "¿Cuál es la montaña más alta del mundo?", answer: "everest" },
+            { question: "¿En qué continente está Egipto?", answer: "africa" },
+            { question: "¿En qué país se encuentra la ciudad de Petra?", answer: "jordania" },
+            { question: "¿Qué océano baña las costas de Perú?", answer: "pacifico" },
+            { question: "¿Qué continente es hogar del desierto de Atacama?", answer: "america" },
+            { question: "¿Cuál es el país más pequeño del mundo?", answer: "vaticano" },
+            { question: "¿Qué país tiene la mayor población del mundo?", answer: "china" },
+            { question: "¿Cuál es el país más grande de África?", answer: "argelia" },
+            { question: "¿En qué continente se encuentra la cordillera de los Andes?", answer: "america" }
+        ];
+
+        let currentIndex = 0;
+        let score = 0;
+        let answeredQuestions = [];
+
+        function normalizeText(text) {
+            return text.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
+        }
+
+        function loadQuestion() {
+            if (answeredQuestions.length === 20) {
+                showFinalScore();
+                return;
+            }
+
+            let randomIndex = Math.floor(Math.random() * questions.length);
+            while (answeredQuestions.includes(randomIndex)) {
+                randomIndex = Math.floor(Math.random() * questions.length);
+            }
+
+            answeredQuestions.push(randomIndex);
+            currentIndex = randomIndex;
+            document.getElementById("question").innerText = questions[currentIndex].question;
+            document.getElementById("answer").value = "";
+            document.getElementById("feedback").innerText = "";
+        }
+
+        function checkAnswer() {
+            const userAnswer = normalizeText(document.getElementById("answer").value.trim());
+            const correctAnswer = normalizeText(questions[currentIndex].answer);
+            
+            if (userAnswer === correctAnswer) {
+                document.getElementById("feedback").innerText = "✅ ¡Correcto!";
+                score++;
+            } else {
+                document.getElementById("feedback").innerText = "❌ Incorrecto. La respuesta es " + questions[currentIndex].answer;
+            }
+            
+            setTimeout(() => {
+                loadQuestion();
+                document.getElementById("final-score").innerText = "Puntaje: " + score + " de 20";
+            }, 2000);
+        }
+
+        function showFinalScore() {
+            const percentage = (score / 20) * 10;
+            document.getElementById("question").innerText = "¡Juego terminado!";
+            document.getElementById("feedback").innerText = "Tu puntuación final es: " + percentage.toFixed(1) + " sobre 10";
+            document.getElementById("final-score").innerText = "";
+            document.getElementById("answer").disabled = true;
+            document.querySelector("button").disabled = true;
+        }
+
+        function restartGame() {
+            score = 0;
+            answeredQuestions = [];
+            document.getElementById("answer").disabled = false;
+            document.querySelector("button").disabled = false;
+            document.getElementById("final-score").innerText = "";
+            loadQuestion();
+        }
+
+        function checkEnter(event) {
+            if (event.key === "Enter") {
+                checkAnswer();
+            }
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
