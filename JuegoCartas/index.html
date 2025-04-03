@@ -35,6 +35,11 @@
             color: transparent;
             background-size: cover;
             background-position: center;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.1);
         }
 
         .flipped {
@@ -55,6 +60,46 @@
         }
         #restart-button:hover {
             background-color: #005f73;
+        }
+
+        /* Ajustes para pantallas pequeñas */
+        @media (max-width: 600px) {
+            #board {
+                grid-template-columns: repeat(4, 80px); /* Menor tamaño de carta */
+                grid-gap: 8px;
+            }
+            .card {
+                width: 80px;
+                height: 110px;
+                font-size: 20px; /* Ajuste de fuente */
+            }
+            #score, #timer {
+                font-size: 16px; /* Fuente más pequeña para pantallas pequeñas */
+            }
+            #restart-button {
+                padding: 8px 16px; /* Botón un poco más pequeño */
+                font-size: 16px;
+            }
+        }
+
+        /* Ajustes para pantallas muy grandes */
+        @media (min-width: 1200px) {
+            #board {
+                grid-template-columns: repeat(4, 120px); /* Aumento el tamaño de las cartas */
+                grid-gap: 12px;
+            }
+            .card {
+                width: 120px;
+                height: 160px;
+                font-size: 28px; /* Aumento de tamaño de fuente */
+            }
+            #score, #timer {
+                font-size: 20px;
+            }
+            #restart-button {
+                padding: 12px 24px;
+                font-size: 18px;
+            }
         }
     </style>
 </head>
