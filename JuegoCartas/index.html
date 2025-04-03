@@ -16,6 +16,28 @@
             flex-direction: column;
             align-items: center;
         }
+        .top-section {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 30px;
+            width: 80%;
+        }
+        .score-table {
+            border-collapse: collapse;
+        }
+        .score-table th, .score-table td {
+            padding: 8px 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        .score-table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .score-table td {
+            background-color: #f2f2f2;
+        }
         #board {
             display: grid;
             grid-template-columns: repeat(4, 100px);
@@ -36,15 +58,12 @@
             background-size: cover;
             background-position: center;
         }
-        .flipped {
-            background-color: #fff;
-        }
-        #score, #timer {
+        .buttons-container {
+            display: flex;
+            gap: 10px;
             margin-top: 20px;
-            font-size: 18px;
         }
-        #restart-button {
-            margin-top: 20px;
+        button {
             background-color: #008CBA;
             color: white;
             padding: 10px 20px;
@@ -52,96 +71,90 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        #restart-button:hover {
-            background-color: #005f73;
-        }
-        /* Ajustes para pantallas pequeñas */
-        @media (max-width: 600px) {
-            #board {
-                grid-template-columns: repeat(4, 80px);
-                grid-gap: 8px;
-            }
-            .card {
-                width: 80px;
-                height: 110px;
-                font-size: 20px;
-            }
-            #score, #timer {
-                font-size: 16px;
-            }
-            #restart-button {
-                padding: 8px 16px;
-                font-size: 16px;
-            }
+        button#reset-scoreboard {
+            background-color: #f44336;
         }
 
-        /* Ajustes para pantallas grandes */
-        @media (min-width: 1200px) {
-            #board {
-                grid-template-columns: repeat(4, 120px);
-                grid-gap: 12px;
-            }
-            .card {
-                width: 120px;
-                height: 160px;
-                font-size: 28px;
-            }
-            #score, #timer {
-                font-size: 20px;
-            }
-            #restart-button {
-                padding: 12px 24px;
-                font-size: 18px;
-            }
+        /* Estilo para la pantalla de bienvenida */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+            font-size: 20px;
         }
 
-        /* Estilos para la tabla de puntuaciones */
-        .score-table {
-            margin-top: 30px;
-            width: 50%;
-            margin-left: auto;
-            margin-right: auto;
-            border-collapse: collapse;
+        .welcome-screen input {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 18px;
         }
-        .score-table th, .score-table td {
-            padding: 8px 12px;
-            text-align: center;
-            border: 1px solid #ddd;
-        }
-        .score-table th {
+
+        .welcome-screen button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
             background-color: #4CAF50;
             color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
         }
-        .score-table td {
-            background-color: #f2f2f2;
+
+        .blurred {
+            filter: blur(3px);
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <h1>Elige tu pokemon</h1>
-        <p id="score">Puntuación: 0</p>
-        <p id="timer">Tiempo: 0s</p>
-        <div id="board"></div>
-        <button id="restart-button" onclick="restartGame()">Reiniciar Juego</button>
-        <div>
-            <input type="text" id="playerName" placeholder="Ingresa tu nombre" />
-            <button onclick="saveScore()">Guardar Puntuación</button>
+        <h1>Elige tu Pokémon</h1>
+        <div class="top-section">
+            <div class="score-info">
+                <p id="score">Puntuación: 0</p>
+                <p id="timer">Tiempo: 0s</p>
+            </div>
+            <table class="score-table" id="scoreboard">
+                <thead>
+                    <tr>
+                        <th>Jugador</th>
+                        <th>Puntuación</th>
+                        <th>Tiempo</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se agregarán las puntuaciones -->
+                </tbody>
+            </table>
         </div>
-        <table class="score-table" id="scoreboard">
-            <thead>
-                <tr>
-                    <th>Jugador</th>
-                    <th>Puntuación</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Aquí se agregarán las puntuaciones -->
-            </tbody>
-        </table>
+        <div id="board"></div>
+        <div class="buttons-container">
+            <button id="restart-button" onclick="restartGame()">Reiniciar Juego</button>
+            <button id="reset-scoreboard" onclick="resetScoreboard()">Resetear Tabla</button>
+        </div>
+    </div>
+
+    <!-- Pantalla de bienvenida -->
+    <div id="welcome-screen" class="welcome-screen">
+        <p>¡Bienvenido al juego de memoria Pokémon!</p>
+        <p>Por favor, introduce tu nombre:</p>
+        <input type="text" id="player-name-input" placeholder="Tu nombre aquí">
+        <button onclick="startGame()">Comenzar</button>
     </div>
 
     <script>
+        let playerName = "Anónimo";
+
         const imagesArray = [
             '/img/image1.jpg', '/img/image2.jpg', '/img/image3.jpg', '/img/image4.jpg',
             '/img/image5.jpg', '/img/image6.jpg', '/img/image7.jpg', '/img/image8.jpg',
@@ -152,8 +165,6 @@
         let board = document.getElementById('board');
         let scoreDisplay = document.getElementById('score');
         let timerDisplay = document.getElementById('timer');
-        let restartButton = document.getElementById('restart-button');
-        let playerNameInput = document.getElementById('playerName');
         let scoreboard = document.getElementById('scoreboard').getElementsByTagName('tbody')[0];
 
         let flippedCards = [];
@@ -163,7 +174,6 @@
         let timerInterval;
         let gameStarted = false;
 
-        // Función para mezclar las cartas
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -171,11 +181,9 @@
             }
         }
 
-        // Crear las cartas en el tablero
         function createBoard() {
             shuffle(imagesArray);
             board.innerHTML = '';
-
             imagesArray.forEach((image, index) => {
                 const cardElement = document.createElement('div');
                 cardElement.classList.add('card');
@@ -187,44 +195,32 @@
             });
         }
 
-        // Función para voltear las cartas
         function flipCard(event) {
             const card = event.target;
             if (card.classList.contains('flipped') || flippedCards.length === 2) return;
-
             if (!gameStarted) {
                 gameStarted = true;
                 startTimer();
             }
-
             card.classList.add('flipped');
             card.style.backgroundImage = `url('${card.dataset.image}')`;
             flippedCards.push(card);
-
             if (flippedCards.length === 2) {
                 checkMatch();
             }
         }
 
-        // Función para comprobar si las cartas coinciden
         function checkMatch() {
             const [firstCard, secondCard] = flippedCards;
-            const timeSpent = timer;
-
             if (firstCard.dataset.image === secondCard.dataset.image) {
                 matchedCards.push(firstCard, secondCard);
-
-                // Cálculo de puntuación
-                let timeBonus = Math.max(1, 10 - Math.floor(timeSpent / 5));
-                let points = 10 * timeBonus;
-                score += points;
-
+                score += 100;
                 scoreDisplay.textContent = `Puntuación: ${score}`;
                 flippedCards = [];
-
                 if (matchedCards.length === imagesArray.length) {
                     clearInterval(timerInterval);
-                    alert(`¡Has ganado! Tu puntuación final es: ${score} puntos`);
+                    saveScore();
+                    alert(`¡Has ganado! Tu puntuación final es: ${score} puntos en ${timer} segundos`);
                 }
             } else {
                 setTimeout(() => {
@@ -237,7 +233,6 @@
             }
         }
 
-        // Función para iniciar el temporizador
         function startTimer() {
             timer = 0;
             timerInterval = setInterval(() => {
@@ -246,7 +241,6 @@
             }, 1000);
         }
 
-        // Función para reiniciar el juego
         function restartGame() {
             matchedCards = [];
             flippedCards = [];
@@ -258,35 +252,55 @@
             timerDisplay.textContent = "Tiempo: 0s";
         }
 
-        // Función para guardar el puntaje y nombre del jugador
         function saveScore() {
-            const playerName = playerNameInput.value;
-            if (playerName && score > 0) {
-                let scores = JSON.parse(localStorage.getItem('scores')) || [];
-                scores.push({ name: playerName, score: score });
-                localStorage.setItem('scores', JSON.stringify(scores));
-                updateScoreboard();
-            } else {
-                alert('Ingresa un nombre válido y asegúrate de tener puntuación');
-            }
+            let scores = JSON.parse(localStorage.getItem('scores')) || [];
+            scores.push({ player: playerName, score: score, time: timer });
+            localStorage.setItem('scores', JSON.stringify(scores));
+            updateScoreboard();
         }
 
-        // Función para actualizar la tabla de puntuaciones
         function updateScoreboard() {
             let scores = JSON.parse(localStorage.getItem('scores')) || [];
-            scoreboard.innerHTML = ''; // Limpiar la tabla
-            scores.forEach(scoreEntry => {
+            scoreboard.innerHTML = '';
+            scores.forEach((entry, index) => {
                 let row = scoreboard.insertRow();
-                row.insertCell(0).textContent = scoreEntry.name;
-                row.insertCell(1).textContent = scoreEntry.score;
+                row.insertCell(0).textContent = entry.player;
+                row.insertCell(1).textContent = entry.score;
+                row.insertCell(2).textContent = entry.time;
+                let deleteCell = row.insertCell(3);
+                let deleteButton = document.createElement('button');
+                deleteButton.textContent = "Eliminar";
+                deleteButton.onclick = function () { deleteScore(index); };
+                deleteCell.appendChild(deleteButton);
             });
         }
+
+        function deleteScore(index) {
+            let scores = JSON.parse(localStorage.getItem('scores')) || [];
+            scores.splice(index, 1);
+            localStorage.setItem('scores', JSON.stringify(scores));
+            updateScoreboard();
+        }
+
+        function resetScoreboard() {
+            localStorage.removeItem('scores');
+            updateScoreboard();
+        }
+
+        function startGame() {
+            let input = document.getElementById('player-name-input');
+            playerName = input.value.trim() || "Anónimo"; // Guarda el nombre del jugador
+            document.getElementById('welcome-screen').style.display = 'none'; // Oculta el mensaje de bienvenida
+            document.querySelector('.container').classList.remove('blurred'); // Reactiva el juego
+        }
+
+        // Aplica el desenfoque al cargar la página
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector('.container').classList.add('blurred');
+        });
 
         restartGame();
         updateScoreboard();
     </script>
 </body>
 </html>
-
-
-
