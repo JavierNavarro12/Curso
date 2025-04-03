@@ -33,8 +33,8 @@
             font-size: 24px;
             font-weight: bold;
             color: transparent;
-            background-size: cover; /* Asegura que la imagen cubra toda la carta */
-            background-position: center; /* Centra la imagen en la carta */
+            background-size: cover;
+            background-position: center;
         }
 
         .flipped {
@@ -68,7 +68,6 @@
     </div>
 
     <script>
-        // Las imágenes que se utilizarán como cartas
         const imagesArray = [
             '/img/image1.jpg', '/img/image2.jpg', '/img/image3.jpg', '/img/image4.jpg', 
             '/img/image5.jpg', '/img/image6.jpg', '/img/image7.jpg', '/img/image8.jpg',
@@ -86,6 +85,7 @@
         let score = 0;
         let timer = 0;
         let timerInterval;
+        let gameStarted = false; // Bandera para controlar el inicio del juego
 
         // Función para mezclar las cartas
         function shuffle(array) {
@@ -115,6 +115,11 @@
         function flipCard(event) {
             const card = event.target;
             if (card.classList.contains('flipped') || flippedCards.length === 2) return;
+
+            if (!gameStarted) {
+                gameStarted = true; // El juego ha comenzado
+                startTimer(); // Inicia el temporizador cuando se hace clic por primera vez
+            }
 
             card.classList.add('flipped');
             card.style.backgroundImage = `url('${card.dataset.image}')`; // Muestra la imagen de la carta
@@ -166,12 +171,12 @@
             score = 0;
             scoreDisplay.textContent = `Puntuación: ${score}`;
             board.innerHTML = '';
+            gameStarted = false; // Reinicia la bandera del juego
             createBoard();
-            startTimer();
+            timerDisplay.textContent = "Tiempo: 0s"; // Resetea el temporizador
         }
 
         restartGame();
     </script>
 </body>
 </html>
-
