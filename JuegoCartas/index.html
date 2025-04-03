@@ -35,11 +35,6 @@
             color: transparent;
             background-size: cover;
             background-position: center;
-            transition: transform 0.3s ease;
-        }
-
-        .card:hover {
-            transform: scale(1.1);
         }
 
         .flipped {
@@ -178,10 +173,16 @@
         // Función para comprobar si las cartas coinciden
         function checkMatch() {
             const [firstCard, secondCard] = flippedCards;
+            const timeSpent = timer; // Tiempo que ha pasado hasta ahora
 
             if (firstCard.dataset.image === secondCard.dataset.image) {
                 matchedCards.push(firstCard, secondCard);
-                score += 10;
+
+                // Cálculo de puntuación
+                let timeBonus = Math.max(1, 10 - Math.floor(timeSpent / 5)); // Más rápido da más puntos
+                let points = 10 * timeBonus; // Puntos base * multiplicador por tiempo
+                score += points;
+
                 scoreDisplay.textContent = `Puntuación: ${score}`;
                 flippedCards = [];
 
