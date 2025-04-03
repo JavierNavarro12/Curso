@@ -36,7 +36,7 @@
             background-size: cover;
             background-position: center;
         }
-
+        
         .flipped {
             background-color: #fff;
         }
@@ -56,46 +56,6 @@
         #restart-button:hover {
             background-color: #005f73;
         }
-
-        /* Ajustes para pantallas pequeñas */
-        @media (max-width: 600px) {
-            #board {
-                grid-template-columns: repeat(4, 80px); /* Menor tamaño de carta */
-                grid-gap: 8px;
-            }
-            .card {
-                width: 80px;
-                height: 110px;
-                font-size: 20px; /* Ajuste de fuente */
-            }
-            #score, #timer {
-                font-size: 16px; /* Fuente más pequeña para pantallas pequeñas */
-            }
-            #restart-button {
-                padding: 8px 16px; /* Botón un poco más pequeño */
-                font-size: 16px;
-            }
-        }
-
-        /* Ajustes para pantallas muy grandes */
-        @media (min-width: 1200px) {
-            #board {
-                grid-template-columns: repeat(4, 120px); /* Aumento el tamaño de las cartas */
-                grid-gap: 12px;
-            }
-            .card {
-                width: 120px;
-                height: 160px;
-                font-size: 28px; /* Aumento de tamaño de fuente */
-            }
-            #score, #timer {
-                font-size: 20px;
-            }
-            #restart-button {
-                padding: 12px 24px;
-                font-size: 18px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -109,7 +69,7 @@
 
     <script>
         const imagesArray = [
-            '/img/image1.jpg', '/img/image2.jpg', '/img/image3.jpg', '/img/image4.jpg', 
+            '/img/image1.jpg', '/img/image2.jpg', '/img/image3.jpg', '/img/image4.jpg',
             '/img/image5.jpg', '/img/image6.jpg', '/img/image7.jpg', '/img/image8.jpg',
             '/img/image1.jpg', '/img/image2.jpg', '/img/image3.jpg', '/img/image4.jpg',
             '/img/image5.jpg', '/img/image6.jpg', '/img/image7.jpg', '/img/image8.jpg'
@@ -118,16 +78,20 @@
         let board = document.getElementById('board');
         let scoreDisplay = document.getElementById('score');
         let timerDisplay = document.getElementById('timer');
-        let restartButton = document.getElementById('restart-button');
-
         let flippedCards = [];
         let matchedCards = [];
         let score = 0;
         let timer = 0;
         let timerInterval;
-        let gameStarted = false; // Bandera para controlar el inicio del juego
+        let gameStarted = false;
 
-        // Función para mezclar las cartas
+        function preloadImages() {
+            imagesArray.forEach(image => {
+                const img = new Image();
+                img.src = image;
+            });
+        }
+
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -135,34 +99,30 @@
             }
         }
 
-        // Crear las cartas en el tablero
         function createBoard() {
             shuffle(imagesArray);
             board.innerHTML = '';
-
             imagesArray.forEach((image, index) => {
                 const cardElement = document.createElement('div');
                 cardElement.classList.add('card');
-                cardElement.dataset.index = index;
                 cardElement.dataset.image = image;
-                cardElement.style.backgroundImage = `url('/img/back.jpg')`; // Imagen de la parte trasera de la carta
+                cardElement.style.backgroundImage = `url('/img/back.jpg')`;
                 cardElement.addEventListener('click', flipCard);
                 board.appendChild(cardElement);
             });
         }
 
-        // Función para voltear las cartas
         function flipCard(event) {
             const card = event.target;
             if (card.classList.contains('flipped') || flippedCards.length === 2) return;
 
             if (!gameStarted) {
-                gameStarted = true; // El juego ha comenzado
-                startTimer(); // Inicia el temporizador cuando se hace clic por primera vez
+                gameStarted = true;
+                startTimer();
             }
 
             card.classList.add('flipped');
-            card.style.backgroundImage = `url('${card.dataset.image}')`; // Muestra la imagen de la carta
+            card.style.backgroundImage = `url('${card.dataset.image}')`;
             flippedCards.push(card);
 
             if (flippedCards.length === 2) {
@@ -170,22 +130,17 @@
             }
         }
 
-        // Función para comprobar si las cartas coinciden
         function checkMatch() {
             const [firstCard, secondCard] = flippedCards;
-            const timeSpent = timer; // Tiempo que ha pasado hasta ahora
+            const timeSpent = timer;
 
             if (firstCard.dataset.image === secondCard.dataset.image) {
                 matchedCards.push(firstCard, secondCard);
-
-                // Cálculo de puntuación
-                let timeBonus = Math.max(1, 10 - Math.floor(timeSpent / 5)); // Más rápido da más puntos
-                let points = 10 * timeBonus; // Puntos base * multiplicador por tiempo
+                let timeBonus = Math.max(1, 10 - Math.floor(timeSpent / 5));
+                let points = 10 * timeBonus;
                 score += points;
-
                 scoreDisplay.textContent = `Puntuación: ${score}`;
                 flippedCards = [];
-
                 if (matchedCards.length === imagesArray.length) {
                     clearInterval(timerInterval);
                     alert(`¡Has ganado! Tu puntuación final es: ${score} puntos`);
@@ -201,28 +156,31 @@
             }
         }
 
-        // Función para iniciar el temporizador
         function startTimer() {
             timer = 0;
+            clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timer++;
                 timerDisplay.textContent = `Tiempo: ${timer}s`;
             }, 1000);
         }
 
-        // Función para reiniciar el juego
         function restartGame() {
             matchedCards = [];
             flippedCards = [];
             score = 0;
+            timer = 0;
+            clearInterval(timerInterval);
             scoreDisplay.textContent = `Puntuación: ${score}`;
+            timerDisplay.textContent = "Tiempo: 0s";
             board.innerHTML = '';
-            gameStarted = false; // Reinicia la bandera del juego
+            gameStarted = false;
             createBoard();
-            timerDisplay.textContent = "Tiempo: 0s"; // Resetea el temporizador
         }
 
+        preloadImages();
         restartGame();
     </script>
 </body>
 </html>
+
