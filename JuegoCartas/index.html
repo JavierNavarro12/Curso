@@ -35,8 +35,9 @@
             color: transparent;
             background-size: cover;
             background-position: center;
+            background-image: url('/img/back.jpg');
         }
-        
+
         .flipped {
             background-color: #fff;
         }
@@ -56,6 +57,44 @@
         #restart-button:hover {
             background-color: #005f73;
         }
+
+        @media (max-width: 600px) {
+            #board {
+                grid-template-columns: repeat(4, 80px);
+                grid-gap: 8px;
+            }
+            .card {
+                width: 80px;
+                height: 110px;
+                font-size: 20px;
+            }
+            #score, #timer {
+                font-size: 16px;
+            }
+            #restart-button {
+                padding: 8px 16px;
+                font-size: 16px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            #board {
+                grid-template-columns: repeat(4, 120px);
+                grid-gap: 12px;
+            }
+            .card {
+                width: 120px;
+                height: 160px;
+                font-size: 28px;
+            }
+            #score, #timer {
+                font-size: 20px;
+            }
+            #restart-button {
+                padding: 12px 24px;
+                font-size: 18px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -69,7 +108,7 @@
 
     <script>
         const imagesArray = [
-            '/img/image1.jpg', '/img/image2.jpg', '/img/image3.jpg', '/img/image4.jpg',
+            '/img/image1.jpg', '/img/image2.jpg', '/img/image3.jpg', '/img/image4.jpg', 
             '/img/image5.jpg', '/img/image6.jpg', '/img/image7.jpg', '/img/image8.jpg',
             '/img/image1.jpg', '/img/image2.jpg', '/img/image3.jpg', '/img/image4.jpg',
             '/img/image5.jpg', '/img/image6.jpg', '/img/image7.jpg', '/img/image8.jpg'
@@ -102,11 +141,10 @@
         function createBoard() {
             shuffle(imagesArray);
             board.innerHTML = '';
-            imagesArray.forEach((image, index) => {
+            imagesArray.forEach(image => {
                 const cardElement = document.createElement('div');
                 cardElement.classList.add('card');
                 cardElement.dataset.image = image;
-                cardElement.style.backgroundImage = `url('/img/back.jpg')`;
                 cardElement.addEventListener('click', flipCard);
                 board.appendChild(cardElement);
             });
@@ -132,13 +170,9 @@
 
         function checkMatch() {
             const [firstCard, secondCard] = flippedCards;
-            const timeSpent = timer;
-
             if (firstCard.dataset.image === secondCard.dataset.image) {
                 matchedCards.push(firstCard, secondCard);
-                let timeBonus = Math.max(1, 10 - Math.floor(timeSpent / 5));
-                let points = 10 * timeBonus;
-                score += points;
+                score += 10;
                 scoreDisplay.textContent = `Puntuación: ${score}`;
                 flippedCards = [];
                 if (matchedCards.length === imagesArray.length) {
@@ -158,7 +192,6 @@
 
         function startTimer() {
             timer = 0;
-            clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timer++;
                 timerDisplay.textContent = `Tiempo: ${timer}s`;
@@ -166,14 +199,13 @@
         }
 
         function restartGame() {
+            clearInterval(timerInterval);
             matchedCards = [];
             flippedCards = [];
             score = 0;
             timer = 0;
-            clearInterval(timerInterval);
             scoreDisplay.textContent = `Puntuación: ${score}`;
             timerDisplay.textContent = "Tiempo: 0s";
-            board.innerHTML = '';
             gameStarted = false;
             createBoard();
         }
@@ -183,4 +215,3 @@
     </script>
 </body>
 </html>
-
