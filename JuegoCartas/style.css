@@ -1,0 +1,148 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+    padding: 50px;
+    position: relative;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.top-section {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+    width: 80%;
+}
+.score-table {
+    border-collapse: collapse;
+}
+.score-table th, .score-table td {
+    padding: 8px 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+.score-table th {
+    background-color: #4CAF50;
+    color: white;
+}
+.score-table td {
+    background-color: #f2f2f2;
+}
+#board {
+    display: grid;
+    grid-template-columns: repeat(4, 100px);
+    grid-gap: 10px;
+    margin-top: 20px;
+}
+.card {
+    width: 100px;
+    height: 140px;
+    background-color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 24px;
+    font-weight: bold;
+    color: transparent;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.3s;
+}
+.card:hover {
+    transform: scale(1.03);
+}
+.buttons-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+button {
+    background-color: #008CBA;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+button#reset-scoreboard {
+    background-color: #f44336;
+}
+/* Overlay para el modal */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* Modal de nombre */
+.name-modal {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 11;
+    max-width: 400px;
+    width: 80%;
+}
+.name-modal h2 {
+    margin-top: 0;
+    color: #333;
+}
+.name-modal input {
+    width: 100%;
+    padding: 10px;
+    margin: 15px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+.name-modal button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+}
+@media (max-width: 680px) {
+    body {
+        padding: 15px;
+    }
+    .top-section {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        width: 95%;
+    }
+    #board {
+        grid-template-columns: repeat(4, 1fr);
+        width: 100%;
+        max-width: 400px;
+    }
+    .card {
+        width: 100%;
+        height: 0;
+        padding-bottom: 130%;
+        position: relative;
+    }
+    .buttons-container {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .score-table {
+        width: 100%;
+        font-size: 14px;
+    }
+    .name-modal {
+        width: 90%;
+        padding: 20px;
+    }
+}
