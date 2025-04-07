@@ -33,20 +33,12 @@ const basePairs = [
     'img/image5.jpg', 'img/image6.jpg', 'img/image7.jpg', 'img/image8.jpg'
 ];
 
-const additionalPairsLevel2 = [
-    'img/image9.jpg', 'img/image10.jpg'
-];
-
-const additionalPairsLevel3 = [
-    'img/image11.jpg', 'img/image12.jpg'
-];
-const additionalPairsLevel4 = [
-    'img/image13.jpg', 'img/image14.jpg'
-];
+const additionalPairsLevel2 = ['img/image9.jpg', 'img/image10.jpg'];
+const additionalPairsLevel3 = ['img/image11.jpg', 'img/image12.jpg'];
+const additionalPairsLevel4 = ['img/image13.jpg', 'img/image14.jpg'];
 
 function getImagesForLevel(level) {
     let images = [...basePairs];
-    
     if (level >= 2) images = [...images, ...additionalPairsLevel2];
     if (level >= 3) images = [...images, ...additionalPairsLevel3];
     if (level >= 4) images = [...images, ...additionalPairsLevel4];
@@ -82,6 +74,7 @@ function shuffle(array) {
 }
 
 function createBoard() {
+    imagesArray = getImagesForLevel(currentLevel); // Actualizar imagesArray según el nivel
     shuffle(imagesArray);
     board.innerHTML = '';
     board.className = `game-board level-${currentLevel}`;
@@ -108,6 +101,7 @@ function createBoard() {
     timerDisplay.textContent = `Tiempo: ${timer}s`;
     lastMatchTime = 0;
     updateBoardSize();
+    updateLevelDisplay(); // Actualizar el display del nivel
 }
 
 function flipCard(event) {
@@ -150,9 +144,7 @@ function checkMatch() {
         if (matchedCards.length === imagesArray.length) {
             clearInterval(timerInterval);
             saveScore();
-            setTimeout(() => {
-                alert(`¡Ganaste ${playerName}!\nPuntos: ${score}\nTiempo: ${timer} segundos\nAciertos: ${totalMatches}/${getTotalPairs()}`);
-            }, 500);
+            showGameOver();
         }
     } else {
         setTimeout(() => {
@@ -259,15 +251,27 @@ function updateMatchesText() {
     matchesDisplay.textContent = `Aciertos: ${totalMatches}/${getTotalPairs()}`;
 }
 
-window.changeLevel = function (newLevel) {
+function changeLevel(newLevel) {
     currentLevel = newLevel;
     imagesArray = getImagesForLevel(currentLevel);
     createBoard();
     updateBoardSize();
     updateMatchesText();
+    updateLevelDisplay();
 }
 
-window.addLevelControls = function () {
+function updateLevelDisplay() {
+    const levelDisplay = document.getElementById('levelDisplay');
+    if (levelDisplay) {
+        levelDisplay.textContent = `Nivel: ${currentLevel}`;
+        const prevButton = document.querySelector('.level-button:first-child');
+        const nextButton = document.querySelector('.level-button:last-child');
+        if (prevButton) prevButton.disabled = currentLevel === 1;
+        if (nextButton) nextButton.disabled = currentLevel === 4;
+    }
+}
+
+function addLevelControls() {
     const buttonsContainer = document.querySelector('.buttons-container');
     
     if (document.querySelector('.level-controls')) return;
@@ -277,7 +281,11 @@ window.addLevelControls = function () {
     
     const prevButton = document.createElement('button');
     prevButton.textContent = '◄';
-    prevButton.onclick = () => currentLevel > 1 && changeLevel(currentLevel - 1);
+    prevButton.onclick = () => {
+        if (currentLevel > 1) {
+            changeLevel(currentLevel - 1);
+        }
+    };
     prevButton.className = 'level-button';
     prevButton.disabled = currentLevel === 1;
     
@@ -288,26 +296,59 @@ window.addLevelControls = function () {
     
     const nextButton = document.createElement('button');
     nextButton.textContent = '►';
-    nextButton.onclick = () => currentLevel < 4 && changeLevel(currentLevel + 1);
+    nextButton.onclick = () => {
+        if (currentLevel < 4) {
+            changeLevel(currentLevel + 1);
+        }
+    };
     nextButton.className = 'level-button';
     nextButton.disabled = currentLevel === 4;
     
     levelControls.append(prevButton, levelDisplay, nextButton);
     buttonsContainer.prepend(levelControls);
 }
+function showGameOver() {
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const gameOverMessage = document.getElementById('gameOverMessage');
+    const finalScore = document.getElementById('finalScore');
+    const finalTime = document.getElementById('finalTime');
+    const finalMatches = document.getElementById('finalMatches');
+    const nextLevelButton = document.getElementById('nextLevelButton');
 
-window.updateLevelDisplay = function () {
-    const levelDisplay = document.getElementById('levelDisplay');
-    if (levelDisplay) {
-        levelDisplay.textContent = `Nivel: ${currentLevel}`;
-        
-        const prevButton = document.querySelector('.level-button:first-child');
-        const nextButton = document.querySelector('.level-button:last-child');
-        
-        if (prevButton) prevButton.disabled = currentLevel === 1;
-        if (nextButton) nextButton.disabled = currentLevel === 4;
+    gameOverMessage.textContent = `¡Felicidades ${playerName}!`;
+    finalScore.textContent = `Puntuación: ${score}`;
+    finalTime.textContent = `Tiempo: ${timer} segundos`;
+    finalMatches.textContent = `Aciertos: ${totalMatches}/${getTotalPairs()}`;
+
+    // Habilitar/deshabilitar el botón de siguiente nivel según el nivel actual
+    nextLevelButton.disabled = currentLevel === 4; // Corrección aquí
+
+    gameOverOverlay.style.display = 'flex';
+    setTimeout(() => {
+        gameOverOverlay.classList.add('active');
+    }, 10); // Pequeño retraso para la transición
+}
+
+function closeGameOver() {
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    gameOverOverlay.classList.remove('active');
+    setTimeout(() => {
+        gameOverOverlay.style.display = 'none';
+        restartGame(); // Reinicia el juego al cerrar
+    }, 300); // Coincide con la duración de la transición
+}
+
+function goToNextLevel() {
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    if (currentLevel < 4) {
+        currentLevel++;
+        gameOverOverlay.classList.remove('active');
+        setTimeout(() => {
+            gameOverOverlay.style.display = 'none';
+            changeLevel(currentLevel); // Cambia al siguiente nivel
+        }, 300); // Coincide con la duración de la transición
     }
-};
+}
 
 window.onload = function () {
     addLevelControls();

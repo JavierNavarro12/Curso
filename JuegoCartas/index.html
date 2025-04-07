@@ -47,6 +47,24 @@
             <button id="reset-scoreboard" onclick="resetScoreboard()">Resetear Tabla</button>
         </div>
     </div>
+    <!-- Pantalla de Nivel Completado -->
+    <div id="gameOverOverlay" class="overlay" style="display: none;">
+        <div class="game-over-modal">
+            <h2>¡Nivel Completado!</h2>
+            <div class="game-over-content">
+                <p id="gameOverMessage"></p>
+                <div class="stats">
+                    <p id="finalScore"></p>
+                    <p id="finalTime"></p>
+                    <p id="finalMatches"></p>
+                </div>
+                <div class="game-over-buttons">
+                    <button onclick="closeGameOver()">Jugar de Nuevo</button>
+                    <button id="nextLevelButton" onclick="goToNextLevel()">Siguiente Nivel</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="script.js"></script>
     <script src="levels.js"></script>
 </body>
