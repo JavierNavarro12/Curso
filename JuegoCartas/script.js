@@ -256,19 +256,29 @@ function resetScoreboard() {
         updateScoreboard();
     }
 }
-
 function updateBoardSize() {
     let columns;
-    switch(currentLevel) {
-        case 1: columns = 4; break;
-        case 2: columns = 5; break;
-        case 3: columns = 6; break;
-        case 4: columns = 7; break;
-        default: columns = 4;
+    const screenWidth = window.innerWidth;
+
+    switch (currentLevel) {
+        case 1:
+            columns = screenWidth < 400 ? 4 : 4;
+            break;
+        case 2:
+            columns = screenWidth < 400 ? 5 : 5;
+            break;
+        case 3:
+            columns = screenWidth < 400 ? 3 : 6;
+            break;
+        case 4:
+            columns = screenWidth < 400 ? 4 : 7;
+            break;
+        default:
+            columns = 4;
     }
-    
-    board.style.gridTemplateColumns = `repeat(${columns}, 100px)`;
-    board.style.maxWidth = `${columns * 110}px`;
+
+    board.style.gridTemplateColumns = `repeat(${columns}, minmax(45px, 1fr))`;
+    board.style.maxWidth = `100%`;
 }
 
 function updateMatchesText() {
