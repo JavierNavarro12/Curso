@@ -11,6 +11,24 @@ let imagesArray = [
     'img/image8.jpg', 'img/image8.jpg'
 ];
 
+// Mapa de imágenes a sonidos
+const soundMap = {
+    'img/image1.jpg': new Audio('sounds/image1.mp3'),
+    'img/image2.jpg': new Audio('sounds/image2.mp3'),
+    'img/image3.jpg': new Audio('sounds/image3.mp3'),
+    'img/image4.jpg': new Audio('sounds/image4.mp3'),
+    'img/image5.jpg': new Audio('sounds/image5.mp3'),
+    'img/image6.jpg': new Audio('sounds/image6.mp3'),
+    'img/image7.jpg': new Audio('sounds/image7.mp3'),
+    'img/image8.jpg': new Audio('sounds/image8.mp3'),
+    'img/image9.jpg': new Audio('sounds/image9.mp3'),
+    'img/image10.jpg': new Audio('sounds/image10.mp3'),
+    'img/image11.jpg': new Audio('sounds/image11.mp3'),
+    'img/image12.jpg': new Audio('sounds/image12.mp3'),
+    'img/image13.jpg': new Audio('sounds/image13.mp3'),
+    'img/image14.jpg': new Audio('sounds/image14.mp3')
+};
+
 let board = document.getElementById('board');
 let scoreDisplay = document.getElementById('score');
 let timerDisplay = document.getElementById('timer');
@@ -74,7 +92,7 @@ function shuffle(array) {
 }
 
 function createBoard() {
-    imagesArray = getImagesForLevel(currentLevel); // Actualizar imagesArray según el nivel
+    imagesArray = getImagesForLevel(currentLevel);
     shuffle(imagesArray);
     board.innerHTML = '';
     board.className = `game-board level-${currentLevel}`;
@@ -101,7 +119,7 @@ function createBoard() {
     timerDisplay.textContent = `Tiempo: ${timer}s`;
     lastMatchTime = 0;
     updateBoardSize();
-    updateLevelDisplay(); // Actualizar el display del nivel
+    updateLevelDisplay();
 }
 
 function flipCard(event) {
@@ -136,6 +154,12 @@ function checkMatch() {
 
         const speedBonus = Math.max(0, 50 - Math.floor(timeTaken));
         score += 100 + speedBonus;
+
+        // Reproducir el sonido específico de la imagen acertada
+        const matchedImage = firstCard.dataset.image;
+        if (soundMap[matchedImage]) {
+            soundMap[matchedImage].play();
+        }
 
         scoreDisplay.textContent = `Puntuación: ${score}`;
         matchesDisplay.textContent = `Aciertos: ${totalMatches}/${getTotalPairs()}`;
@@ -307,6 +331,7 @@ function addLevelControls() {
     levelControls.append(prevButton, levelDisplay, nextButton);
     buttonsContainer.prepend(levelControls);
 }
+
 function showGameOver() {
     const gameOverOverlay = document.getElementById('gameOverOverlay');
     const gameOverMessage = document.getElementById('gameOverMessage');
@@ -320,13 +345,12 @@ function showGameOver() {
     finalTime.textContent = `Tiempo: ${timer} segundos`;
     finalMatches.textContent = `Aciertos: ${totalMatches}/${getTotalPairs()}`;
 
-    // Habilitar/deshabilitar el botón de siguiente nivel según el nivel actual
-    nextLevelButton.disabled = currentLevel === 4; // Corrección aquí
+    nextLevelButton.disabled = currentLevel === 4;
 
     gameOverOverlay.style.display = 'flex';
     setTimeout(() => {
         gameOverOverlay.classList.add('active');
-    }, 10); // Pequeño retraso para la transición
+    }, 10);
 }
 
 function closeGameOver() {
@@ -334,8 +358,8 @@ function closeGameOver() {
     gameOverOverlay.classList.remove('active');
     setTimeout(() => {
         gameOverOverlay.style.display = 'none';
-        restartGame(); // Reinicia el juego al cerrar
-    }, 300); // Coincide con la duración de la transición
+        restartGame();
+    }, 300);
 }
 
 function goToNextLevel() {
@@ -345,8 +369,8 @@ function goToNextLevel() {
         gameOverOverlay.classList.remove('active');
         setTimeout(() => {
             gameOverOverlay.style.display = 'none';
-            changeLevel(currentLevel); // Cambia al siguiente nivel
-        }, 300); // Coincide con la duración de la transición
+            changeLevel(currentLevel);
+        }, 300);
     }
 }
 
