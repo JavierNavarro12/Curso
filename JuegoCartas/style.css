@@ -122,11 +122,69 @@ button#reset-scoreboard {
         gap: 15px;
         width: 95%;
     }
+    /* ... (otros estilos se mantienen igual) */
+
+#board {
+    display: grid;
+    grid-gap: 10px;
+    margin: 20px auto;
+    justify-content: center;
+}
+
+/* Niveles específicos */
+#board.level-1 {
+    grid-template-columns: repeat(4, 100px);
+}
+#board.level-2 {
+    grid-template-columns: repeat(5, 100px);
+}
+#board.level-3 {
+    grid-template-columns: repeat(6, 100px);
+}
+
+/* Responsive */
+@media (max-width: 680px) {
     #board {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
         width: 100%;
         max-width: 400px;
     }
+    
+    .card {
+        width: 100%;
+        height: 0;
+        padding-bottom: 130%;
+    }
+    
+    /* Ajustar niveles en móvil */
+    #board.level-1 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    #board.level-2 {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    #board.level-3 {
+        grid-template-columns: repeat(7, 1fr);
+    }
+}
+    .level-button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+    }
+    
+    .level-button:hover {
+        background-color: #45a049;
+    }
+    
+    .level-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #cccccc;
+    }
+    
     .card {
         width: 100%;
         height: 0;
@@ -144,5 +202,21 @@ button#reset-scoreboard {
     .name-modal {
         width: 90%;
         padding: 20px;
+    }
+}
+
+@media (max-width: 680px) {
+    .game-board {
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    }
+    
+    .card {
+        padding-bottom: 100%;
+    }
+}
+@media (max-width: 680px) {
+    /* Ajuste del tablero para dispositivos pequeños */
+    #board.level-3 {
+        grid-template-columns: repeat(7, 1fr); /* Aseguramos que sea 7 columnas también en móviles */
     }
 }

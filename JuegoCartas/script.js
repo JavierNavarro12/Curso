@@ -1,10 +1,14 @@
 let playerName = "Anónimo";
 let lastMatchTime = 0;
-const imagesArray = [
-    'img/image1.jpg', 'img/image2.jpg', 'img/image3.jpg', 'img/image4.jpg',
-    'img/image5.jpg', 'img/image6.jpg', 'img/image7.jpg', 'img/image8.jpg',
-    'img/image1.jpg', 'img/image2.jpg', 'img/image3.jpg', 'img/image4.jpg',
-    'img/image5.jpg', 'img/image6.jpg', 'img/image7.jpg', 'img/image8.jpg'
+let imagesArray = [
+    'img/image1.jpg', 'img/image1.jpg',
+    'img/image2.jpg', 'img/image2.jpg',
+    'img/image3.jpg', 'img/image3.jpg',
+    'img/image4.jpg', 'img/image4.jpg',
+    'img/image5.jpg', 'img/image5.jpg',
+    'img/image6.jpg', 'img/image6.jpg',
+    'img/image7.jpg', 'img/image7.jpg',
+    'img/image8.jpg', 'img/image8.jpg'
 ];
 
 let board = document.getElementById('board');
@@ -22,23 +26,38 @@ let timer = 0;
 let timerInterval;
 let gameStarted = false;
 let totalMatches = 0;
+let currentLevel = 1;
 
-function createInitialBoard() {
-    shuffle(imagesArray);
-    board.innerHTML = '';
-    imagesArray.forEach((image, index) => {
-        const cardElement = document.createElement('div');
-        cardElement.classList.add('card');
-        cardElement.dataset.index = index;
-        cardElement.dataset.image = image;
-        cardElement.style.backgroundImage = "url('img/back.jpg')";
-        cardElement.onerror = function() {
-            this.style.backgroundColor = "#ccc";
-            console.error("Error cargando imagen de fondo");
-        };
-        board.appendChild(cardElement);
-    });
+const basePairs = [
+    'img/image1.jpg', 'img/image2.jpg', 'img/image3.jpg', 'img/image4.jpg',
+    'img/image5.jpg', 'img/image6.jpg', 'img/image7.jpg', 'img/image8.jpg'
+];
+
+const additionalPairsLevel2 = [
+    'img/image9.jpg', 'img/image10.jpg'
+];
+
+const additionalPairsLevel3 = [
+    'img/image11.jpg', 'img/image12.jpg', 'img/image13.jpg', 'img/image14.jpg'
+];
+
+function getImagesForLevel(level) {
+    let images = [...basePairs];
+    
+    if (level >= 2) {
+        images = [...images, ...additionalPairsLevel2];
+    }
+    if (level >= 3) {
+        // Asegúrate de que solo haya 12 parejas (24 cartas en total)
+        images = [...images, ...additionalPairsLevel3].slice(0, 12);  // Limitar a 12 parejas
+    }
+    
+    // Duplicar para hacer parejas
+    let pairedImages = [];
+    images.forEach(img => pairedImages.push(img, img));
+    return shuffle(pairedImages);
 }
+
 
 function setPlayerName() {
     const name = playerNameInput.value.trim();
@@ -62,6 +81,7 @@ function shuffle(array) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
+    return array;
 }
 
 function createBoard() {
@@ -82,7 +102,7 @@ function createBoard() {
     score = 0;
     totalMatches = 0;
     scoreDisplay.textContent = `Puntuación: ${score}`;
-    matchesDisplay.textContent = `Aciertos: ${totalMatches}/8`;
+    matchesDisplay.textContent = `Aciertos: ${totalMatches}/${getTotalPairs()}`;
     gameStarted = false;
 
     if (timerInterval) clearInterval(timerInterval);
@@ -125,14 +145,14 @@ function checkMatch() {
         score += 100 + speedBonus;
 
         scoreDisplay.textContent = `Puntuación: ${score}`;
-        matchesDisplay.textContent = `Aciertos: ${totalMatches}/8`;
+        matchesDisplay.textContent = `Aciertos: ${totalMatches}/${getTotalPairs()}`;
         flippedCards = [];
 
         if (matchedCards.length === imagesArray.length) {
             clearInterval(timerInterval);
             saveScore();
             setTimeout(() => {
-                alert(`¡Ganaste ${playerName}!\nPuntos: ${score}\nTiempo: ${timer} segundos\nAciertos: ${totalMatches}/8`);
+                alert(`¡Ganaste ${playerName}!\nPuntos: ${score}\nTiempo: ${timer} segundos\nAciertos: ${totalMatches}/${getTotalPairs()}`);
             }, 500);
         }
     } else {
@@ -149,6 +169,10 @@ function checkMatch() {
     }
 }
 
+function getTotalPairs() {
+    return imagesArray.length / 2;
+}
+
 function startTimer() {
     timer = 0;
     timerInterval = setInterval(() => {
@@ -163,6 +187,8 @@ function startTimer() {
 
 function restartGame() {
     createBoard();
+    updateBoardSize();
+    updateMatchesText();
 }
 
 function saveScore() {
@@ -171,7 +197,7 @@ function saveScore() {
         player: playerName,
         score: score,
         time: timer,
-        matches: totalMatches,
+        level: currentLevel,  // Agregar el nivel
         date: new Date().toISOString()
     });
 
@@ -179,6 +205,7 @@ function saveScore() {
     localStorage.setItem('scores', JSON.stringify(scores));
     updateScoreboard();
 }
+
 
 function updateScoreboard() {
     let scores = JSON.parse(localStorage.getItem('scores')) || [];
@@ -188,9 +215,10 @@ function updateScoreboard() {
         let row = scoreboard.insertRow();
         row.insertCell(0).textContent = entry.player;
         row.insertCell(1).textContent = entry.score;
-        row.insertCell(2).textContent = `${entry.time}s (${entry.matches}/8)`;
+        row.insertCell(2).textContent = `${entry.time}s`;
+        row.insertCell(3).textContent = `Nivel ${entry.level}`;  // Mostrar el nivel
 
-        let deleteCell = row.insertCell(3);
+        let deleteCell = row.insertCell(4);
         let deleteButton = document.createElement('button');
         deleteButton.textContent = "Eliminar";
         deleteButton.onclick = function () { deleteScore(index); };
@@ -200,6 +228,7 @@ function updateScoreboard() {
         deleteCell.appendChild(deleteButton);
     });
 }
+
 
 function deleteScore(index) {
     let scores = JSON.parse(localStorage.getItem('scores')) || [];
@@ -215,7 +244,66 @@ function resetScoreboard() {
     }
 }
 
-// Inicialización
-loadPlayerName();
-createInitialBoard();
-updateScoreboard();
+function updateBoardSize() {
+    // Configuración fija de columnas por nivel
+    let columns;
+    switch(currentLevel) {
+        case 1: columns = 4; break;
+        case 2: columns = 5; break;
+        case 3: columns = 6; break;
+        default: columns = 4;
+    }
+    
+    // Asegurar que el tablero tenga el ancho suficiente
+    board.style.gridTemplateColumns = `repeat(${columns}, 100px)`;
+    board.style.maxWidth = `${columns * 110}px`; // 100px + 10px de gap
+}
+
+function updateMatchesText() {
+    matchesDisplay.textContent = `Aciertos: ${totalMatches}/${getTotalPairs()}`;
+}
+
+window.changeLevel = function (newLevel) {
+    currentLevel = newLevel;
+    imagesArray = getImagesForLevel(currentLevel);
+    createBoard();
+    updateBoardSize();
+    updateMatchesText();
+}
+
+window.addLevelControls = function () {
+    const buttonsContainer = document.querySelector('.buttons-container');
+    
+    const levelControls = document.createElement('div');
+    levelControls.classList.add('level-controls');
+    
+    const prevButton = document.createElement('button');
+    prevButton.textContent = "Nivel Anterior";
+    prevButton.onclick = () => currentLevel > 1 && changeLevel(currentLevel - 1);
+    prevButton.classList.add('level-button');
+    
+    const nextButton = document.createElement('button');
+    nextButton.textContent = "Nivel Siguiente";
+    nextButton.onclick = () => currentLevel < 3 && changeLevel(currentLevel + 1);
+    nextButton.classList.add('level-button');
+    
+    levelControls.appendChild(prevButton);
+    levelControls.appendChild(nextButton);
+    buttonsContainer.appendChild(levelControls);
+    
+    updateLevelDisplay();
+};
+
+window.updateLevelDisplay = function () {
+    const levelDisplay = document.getElementById('levelDisplay');
+    if (levelDisplay) {
+        levelDisplay.textContent = `Nivel: ${currentLevel}`;
+    }
+};
+
+window.onload = function () {
+    addLevelControls();
+    loadPlayerName();
+    createBoard();
+    updateMatchesText();
+};

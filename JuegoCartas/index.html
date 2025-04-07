@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juego de Memoria con Imágenes</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="levels.css">
 </head>
 <body>
     <!-- Overlay y modal para el nombre -->
@@ -31,6 +32,7 @@
                         <th>Jugador</th>
                         <th>Puntuación</th>
                         <th>Tiempo</th>
+                        <th>Nivel</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
@@ -39,7 +41,7 @@
                 </tbody>
             </table>
         </div>
-        <div id="board"></div>
+        <div id="board" class="game-board"></div>
         <div class="buttons-container">
             <button id="restart-button" onclick="restartGame()">Reiniciar Juego</button>
             <button id="reset-scoreboard" onclick="resetScoreboard()">Resetear Tabla</button>
@@ -47,5 +49,6 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="levels.js"></script>
 </body>
 </html>
