@@ -1,8 +1,6 @@
-/* Estilo de los botones de nivel */
 .level-button {
     width: 90px;
     height: 50px;
-   
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -29,7 +27,6 @@
     box-shadow: none;
 }
 
-/* Contenedor de los botones */
 .level-controls {
     display: flex;
     justify-content: center;
@@ -39,7 +36,6 @@
     width: 100%;
 }
 
-/* Diseño del texto del nivel */
 .level-display {
     font-size: 22px;
     font-weight: bold;
@@ -52,7 +48,6 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Para asegurar que se vea bien en pantallas pequeñas */
 @media (max-width: 680px) {
     .level-button {
         width: 40px;

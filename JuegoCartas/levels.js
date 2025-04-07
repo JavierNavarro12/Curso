@@ -10,7 +10,10 @@ const additionalPairsLevel2 = [
 ];
 
 const additionalPairsLevel3 = [
-    'img/image11.jpg', 'img/image12.jpg', 'img/image13.jpg', 'img/image14.jpg'
+    'img/image11.jpg', 'img/image12.jpg'
+];
+const additionalPairsLevel4 = [
+    'img/image13.jpg', 'img/image14.jpg'
 ];
 
 function getImagesForLevel(level) {
@@ -18,8 +21,8 @@ function getImagesForLevel(level) {
     
     if (level >= 2) images = [...images, ...additionalPairsLevel2];
     if (level >= 3) images = [...images, ...additionalPairsLevel3];
+    if (level >= 4) images = [...images, ...additionalPairsLevel4];
     
-    // Duplicar para hacer parejas
     let pairedImages = [];
     images.forEach(img => pairedImages.push(img, img));
     return shuffle(pairedImages);
@@ -37,19 +40,17 @@ function updateLevelDisplay() {
     if (levelDisplay) {
         levelDisplay.textContent = `Nivel: ${currentLevel}`;
         
-        // Actualizar estado de los botones
         const prevButton = document.querySelector('.level-button:first-child');
         const nextButton = document.querySelector('.level-button:last-child');
         
         if (prevButton) prevButton.disabled = currentLevel === 1;
-        if (nextButton) nextButton.disabled = currentLevel === 3;
+        if (nextButton) nextButton.disabled = currentLevel === 4;
     }
 }
 
 function addLevelControls() {
     const buttonsContainer = document.querySelector('.buttons-container');
     
-    // Evitar duplicación de controles
     if (document.querySelector('.level-controls')) return;
     
     const levelControls = document.createElement('div');
@@ -68,15 +69,14 @@ function addLevelControls() {
     
     const nextButton = document.createElement('button');
     nextButton.textContent = '►';
-    nextButton.onclick = () => currentLevel < 3 && changeLevel(currentLevel + 1);
+    nextButton.onclick = () => currentLevel < 4 && changeLevel(currentLevel + 1);
     nextButton.className = 'level-button';
-    nextButton.disabled = currentLevel === 3;
+    nextButton.disabled = currentLevel === 4;
     
     levelControls.append(prevButton, levelDisplay, nextButton);
     buttonsContainer.prepend(levelControls);
 }
 
-// Inicialización
 document.addEventListener('DOMContentLoaded', () => {
     addLevelControls();
     updateLevelDisplay();

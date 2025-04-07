@@ -38,26 +38,23 @@ const additionalPairsLevel2 = [
 ];
 
 const additionalPairsLevel3 = [
-    'img/image11.jpg', 'img/image12.jpg', 'img/image13.jpg', 'img/image14.jpg'
+    'img/image11.jpg', 'img/image12.jpg'
+];
+const additionalPairsLevel4 = [
+    'img/image13.jpg', 'img/image14.jpg'
 ];
 
 function getImagesForLevel(level) {
     let images = [...basePairs];
     
-    if (level >= 2) {
-        images = [...images, ...additionalPairsLevel2];
-    }
-    if (level >= 3) {
-        // Asegúrate de que solo haya 12 parejas (24 cartas en total)
-        images = [...images, ...additionalPairsLevel3].slice(0, 12);  // Limitar a 12 parejas
-    }
+    if (level >= 2) images = [...images, ...additionalPairsLevel2];
+    if (level >= 3) images = [...images, ...additionalPairsLevel3];
+    if (level >= 4) images = [...images, ...additionalPairsLevel4];
     
-    // Duplicar para hacer parejas
     let pairedImages = [];
     images.forEach(img => pairedImages.push(img, img));
     return shuffle(pairedImages);
 }
-
 
 function setPlayerName() {
     const name = playerNameInput.value.trim();
@@ -87,6 +84,7 @@ function shuffle(array) {
 function createBoard() {
     shuffle(imagesArray);
     board.innerHTML = '';
+    board.className = `game-board level-${currentLevel}`;
     imagesArray.forEach((image, index) => {
         const cardElement = document.createElement('div');
         cardElement.classList.add('card');
@@ -109,6 +107,7 @@ function createBoard() {
     timer = 0;
     timerDisplay.textContent = `Tiempo: ${timer}s`;
     lastMatchTime = 0;
+    updateBoardSize();
 }
 
 function flipCard(event) {
@@ -197,7 +196,7 @@ function saveScore() {
         player: playerName,
         score: score,
         time: timer,
-        level: currentLevel,  // Agregar el nivel
+        level: currentLevel,
         date: new Date().toISOString()
     });
 
@@ -205,7 +204,6 @@ function saveScore() {
     localStorage.setItem('scores', JSON.stringify(scores));
     updateScoreboard();
 }
-
 
 function updateScoreboard() {
     let scores = JSON.parse(localStorage.getItem('scores')) || [];
@@ -216,7 +214,7 @@ function updateScoreboard() {
         row.insertCell(0).textContent = entry.player;
         row.insertCell(1).textContent = entry.score;
         row.insertCell(2).textContent = `${entry.time}s`;
-        row.insertCell(3).textContent = `Nivel ${entry.level}`;  // Mostrar el nivel
+        row.insertCell(3).textContent = `Nivel ${entry.level}`;
 
         let deleteCell = row.insertCell(4);
         let deleteButton = document.createElement('button');
@@ -228,7 +226,6 @@ function updateScoreboard() {
         deleteCell.appendChild(deleteButton);
     });
 }
-
 
 function deleteScore(index) {
     let scores = JSON.parse(localStorage.getItem('scores')) || [];
@@ -245,18 +242,17 @@ function resetScoreboard() {
 }
 
 function updateBoardSize() {
-    // Configuración fija de columnas por nivel
     let columns;
     switch(currentLevel) {
         case 1: columns = 4; break;
         case 2: columns = 5; break;
         case 3: columns = 6; break;
+        case 4: columns = 7; break;
         default: columns = 4;
     }
     
-    // Asegurar que el tablero tenga el ancho suficiente
     board.style.gridTemplateColumns = `repeat(${columns}, 100px)`;
-    board.style.maxWidth = `${columns * 110}px`; // 100px + 10px de gap
+    board.style.maxWidth = `${columns * 110}px`;
 }
 
 function updateMatchesText() {
@@ -274,30 +270,42 @@ window.changeLevel = function (newLevel) {
 window.addLevelControls = function () {
     const buttonsContainer = document.querySelector('.buttons-container');
     
+    if (document.querySelector('.level-controls')) return;
+    
     const levelControls = document.createElement('div');
-    levelControls.classList.add('level-controls');
+    levelControls.className = 'level-controls';
     
     const prevButton = document.createElement('button');
-    prevButton.textContent = "Nivel Anterior";
+    prevButton.textContent = '◄';
     prevButton.onclick = () => currentLevel > 1 && changeLevel(currentLevel - 1);
-    prevButton.classList.add('level-button');
+    prevButton.className = 'level-button';
+    prevButton.disabled = currentLevel === 1;
+    
+    const levelDisplay = document.createElement('span');
+    levelDisplay.id = 'levelDisplay';
+    levelDisplay.className = 'level-display';
+    levelDisplay.textContent = `Nivel: ${currentLevel}`;
     
     const nextButton = document.createElement('button');
-    nextButton.textContent = "Nivel Siguiente";
-    nextButton.onclick = () => currentLevel < 3 && changeLevel(currentLevel + 1);
-    nextButton.classList.add('level-button');
+    nextButton.textContent = '►';
+    nextButton.onclick = () => currentLevel < 4 && changeLevel(currentLevel + 1);
+    nextButton.className = 'level-button';
+    nextButton.disabled = currentLevel === 4;
     
-    levelControls.appendChild(prevButton);
-    levelControls.appendChild(nextButton);
-    buttonsContainer.appendChild(levelControls);
-    
-    updateLevelDisplay();
-};
+    levelControls.append(prevButton, levelDisplay, nextButton);
+    buttonsContainer.prepend(levelControls);
+}
 
 window.updateLevelDisplay = function () {
     const levelDisplay = document.getElementById('levelDisplay');
     if (levelDisplay) {
         levelDisplay.textContent = `Nivel: ${currentLevel}`;
+        
+        const prevButton = document.querySelector('.level-button:first-child');
+        const nextButton = document.querySelector('.level-button:last-child');
+        
+        if (prevButton) prevButton.disabled = currentLevel === 1;
+        if (nextButton) nextButton.disabled = currentLevel === 4;
     }
 };
 
@@ -306,4 +314,5 @@ window.onload = function () {
     loadPlayerName();
     createBoard();
     updateMatchesText();
+    updateLevelDisplay();
 };
