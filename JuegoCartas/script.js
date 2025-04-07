@@ -29,6 +29,29 @@ const soundMap = {
     'img/image14.jpg': new Audio('sounds/image14.mp3')
 };
 
+// Lista de todas las imágenes posibles (incluye todas las imágenes de todos los niveles)
+const allImages = [
+    'img/image1.jpg', 'img/image2.jpg', 'img/image3.jpg', 'img/image4.jpg',
+    'img/image5.jpg', 'img/image6.jpg', 'img/image7.jpg', 'img/image8.jpg',
+    'img/image9.jpg', 'img/image10.jpg', 'img/image11.jpg', 'img/image12.jpg',
+    'img/image13.jpg', 'img/image14.jpg',
+    'img/back.jpg' // Incluye la imagen de fondo de las cartas
+];
+
+// Función para precargar imágenes con promesa
+function preloadImages(imageUrls) {
+    const promises = imageUrls.map(url => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = url;
+            img.onload = resolve;
+            img.onerror = reject;
+        });
+    });
+
+    return Promise.all(promises);
+}
+
 let board = document.getElementById('board');
 let scoreDisplay = document.getElementById('score');
 let timerDisplay = document.getElementById('timer');
@@ -256,6 +279,7 @@ function resetScoreboard() {
         updateScoreboard();
     }
 }
+
 function updateBoardSize() {
     let columns;
     const screenWidth = window.innerWidth;
@@ -385,9 +409,26 @@ function goToNextLevel() {
 }
 
 window.onload = function () {
-    addLevelControls();
-    loadPlayerName();
-    createBoard();
-    updateMatchesText();
-    updateLevelDisplay();
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    
+    preloadImages(allImages)
+        .then(() => {
+            // Ocultar el overlay de carga cuando todas las imágenes estén listas
+            loadingOverlay.style.display = 'none';
+            addLevelControls();
+            loadPlayerName();
+            createBoard();
+            updateMatchesText();
+            updateLevelDisplay();
+        })
+        .catch(err => {
+            console.error('Error al precargar imágenes:', err);
+            // En caso de error, aún mostramos el juego
+            loadingOverlay.style.display = 'none';
+            addLevelControls();
+            loadPlayerName();
+            createBoard();
+            updateMatchesText();
+            updateLevelDisplay();
+        });
 };
