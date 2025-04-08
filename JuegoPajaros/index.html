@@ -1,140 +1,137 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flappy Bird Simplificado</title>
-  <link rel="stylesheet" href="estilo.css" />
-  <!-- Fuente pixelada para un estilo de videojuego -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
-  <!-- Menú inicial -->
+  <!-- Menú principal -->
   <div id="menu" class="menu">
-    <h1>Flappy Bird Simplificado</h1>
-    <h2>Elige tu personaje</h2>
-
-    <!-- Sección de personajes predefinidos -->
+    <h1>Flappy Bird</h1>
+    <h2>Selecciona un personaje</h2>
     <div class="character-selection">
-      <h3>Personajes predefinidos</h3>
       <div class="character-options">
-        <div class="character-option" data-character="1">
-          <img src="img/character1.png" alt="Personaje 1" />
+        <div class="character-option unlocked" data-character="1">
+          <img src="img/character1.png" alt="Personaje 1">
           <p>Personaje 1</p>
-          <span class="locked">🔒 Bloqueado</span>
+          <span class="locked">Bloqueado</span>
         </div>
         <div class="character-option" data-character="2">
-          <img src="img/character2.png" alt="Personaje 2" />
+          <img src="img/character2.png" alt="Personaje 2">
           <p>Personaje 2</p>
-          <span class="locked">🔒 Bloqueado</span>
+          <span class="locked">Bloqueado</span>
         </div>
         <div class="character-option" data-character="3">
-          <img src="img/character3.png" alt="Personaje 3" />
+          <img src="img/character3.png" alt="Personaje 3">
           <p>Personaje 3</p>
-          <span class="locked">🔒 Bloqueado</span>
+          <span class="locked">Bloqueado</span>
         </div>
         <div class="character-option" data-character="4">
-          <img src="img/character4.png" alt="Personaje 4" />
+          <img src="img/character4.png" alt="Personaje 4">
           <p>Personaje 4</p>
-          <span class="locked">🔒 Bloqueado</span>
+          <span class="locked">Bloqueado</span>
         </div>
         <div class="character-option" data-character="5">
-          <img src="img/character5.png" alt="Personaje 5" />
+          <img src="img/character5.png" alt="Personaje 5">
           <p>Personaje 5</p>
-          <span class="locked">🔒 Bloqueado</span>
+          <span class="locked">Bloqueado</span>
         </div>
       </div>
-      <div class="predefined-size-control">
-        <label>
-          Tamaño del personaje:
-          <input type="range" id="predefined-bird-size" min="20" max="40" value="30" />
-        </label>
-      </div>
     </div>
-
-    <!-- Sección de personalización -->
     <div class="character-customization">
-      <h3>Personaliza tu personaje</h3>
-      <div class="customization-options">
-        <div id="custom-bird-preview" class="custom-bird"></div>
-        <label>
-          Color del cuerpo:
-          <input type="color" id="body-color" value="#FFD700" />
-        </label>
-        <label>
-          Color de las alas:
-          <input type="color" id="wings-color" value="#FFFFFF" />
-        </label>
-        <label>
-          Tamaño:
-          <input type="range" id="bird-size" min="20" max="40" value="30" />
-        </label>
-      </div>
+      <h3>O personaliza tu personaje</h3>
+      <button id="customize-character-button">Personalizar</button>
     </div>
-
-    <button id="play-button">Jugar</button>
+    <div class="menu-buttons">
+      <button id="play-button" disabled>Jugar</button>
+      <button id="shop-button">Tienda 🏪</button>
+    </div>
   </div>
 
-  <!-- Área del juego (oculta al inicio) -->
+  <!-- Menú de personalización -->
+  <div id="customization-menu" class="menu hidden">
+    <h2>Personaliza tu personaje</h2>
+    <div class="customization-options">
+      <div id="custom-bird-preview" class="custom-bird"></div>
+      <label>
+        Color del cuerpo:
+        <input type="color" id="body-color" value="#FFD700">
+      </label>
+      <label>
+        Color de las alas:
+        <input type="color" id="wings-color" value="#FFFFFF">
+      </label>
+    </div>
+    <div class="menu-buttons">
+      <button id="confirm-customization">Confirmar</button>
+      <button id="back-to-menu">Volver</button>
+    </div>
+  </div>
+
+  <!-- Menú de equipamiento -->
+  <div id="equip-menu" class="menu hidden">
+    <h2>Equipa ítems</h2>
+    <div id="equip-options"></div>
+    <div class="size-control">
+      <label>
+        Tamaño del pájaro:
+        <input type="range" id="equip-bird-size" min="20" max="50" value="30">
+      </label>
+    </div>
+    <div class="menu-buttons">
+      <button id="confirm-equip">Confirmar</button>
+      <button id="back-to-selection">Volver</button>
+    </div>
+  </div>
+
+  <!-- Menú de la tienda -->
+  <div id="shop-menu" class="menu hidden">
+    <h2>Tienda 🏪</h2>
+    <p>Monedas: <span id="shop-coins">0</span></p>
+    <div id="shop-items"></div>
+    <div class="menu-buttons">
+      <button id="back-to-menu-from-shop">Volver</button>
+    </div>
+  </div>
+
+  <!-- Área del juego -->
   <div class="game-container hidden">
     <div class="game-info">
-      <p>Puntuación: <span id="score">0</span></p>
-      <p>Monedas: <span id="coins">0</span></p>
+      <span>Puntuación: <span id="score">0</span></span>
+      <span>Monedas: <span id="coins">0</span></span>
     </div>
     <div class="game-area">
-      <div id="bird"></div>
-    </div>
-    <div id="game-over" class="game-over hidden">
-      <h2>¡Game Over!</h2>
-      <p>Puntuación final: <span id="final-score">0</span></p>
-      <p>Monedas totales: <span id="total-coins">0</span></p>
-      <div class="shop">
-        <h3>Tienda 🏪</h3>
-        <p>Monedas disponibles: <span id="shop-coins">0</span> 💰</p>
-        <div class="shop-items">
-          <div class="shop-item" data-item="body-color-1">
-            <p>Nuevo color de cuerpo (Rojo) 🎨: 10 monedas</p>
-            <button class="buy-button">Comprar</button>
-          </div>
-          <div class="shop-item" data-item="wings-style-1">
-            <p>Nuevo estilo de alas (Elegante) 🕊️: 15 monedas</p>
-            <button class="buy-button">Comprar</button>
-          </div>
-          <div class="shop-item" data-item="pipe-style-1">
-            <p>Nuevo estilo de tuberías (Metálico) 🛠️: 20 monedas</p>
-            <button class="buy-button">Comprar</button>
-          </div>
-          <div class="shop-item" data-item="character-1">
-            <p>Personaje 1 🐦: 25 monedas</p>
-            <button class="buy-button">Comprar</button>
-          </div>
-          <div class="shop-item" data-item="character-2">
-            <p>Personaje 2 🐤: 25 monedas</p>
-            <button class="buy-button">Comprar</button>
-          </div>
-          <div class="shop-item" data-item="character-3">
-            <p>Personaje 3 🐥: 25 monedas</p>
-            <button class="buy-button">Comprar</button>
-          </div>
-          <div class="shop-item" data-item="character-4">
-            <p>Personaje 4 🐧: 25 monedas</p>
-            <button class="buy-button">Comprar</button>
-          </div>
-          <div class="shop-item" data-item="character-5">
-            <p>Personaje 5 🦅: 25 monedas</p>
-            <button class="buy-button">Comprar</button>
-          </div>
-          <div class="shop-item" data-item="trail-effect-1">
-            <p>Efecto de rastro (Estrellas) ✨: 30 monedas</p>
-            <button class="buy-button">Comprar</button>
-          </div>
-        </div>
+      <div id="bird">
+        <div class="trail"></div>
       </div>
-      <button id="restart-button">Jugar de nuevo</button>
     </div>
+  </div>
+
+  <!-- Pantalla de Game Over -->
+  <div id="game-over" class="game-over hidden">
+    <h2>¡Game Over!</h2>
+    <p>Puntuación final: <span id="final-score">0</span></p>
+    <p>Monedas totales: <span id="total-coins">0</span></p>
+    <div class="high-scores">
+      <h3>Mejores puntuaciones</h3>
+      <table id="high-scores-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Puntuación</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <button id="restart-button">Jugar de nuevo</button>
   </div>
 
   <script src="juego.js"></script>
 </body>
 </html>
-<!--pon que el primer personaje venga desbloqueado y que cuando te compres algo de la tienda tengas la opcion de equipartelo-->
+<!--el ala izquierda demoniaca se ve perfecta, quiero que pongas la derecha de la misma forma pero opuesta y que copies el mismo estilo para todas las alas, ademas se ha desajustado el botón confirmar al personalizar ademas ponle un fondo al menú de personalizar y al de la tienda que pegue con los demás colores e intenta mejorar el estilo de todos los tipos de tubos para que se vean mas real sin cambiar la funciónalidad de las cosas-->

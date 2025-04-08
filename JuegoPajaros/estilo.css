@@ -1,453 +1,768 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: 'Press Start 2P', cursive; /* Fuente pixelada para un estilo de videojuego */
-    background: linear-gradient(135deg, #87CEEB, #4682B4); /* Fondo degradado más vibrante */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
-  }
-  
-  /* Estilo del menú */
-  .menu {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    max-width: 600px;
-    width: 90%;
-    z-index: 10;
-    border: 4px solid #FFD700; /* Borde dorado para un toque retro */
-  }
-  
-  .menu.hidden {
-    display: none;
-  }
-  
-  .menu h1 {
-    font-size: 1.8rem;
-    color: #FF4500; /* Naranja vibrante */
-    margin-bottom: 10px;
-    text-shadow: 2px 2px #000; /* Sombra para efecto retro */
-  }
-  
-  .menu h2 {
-    font-size: 1.2rem;
-    color: #FFD700;
-    margin-bottom: 20px;
-    text-shadow: 1px 1px #000;
-  }
-  
-  .menu h3 {
-    font-size: 1rem;
-    color: #FF6347;
-    margin-bottom: 10px;
-    text-shadow: 1px 1px #000;
-  }
-  
-  /* Sección de personajes predefinidos */
-  .character-selection {
-    margin-bottom: 20px;
-  }
-  
-  .character-options {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  
-  .character-option {
-    position: relative;
-    cursor: pointer;
-    padding: 10px;
-    border: 2px solid transparent;
-    border-radius: 5px;
-    transition: border 0.3s, transform 0.2s;
-  }
-  
-  .character-option:hover {
-    border: 2px solid #FFD700;
-    transform: scale(1.05); /* Efecto de agrandamiento al pasar el ratón */
-  }
-  
-  .character-option img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    filter: brightness(0.5); /* Oscurecer si está bloqueado */
-  }
-  
-  .character-option.unlocked img {
-    filter: brightness(1); /* Restaurar brillo si está desbloqueado */
-  }
-  
-  .character-option p {
-    margin-top: 5px;
-    font-size: 0.8rem;
-    color: #FFD700;
-    text-shadow: 1px 1px #000;
-  }
-  
-  .character-option .locked {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 0.7rem;
-    color: #FF4500;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 2px 5px;
-    border-radius: 3px;
-    display: block;
-  }
-  
-  .character-option.unlocked .locked {
-    display: none;
-  }
-  
-  .character-option.selected {
-    border: 2px solid #FF4500;
-  }
-  
-  .predefined-size-control {
-    margin-top: 10px;
-  }
-  
-  .predefined-size-control label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9rem;
-    color: #FFD700;
-    text-shadow: 1px 1px #000;
-  }
-  
-  /* Sección de personalización */
-  .character-customization {
-    margin-bottom: 20px;
-  }
-  
-  .customization-options {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .custom-bird {
-    position: relative;
-    width: 50px;
-    height: 50px;
-    background: #FFD700;
-    border-radius: 50%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  }
-  
-  /* Alas en la vista previa */
-  .custom-bird::before,
-  .custom-bird::after {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 10px;
-    background: var(--wings-color, #FFFFFF);
-    clip-path: polygon(0 0, 100% 0, 50% 100%); /* Forma triangular para las alas */
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
-  }
-  
-  .custom-bird::before {
-    left: -15px;
-    top: 20px;
-    transform: rotate(45deg);
-  }
-  
-  .custom-bird::after {
-    right: -15px;
-    top: 20px;
-    transform: rotate(-45deg);
-  }
-  
-  .customization-options label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9rem;
-    color: #FFD700;
-    text-shadow: 1px 1px #000;
-  }
-  
-  /* Área del juego */
-  .game-container {
-    text-align: center;
-    position: relative;
-  }
-  
-  .game-container.hidden {
-    display: none;
-  }
-  
-  .game-info {
-    margin-bottom: 10px;
-    font-size: 1rem;
-    color: #FFD700;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    text-shadow: 1px 1px #000;
-  }
-  
-  .game-area {
-    position: relative;
-    width: 800px;
-    height: 500px;
-    background: linear-gradient(180deg, #87CEEB, #B0E0E6); /* Fondo más dinámico */
-    border: 4px solid #FFD700;
-    overflow: hidden;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  }
-  
-  #bird {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    background: #FFD700;
-    border-radius: 50%;
-    left: 150px;
-    top: 250px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    background-size: cover;
-    background-position: center;
-  }
-  
-  /* Alas mejoradas */
-  #bird::before,
-  #bird::after {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 10px;
-    background: var(--wings-color, #FFFFFF); /* Blancas por defecto */
-    clip-path: polygon(0 0, 100% 0, 50% 100%); /* Forma triangular para las alas */
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
-  }
-  
-  #bird::before {
-    left: -15px;
-    top: 15px;
-    transform: rotate(45deg);
-  }
-  
-  #bird::after {
-    right: -15px;
-    top: 15px;
-    transform: rotate(-45deg);
-  }
-  
-  /* Efecto de rastro (desbloqueable) */
-  #bird.trail-effect-1::after {
-    content: '✨';
-    position: absolute;
-    left: -30px;
-    top: 10px;
-    font-size: 12px;
-    animation: sparkle 0.5s infinite;
-  }
-  
-  @keyframes sparkle {
-    0% { opacity: 1; }
-    50% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-  
-  /* Tuberías */
-  .pipe {
-    position: absolute;
-    width: 30px;
-    background: linear-gradient(90deg, #2E8B57, #3CB371);
-    border-left: 2px solid #145214;
-    border-right: 2px solid #145214;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
-  }
-  
-  .pipe.top {
-    top: 0;
-    transform-origin: top;
-  }
-  
-  .pipe.bottom {
-    bottom: 0;
-    transform-origin: bottom;
-  }
-  
-  /* Borde de las tuberías */
-  .pipe.top::after,
-  .pipe.bottom::before {
-    content: '';
-    position: absolute;
-    width: 40px;
-    height: 10px;
-    background: #2E8B57;
-    border: 2px solid #145214;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  
-  .pipe.top::after {
-    bottom: -10px;
-  }
-  
-  .pipe.bottom::before {
-    top: -10px;
-  }
-  
-  /* Monedas */
-  .coin {
-    position: absolute;
-    width: 15px;
-    height: 15px;
-    background: #FFD700;
-    border-radius: 50%;
-    border: 2px solid #DAA520;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-    animation: coin-spin 1s infinite linear;
-  }
-  
-  @keyframes coin-spin {
-    0% { transform: rotateY(0deg); }
-    100% { transform: rotateY(360deg); }
-  }
-  
-  /* Pantalla de Game Over y Tienda */
-  .game-over {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.9); /* Fondo oscuro para un estilo más de videojuego */
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    max-width: 500px;
-    width: 90%;
-    z-index: 20;
-    border: 4px solid #FF4500; /* Borde naranja */
-    color: #FFD700;
-    text-shadow: 1px 1px #000;
-  }
-  
-  .game-over.hidden {
-    display: none;
-  }
-  
-  .game-over h2 {
-    font-size: 1.5rem;
-    color: #FF4500;
-    margin-bottom: 10px;
-  }
-  
-  .game-over p {
-    font-size: 0.9rem;
-    margin-bottom: 5px;
-  }
-  
-  .shop {
-    margin-top: 20px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    border: 2px solid #FFD700;
-  }
-  
-  .shop h3 {
-    font-size: 1.2rem;
-    color: #FFD700;
-    margin-bottom: 10px;
-  }
-  
-  .shop-items {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-height: 200px;
-    overflow-y: auto; /* Permitir desplazamiento si hay muchos ítems */
-  }
-  
-  .shop-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
-    border: 1px solid #FFD700;
-    transition: transform 0.2s;
-  }
-  
-  .shop-item:hover {
-    transform: scale(1.02); /* Efecto de agrandamiento al pasar el ratón */
-  }
-  
-  .shop-item p {
-    margin: 0;
-    font-size: 0.8rem;
-    color: #FFD700;
-    text-shadow: 1px 1px #000;
-  }
-  
-  .buy-button {
-    padding: 5px 10px;
-    font-size: 0.8rem;
-    background: #FF4500;
-    color: #FFF;
-    border: 2px solid #FFD700;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.1s;
-    font-family: 'Press Start 2P', cursive;
-  }
-  
-  .buy-button:hover {
-    background: #FFD700;
-    color: #FF4500;
-    transform: scale(1.05);
-  }
-  
-  .buy-button:disabled {
-    background: #555;
-    color: #999;
-    border-color: #999;
-    cursor: not-allowed;
-  }
-  
-  button {
-    padding: 10px 20px;
-    font-size: 0.9rem;
-    background: #FF4500;
-    color: #FFF;
-    border: 2px solid #FFD700;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.1s;
-    font-family: 'Press Start 2P', cursive;
-  }
-  
-  button:hover {
-    background: #FFD700;
-    color: #FF4500;
-    transform: scale(1.05);
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Press Start 2P', cursive; /* Fuente pixelada para un estilo de videojuego */
+  background: linear-gradient(135deg, #87CEEB, #4682B4); /* Fondo degradado más vibrante */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Estilo del menú */
+.menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  width: 90%;
+  z-index: 10;
+  border: 4px solid #FFD700; /* Borde dorado para un toque retro */
+}
+
+.menu.hidden {
+  display: none;
+}
+
+.menu h1 {
+  font-size: 1.8rem;
+  color: #FF4500; /* Naranja vibrante */
+  margin-bottom: 10px;
+  text-shadow: 2px 2px #000; /* Sombra para efecto retro */
+}
+
+.menu h2 {
+  font-size: 1.2rem;
+  color: #FFD700;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px #000;
+}
+
+.menu h3 {
+  font-size: 1rem;
+  color: #FF6347;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px #000;
+}
+
+/* Contenedor para los botones del menú */
+.menu-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+#play-button,
+#shop-button,
+#confirm-customization,
+#back-to-menu,
+#confirm-equip,
+#back-to-selection,
+#back-to-menu-from-shop {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  width: 120px; /* Tamaño fijo para que sean iguales */
+  background: #FF4500;
+  color: #FFF;
+  border: 2px solid #FFD700;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+  font-family: 'Press Start 2P', cursive;
+}
+
+#play-button:disabled {
+  background: #555;
+  color: #999;
+  border-color: #999;
+  cursor: not-allowed;
+}
+
+#play-button:hover:not(:disabled),
+#shop-button:hover,
+#confirm-customization:hover,
+#back-to-menu:hover,
+#confirm-equip:hover,
+#back-to-selection:hover,
+#back-to-menu-from-shop:hover {
+  background: #FFD700;
+  color: #FF4500;
+  transform: scale(1.05);
+}
+
+/* Sección de personajes predefinidos */
+.character-selection {
+  margin-bottom: 20px;
+}
+
+.character-options {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.character-option {
+  position: relative;
+  cursor: pointer;
+  padding: 10px;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  transition: border 0.3s, transform 0.2s;
+}
+
+.character-option:hover {
+  border: 2px solid #FFD700;
+  transform: scale(1.05); /* Efecto de agrandamiento al pasar el ratón */
+}
+
+.character-option img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: brightness(0.5); /* Oscurecer si está bloqueado */
+}
+
+.character-option.unlocked img {
+  filter: brightness(1); /* Restaurar brillo si está desbloqueado */
+}
+
+.character-option p {
+  margin-top: 5px;
+  font-size: 0.8rem;
+  color: #FFD700;
+  text-shadow: 1px 1px #000;
+}
+
+.character-option .locked {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.7rem;
+  color: #FF4500;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 2px 5px;
+  border-radius: 3px;
+  display: block;
+}
+
+.character-option.unlocked .locked {
+  display: none;
+}
+
+.character-option.selected {
+  border: 2px solid #FF4500;
+}
+
+/* Sección de personalización */
+.character-customization {
+  margin-bottom: 20px;
+}
+
+#customize-character-button {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  background: #FF6347;
+  color: #FFF;
+  border: 2px solid #FFD700;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+  font-family: 'Press Start 2P', cursive;
+}
+
+#customize-character-button:hover {
+  background: #FFD700;
+  color: #FF4500;
+  transform: scale(1.05);
+}
+
+.customization-options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.custom-bird {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  background: #FFD700;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Alas en la vista previa (usando imágenes o emoji) */
+.custom-bird::before,
+.custom-bird::after {
+  content: '';
+  position: absolute;
+  width: 40px; /* Aumentado para que las alas sean más grandes */
+  height: 40px; /* Aumentado para que las alas sean más grandes */
+  background-size: contain;
+  background-repeat: no-repeat;
+  animation: flap 0.5s infinite alternate; /* Animación de aleteo */
+}
+
+/* Alas por defecto (Alas - emoji 🪽) */
+.custom-bird::before,
+.custom-bird::after {
+  content: '🪽';
+  font-size: 30px; /* Aumentado para que las alas sean más grandes */
+  color: var(--wings-color, #FFFFFF);
+}
+
+/* Alas Doradas (wings-style-1) */
+.custom-bird.wings-style-1::before {
+  content: '';
+  background-image: url('img/golden-wing-left.png');
+  left: -30px; /* Ajustado para que las alas estén más separadas */
+  top: 5px; /* Ajustado para centrar verticalmente */
+  transform: rotate(20deg);
+}
+
+.custom-bird.wings-style-1::after {
+  content: '';
+  background-image: url('img/golden-wing-left.png');
+  right: -30px; /* Ajustado para que las alas estén más separadas */
+  top: 5px; /* Ajustado para centrar verticalmente */
+  transform: rotate(-20deg) scaleX(-1); /* Reflejar horizontalmente */
+}
+
+/* Alas Demoníacas (wings-style-2) */
+.custom-bird.wings-style-2::before {
+  content: '';
+  background-image: url('img/demonic-wing-left.png');
+  left: -30px; /* Ajustado para que las alas estén más separadas */
+  top: 5px; /* Ajustado para centrar verticalmente */
+  transform: rotate(20deg);
+}
+
+.custom-bird.wings-style-2::after {
+  content: '';
+  background-image: url('img/demonic-wing-left.png');
+  right: -30px; /* Ajustado para que las alas estén más separadas */
+  top: 5px; /* Ajustado para centrar verticalmente */
+  transform: rotate(-20deg) scaleX(-1); /* Reflejar horizontalmente */
+}
+
+/* Alas de Fuego (wings-style-3) */
+.custom-bird.wings-style-3::before,
+.custom-bird.wings-style-3::after {
+  content: '🪽';
+  font-size: 30px; /* Aumentado para que las alas sean más grandes */
+  color: #FF4500; /* Alas de fuego */
+}
+
+.custom-bird::before {
+  left: -25px; /* Ajustado para que las alas estén más separadas */
+  top: 5px; /* Ajustado para centrar verticalmente */
+}
+
+.custom-bird::after {
+  right: -25px; /* Ajustado para que las alas estén más separadas */
+  top: 5px; /* Ajustado para centrar verticalmente */
+}
+
+.customization-options label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  color: #FFD700;
+  text-shadow: 1px 1px #000;
+}
+
+/* Sección para equipar ítems */
+#equip-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.equip-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  border: 1px solid #FFD700;
+}
+
+.equip-item p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #FFD700;
+  text-shadow: 1px 1px #000;
+}
+
+.equip-button,
+.unequip-button {
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  border: 2px solid #FFD700;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.equip-button {
+  background: #FF4500;
+  color: #FFF;
+}
+
+.unequip-button {
+  background: #555;
+  color: #FFF;
+}
+
+.equip-button:hover,
+.unequip-button:hover {
+  background: #FFD700;
+  color: #FF4500;
+  transform: scale(1.05);
+}
+
+.equip-button.active {
+  background: #FFD700;
+  color: #FF4500;
+}
+
+.size-control {
+  margin-top: 10px;
+}
+
+.size-control label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  color: #FFD700;
+  text-shadow: 1px 1px #000;
+}
+
+/* Área del juego */
+.game-container {
+  text-align: center;
+  position: relative;
+}
+
+.game-container.hidden {
+  display: none;
+}
+
+.game-info {
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #FFD700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-shadow: 1px 1px #000;
+}
+
+.game-area {
+  position: relative;
+  width: 800px;
+  height: 500px;
+  background: linear-gradient(180deg, #87CEEB, #B0E0E6); /* Fondo más dinámico */
+  border: 4px solid #FFD700;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.game-area.hidden {
+  display: none;
+}
+
+#bird {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: #FFD700;
+  border-radius: 50%;
+  left: 150px;
+  top: 250px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  background-size: cover;
+  background-position: center;
+}
+
+/* Alas del pájaro (usando imágenes o emoji) */
+#bird::before,
+#bird::after {
+  content: '';
+  position: absolute;
+  width: 40px; /* Aumentado para que las alas sean más grandes */
+  height: 40px; /* Aumentado para que las alas sean más grandes */
+  background-size: contain;
+  background-repeat: no-repeat;
+  animation: flap 0.5s infinite alternate; /* Animación de aleteo */
+}
+
+/* Alas por defecto (Alas - emoji 🪽) */
+#bird::before,
+#bird::after {
+  content: '🪽';
+  font-size: 30px; /* Aumentado para que las alas sean más grandes */
+  color: var(--wings-color, #FFFFFF);
+}
+
+/* Alas Doradas (wings-style-1) */
+#bird.wings-style-1::before {
+  content: '';
+  background-image: url('img/golden-wing-left.png');
+  left: -30px; /* Ajustado para que las alas estén más separadas */
+  top: 0px; /* Ajustado para centrar verticalmente */
+  transform: rotate(20deg);
+}
+
+#bird.wings-style-1::after {
+  content: '';
+  background-image: url('img/golden-wing-left.png');
+  right: -30px; /* Ajustado para que las alas estén más separadas */
+  top: 0px; /* Ajustado para centrar verticalmente */
+  transform: rotate(-20deg) scaleX(-1); /* Reflejar horizontalmente */
+}
+
+/* Alas Demoníacas (wings-style-2) */
+#bird.wings-style-2::before {
+  content: '';
+  background-image: url('img/demonic-wing-left.png');
+  left: -30px; /* Ajustado para que las alas estén más separadas */
+  top: 0px; /* Ajustado para centrar verticalmente */
+  transform: rotate(20deg);
+}
+
+#bird.wings-style-2::after {
+  content: '';
+  background-image: url('img/demonic-wing-left.png');
+  right: -30px; /* Ajustado para que las alas estén más separadas */
+  top: 0px; /* Ajustado para centrar verticalmente */
+  transform: rotate(-20deg) scaleX(-1); /* Reflejar horizontalmente */
+}
+
+/* Alas de Fuego (wings-style-3) */
+#bird.wings-style-3::before,
+#bird.wings-style-3::after {
+  content: '🪽';
+  font-size: 30px; /* Aumentado para que las alas sean más grandes */
+  color: #FF4500; /* Alas de fuego */
+}
+
+/* Posicionamiento base de las alas */
+#bird::before {
+  left: -25px; /* Ajustado para que las alas estén más separadas */
+  top: 0px; /* Ajustado para centrar verticalmente */
+}
+
+#bird::after {
+  right: -25px; /* Ajustado para que las alas estén más separadas */
+  top: 0px; /* Ajustado para centrar verticalmente */
+}
+
+/* Animación de aleteo */
+@keyframes flap {
+  0% { transform: rotate(20deg) translateY(0); }
+  100% { transform: rotate(40deg) translateY(-3px); }
+}
+
+#bird::after {
+  animation: flap 0.5s infinite alternate-reverse; /* Aleteo desfasado para la otra ala */
+}
+
+/* Efectos de rastro */
+.trail {
+  position: absolute;
+  left: -30px;
+  top: 10px;
+  font-size: 12px;
+  display: none;
+}
+
+.trail.trail-effect-1::after {
+  content: '✨';
+  display: block;
+  animation: sparkle 0.5s infinite;
+}
+
+.trail.trail-effect-2::after {
+  content: '💕';
+  display: block;
+  animation: sparkle 0.5s infinite;
+}
+
+.trail.trail-effect-3::after {
+  content: '🔥';
+  display: block;
+  animation: sparkle 0.5s infinite;
+}
+
+@keyframes sparkle {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Tuberías */
+.pipe {
+  position: absolute;
+  width: 30px;
+  background: linear-gradient(90deg, #2E8B57, #3CB371);
+  border-left: 2px solid #145214;
+  border-right: 2px solid #145214;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.pipe.pipe-style-1 {
+  background: linear-gradient(90deg, #4A4A4A, #6A6A6A); /* Metálico */
+  border-left: 2px solid #333;
+  border-right: 2px solid #333;
+}
+
+.pipe.pipe-style-2 {
+  background: linear-gradient(90deg, #87CEEB, #E0FFFF); /* Cristal */
+  border-left: 2px solid #4682B4;
+  border-right: 2px solid #4682B4;
+  opacity: 0.9;
+}
+
+.pipe.pipe-style-3 {
+  background: linear-gradient(90deg, #8B4513, #D2691E); /* Madera */
+  border-left: 2px solid #5C4033;
+  border-right: 2px solid #5C4033;
+}
+
+.pipe.top {
+  top: 0;
+}
+
+.pipe.bottom {
+  bottom: 0;
+}
+
+/* Borde de las tuberías */
+.pipe.top::after,
+.pipe.bottom::before {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 10px;
+  background: inherit;
+  border: 2px solid #145214;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.pipe.pipe-style-1.top::after,
+.pipe.pipe-style-1.bottom::before {
+  border-color: #333;
+}
+
+.pipe.pipe-style-2.top::after,
+.pipe.pipe-style-2.bottom::before {
+  border-color: #4682B4;
+}
+
+.pipe.pipe-style-3.top::after,
+.pipe.pipe-style-3.bottom::before {
+  border-color: #5C4033;
+}
+
+.pipe.top::after {
+  bottom: -10px;
+}
+
+.pipe.bottom::before {
+  top: -10px;
+}
+
+/* Monedas */
+.coin {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  background: #FFD700;
+  border-radius: 50%;
+  border: 2px solid #DAA520;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  animation: coin-spin 1s infinite linear;
+}
+
+@keyframes coin-spin {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+/* Pantalla de Game Over */
+.game-over {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9); /* Fondo oscuro para un estilo más de videojuego */
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  max-width: 800px; /* Aumentado para más ancho */
+  width: 95%; /* Más ancho */
+  z-index: 20;
+  border: 4px solid #FF4500; /* Borde naranja */
+  color: #FFD700;
+  text-shadow: 1px 1px #000;
+}
+
+.game-over.hidden {
+  display: none;
+}
+
+.game-over h2 {
+  font-size: 1.5rem;
+  color: #FF4500;
+  margin-bottom: 10px;
+}
+
+.game-over p {
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.save-message {
+  font-size: 0.8rem;
+  color: #32CD32; /* Verde para destacar */
+  margin-top: 10px;
+}
+
+/* Tabla de mejores puntuaciones */
+.high-scores {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  border: 2px solid #FFD700;
+}
+
+.high-scores h3 {
+  font-size: 1.2rem;
+  color: #FFD700;
+  margin-bottom: 10px;
+}
+
+#high-scores-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #FFD700;
+  text-shadow: 1px 1px #000;
+}
+
+#high-scores-table th,
+#high-scores-table td {
+  padding: 8px;
+  border: 1px solid #FFD700;
+  font-size: 0.8rem;
+}
+
+#high-scores-table th {
+  background: rgba(255, 215, 0, 0.3);
+  color: #FF4500;
+}
+
+#high-scores-table td {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+#high-scores-table tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Estilo para la tienda */
+#shop-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.shop-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  border: 1px solid #FFD700;
+}
+
+.shop-item p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #FFD700;
+  text-shadow: 1px 1px #000;
+}
+
+.shop-item button {
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  background: #FF4500;
+  color: #FFF;
+  border: 2px solid #FFD700;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.shop-item button:disabled {
+  background: #555;
+  color: #999;
+  border-color: #999;
+  cursor: not-allowed;
+}
+
+.shop-item button:hover:not(:disabled) {
+  background: #FFD700;
+  color: #FF4500;
+  transform: scale(1.05);
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  background: #FF4500;
+  color: #FFF;
+  border: 2px solid #FFD700;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+  font-family: 'Press Start 2P', cursive;
+}
+
+button:hover {
+  background: #FFD700;
+  color: #FF4500;
+  transform: scale(1.05);
+}
