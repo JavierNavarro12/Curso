@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flying Politics</title>
-  <link rel="stylesheet" href="estilo.css">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
   <!-- Pantalla de bienvenida -->
@@ -19,16 +19,16 @@
     </div>
   </div>
 
-  <!-- Mensaje de bloqueo de orientación -->
-  <div id="orientation-lock" class="orientation-lock">
-    <p>Por favor, gira tu dispositivo a modo horizontal para jugar.</p>
+  <!-- Mensaje de bloqueo para orientación vertical -->
+  <div id="orientation-lock" class="orientation-lock hidden">
+    <p>-por favor, gira tu dispositivo a modo horizontal para jugar.</p>
   </div>
 
   <!-- Menú principal -->
-  <div id="menu" class="menu">
-    <h1>Flying Politics</h1>
+  <div id="menu" class="menu hidden">
+    <h1>FLYING POLITICS</h1>
+    <h2>Selecciona un personaje</h2>
     <div class="character-selection">
-      <h3>Selecciona un personaje</h3>
       <div class="character-options">
         <div class="character-option" data-character="1">
           <img src="img/character1.png" alt="Personaje 1">
@@ -68,13 +68,17 @@
 
   <!-- Menú de personalización -->
   <div id="customization-menu" class="menu hidden">
-    <h2>Personaliza tu personaje</h2>
-    <div class="character-customization">
+    <h2>Personaliza tu pájaro</h2>
+    <div class="customization-options">
       <div id="custom-bird-preview" class="custom-bird"></div>
-      <div class="customization-options">
-        <label>Color del cuerpo: <input type="color" id="body-color" value="#FFD700"></label>
-        <label>Color de las alas: <input type="color" id="wings-color" value="#FFFFFF"></label>
-      </div>
+      <label>
+        Color del cuerpo:
+        <input type="color" id="body-color" value="#FFD700">
+      </label>
+      <label>
+        Color de las alas:
+        <input type="color" id="wings-color" value="#FFFFFF">
+      </label>
     </div>
     <div class="menu-buttons">
       <button id="confirm-customization">Confirmar</button>
@@ -87,7 +91,10 @@
     <h2>Equipa tus ítems</h2>
     <div id="equip-options"></div>
     <div class="size-control">
-      <label>Tamaño del pájaro: <input type="range" id="equip-bird-size" min="20" max="50" value="30"></label>
+      <label>
+        Tamaño del pájaro:
+        <input type="range" id="equip-bird-size" min="20" max="50" value="30">
+      </label>
     </div>
     <div class="menu-buttons">
       <button id="confirm-equip">Confirmar</button>
@@ -95,7 +102,7 @@
     </div>
   </div>
 
-  <!-- Tienda -->
+  <!-- Menú de la tienda -->
   <div id="shop-menu" class="menu hidden">
     <h2>Tienda</h2>
     <p>Monedas: <span id="shop-coins">0</span></p>
@@ -106,7 +113,7 @@
   </div>
 
   <!-- Área del juego -->
-  <div class="game-container hidden">
+  <div id="game-container" class="game-container hidden">
     <div class="game-info">
       <span>Puntuación: <span id="score">0</span></span>
       <span>Monedas: <span id="coins">0</span></span>
@@ -123,7 +130,6 @@
     <h2>¡Game Over!</h2>
     <p>Puntuación final: <span id="final-score">0</span></p>
     <p>Monedas totales: <span id="total-coins">0</span></p>
-    <div class="save-message">Puntuación guardada.</div>
     <div class="high-scores">
       <h3>Mejores puntuaciones</h3>
       <table id="high-scores-table">
