@@ -5,13 +5,36 @@
 }
 
 body {
-  font-family: 'Press Start 2P', cursive; /* Fuente pixelada para un estilo de videojuego */
-  background: linear-gradient(135deg, #87CEEB, #4682B4); /* Fondo degradado más vibrante */
+  font-family: 'Press Start 2P', cursive;
+  background: linear-gradient(135deg, #87CEEB, #4682B4);
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   overflow: hidden;
+}
+
+/* Mensaje de bloqueo para orientación vertical */
+.orientation-lock {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: #FFD700;
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 20px;
+  text-shadow: 1px 1px #000;
+}
+
+.orientation-lock.hidden {
+  display: none;
 }
 
 /* Estilo del menú */
@@ -28,7 +51,32 @@ body {
   max-width: 600px;
   width: 90%;
   z-index: 10;
-  border: 4px solid #FFD700; /* Borde dorado para un toque retro */
+  border: 4px solid #FFD700;
+}
+
+#customization-menu,
+#shop-menu {
+  background: linear-gradient(135deg, #87CEEB, #4682B4);
+  color: #FFD700;
+  border: 4px solid #FF4500;
+}
+
+#customization-menu h2,
+#shop-menu h2 {
+  color: #FFD700;
+  text-shadow: 1px 1px #000;
+}
+
+#customization-menu p,
+#shop-menu p {
+  color: #FFD700;
+  text-shadow: 1px 1px #000;
+}
+
+#customization-menu label,
+#shop-menu label {
+  color: #FFD700;
+  text-shadow: 1px 1px #000;
 }
 
 .menu.hidden {
@@ -37,9 +85,9 @@ body {
 
 .menu h1 {
   font-size: 1.8rem;
-  color: #FF4500; /* Naranja vibrante */
+  color: #FF4500;
   margin-bottom: 10px;
-  text-shadow: 2px 2px #000; /* Sombra para efecto retro */
+  text-shadow: 2px 2px #000;
 }
 
 .menu h2 {
@@ -62,6 +110,7 @@ body {
   justify-content: center;
   gap: 10px;
   margin-top: 20px;
+  flex-wrap: wrap;
 }
 
 #play-button,
@@ -73,7 +122,7 @@ body {
 #back-to-menu-from-shop {
   padding: 10px 20px;
   font-size: 0.9rem;
-  width: 120px; /* Tamaño fijo para que sean iguales */
+  width: 120px;
   background: #FF4500;
   color: #FFF;
   border: 2px solid #FFD700;
@@ -81,6 +130,11 @@ body {
   cursor: pointer;
   transition: background 0.3s, transform 0.1s;
   font-family: 'Press Start 2P', cursive;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  line-height: 1;
 }
 
 #play-button:disabled {
@@ -125,7 +179,7 @@ body {
 
 .character-option:hover {
   border: 2px solid #FFD700;
-  transform: scale(1.05); /* Efecto de agrandamiento al pasar el ratón */
+  transform: scale(1.05);
 }
 
 .character-option img {
@@ -133,11 +187,11 @@ body {
   height: 50px;
   border-radius: 50%;
   object-fit: cover;
-  filter: brightness(0.5); /* Oscurecer si está bloqueado */
+  filter: brightness(0.5);
 }
 
 .character-option.unlocked img {
-  filter: brightness(1); /* Restaurar brillo si está desbloqueado */
+  filter: brightness(1);
 }
 
 .character-option p {
@@ -171,11 +225,15 @@ body {
 /* Sección de personalización */
 .character-customization {
   margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 #customize-character-button {
-  padding: 10px 20px;
-  font-size: 0.9rem;
+  padding: 10px 15px; /* Reducir el padding horizontal para ajustar mejor el texto */
+  font-size: 0.6rem; /* Reducir el tamaño de la fuente para que el texto quepa en una sola línea */
   background: #FF6347;
   color: #FFF;
   border: 2px solid #FFD700;
@@ -183,6 +241,13 @@ body {
   cursor: pointer;
   transition: background 0.3s, transform 0.1s;
   font-family: 'Press Start 2P', cursive;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  line-height: 1;
+  width: 150px; /* Aumentar el ancho para que el texto quepa en una sola línea */
+  white-space: nowrap; /* Asegurar que el texto no se divida en varias líneas */
 }
 
 #customize-character-button:hover {
@@ -212,71 +277,72 @@ body {
 .custom-bird::after {
   content: '';
   position: absolute;
-  width: 40px; /* Aumentado para que las alas sean más grandes */
-  height: 40px; /* Aumentado para que las alas sean más grandes */
+  width: 40px;
+  height: 40px;
   background-size: contain;
   background-repeat: no-repeat;
-  animation: flap 0.5s infinite alternate; /* Animación de aleteo */
+  animation: flap 0.5s infinite alternate;
 }
 
 /* Alas por defecto (Alas - emoji 🪽) */
 .custom-bird::before,
 .custom-bird::after {
   content: '🪽';
-  font-size: 30px; /* Aumentado para que las alas sean más grandes */
+  font-size: 30px;
   color: var(--wings-color, #FFFFFF);
+}
+
+/* Alas por defecto (wings-style-0) */
+.custom-bird.wings-style-0::before {
+  content: '🪽';
+  font-size: 30px;
+  color: var(--wings-color, #FFFFFF);
+  left: -30px;
+  top: 5px;
+  transform: rotate(20deg);
+}
+
+.custom-bird.wings-style-0::after {
+  content: '🪽';
+  font-size: 30px;
+  color: var(--wings-color, #FFFFFF);
+  right: -30px;
+  top: 5px;
+  transform: rotate(-20deg) scaleX(-1);
 }
 
 /* Alas Doradas (wings-style-1) */
 .custom-bird.wings-style-1::before {
   content: '';
   background-image: url('img/golden-wing-left.png');
-  left: -30px; /* Ajustado para que las alas estén más separadas */
-  top: 5px; /* Ajustado para centrar verticalmente */
+  left: -30px;
+  top: 5px;
   transform: rotate(20deg);
 }
 
 .custom-bird.wings-style-1::after {
   content: '';
   background-image: url('img/golden-wing-left.png');
-  right: -30px; /* Ajustado para que las alas estén más separadas */
-  top: 5px; /* Ajustado para centrar verticalmente */
-  transform: rotate(-20deg) scaleX(-1); /* Reflejar horizontalmente */
+  right: -30px;
+  top: 5px;
+  transform: rotate(-20deg) scaleX(-1);
 }
 
 /* Alas Demoníacas (wings-style-2) */
 .custom-bird.wings-style-2::before {
   content: '';
   background-image: url('img/demonic-wing-left.png');
-  left: -30px; /* Ajustado para que las alas estén más separadas */
-  top: 5px; /* Ajustado para centrar verticalmente */
+  left: -30px;
+  top: 5px;
   transform: rotate(20deg);
 }
 
 .custom-bird.wings-style-2::after {
   content: '';
   background-image: url('img/demonic-wing-left.png');
-  right: -30px; /* Ajustado para que las alas estén más separadas */
-  top: 5px; /* Ajustado para centrar verticalmente */
-  transform: rotate(-20deg) scaleX(-1); /* Reflejar horizontalmente */
-}
-
-/* Alas de Fuego (wings-style-3) */
-.custom-bird.wings-style-3::before,
-.custom-bird.wings-style-3::after {
-  content: '🪽';
-  font-size: 30px; /* Aumentado para que las alas sean más grandes */
-  color: #FF4500; /* Alas de fuego */
-}
-
-.custom-bird::before {
-  left: -25px; /* Ajustado para que las alas estén más separadas */
-  top: 5px; /* Ajustado para centrar verticalmente */
-}
-
-.custom-bird::after {
-  right: -25px; /* Ajustado para que las alas estén más separadas */
-  top: 5px; /* Ajustado para centrar verticalmente */
+  right: -30px;
+  top: 5px;
+  transform: rotate(-20deg) scaleX(-1);
 }
 
 .customization-options label {
@@ -385,7 +451,7 @@ body {
   position: relative;
   width: 800px;
   height: 500px;
-  background: linear-gradient(180deg, #87CEEB, #B0E0E6); /* Fondo más dinámico */
+  background: linear-gradient(180deg, #87CEEB, #B0E0E6);
   border: 4px solid #FFD700;
   overflow: hidden;
   border-radius: 10px;
@@ -414,72 +480,64 @@ body {
 #bird::after {
   content: '';
   position: absolute;
-  width: 40px; /* Aumentado para que las alas sean más grandes */
-  height: 40px; /* Aumentado para que las alas sean más grandes */
+  width: 40px;
+  height: 40px;
   background-size: contain;
   background-repeat: no-repeat;
-  animation: flap 0.5s infinite alternate; /* Animación de aleteo */
+  animation: flap 0.5s infinite alternate;
 }
 
 /* Alas por defecto (Alas - emoji 🪽) */
-#bird::before,
-#bird::after {
+#bird.wings-style-0::before {
   content: '🪽';
-  font-size: 30px; /* Aumentado para que las alas sean más grandes */
+  font-size: 30px;
   color: var(--wings-color, #FFFFFF);
+  left: -30px;
+  top: 0px;
+  transform: rotate(20deg);
+}
+
+#bird.wings-style-0::after {
+  content: '🪽';
+  font-size: 30px;
+  color: var(--wings-color, #FFFFFF);
+  right: -30px;
+  top: 0px;
+  transform: rotate(-20deg) scaleX(-1);
 }
 
 /* Alas Doradas (wings-style-1) */
 #bird.wings-style-1::before {
   content: '';
   background-image: url('img/golden-wing-left.png');
-  left: -30px; /* Ajustado para que las alas estén más separadas */
-  top: 0px; /* Ajustado para centrar verticalmente */
+  left: -30px;
+  top: 0px;
   transform: rotate(20deg);
 }
 
 #bird.wings-style-1::after {
   content: '';
   background-image: url('img/golden-wing-left.png');
-  right: -30px; /* Ajustado para que las alas estén más separadas */
-  top: 0px; /* Ajustado para centrar verticalmente */
-  transform: rotate(-20deg) scaleX(-1); /* Reflejar horizontalmente */
+  right: -30px;
+  top: 0px;
+  transform: rotate(-20deg) scaleX(-1);
 }
 
 /* Alas Demoníacas (wings-style-2) */
 #bird.wings-style-2::before {
   content: '';
   background-image: url('img/demonic-wing-left.png');
-  left: -30px; /* Ajustado para que las alas estén más separadas */
-  top: 0px; /* Ajustado para centrar verticalmente */
+  left: -30px;
+  top: 0px;
   transform: rotate(20deg);
 }
 
 #bird.wings-style-2::after {
   content: '';
   background-image: url('img/demonic-wing-left.png');
-  right: -30px; /* Ajustado para que las alas estén más separadas */
-  top: 0px; /* Ajustado para centrar verticalmente */
-  transform: rotate(-20deg) scaleX(-1); /* Reflejar horizontalmente */
-}
-
-/* Alas de Fuego (wings-style-3) */
-#bird.wings-style-3::before,
-#bird.wings-style-3::after {
-  content: '🪽';
-  font-size: 30px; /* Aumentado para que las alas sean más grandes */
-  color: #FF4500; /* Alas de fuego */
-}
-
-/* Posicionamiento base de las alas */
-#bird::before {
-  left: -25px; /* Ajustado para que las alas estén más separadas */
-  top: 0px; /* Ajustado para centrar verticalmente */
-}
-
-#bird::after {
-  right: -25px; /* Ajustado para que las alas estén más separadas */
-  top: 0px; /* Ajustado para centrar verticalmente */
+  right: -30px;
+  top: 0px;
+  transform: rotate(-20deg) scaleX(-1);
 }
 
 /* Animación de aleteo */
@@ -489,7 +547,7 @@ body {
 }
 
 #bird::after {
-  animation: flap 0.5s infinite alternate-reverse; /* Aleteo desfasado para la otra ala */
+  animation: flap 0.5s infinite alternate-reverse;
 }
 
 /* Efectos de rastro */
@@ -529,29 +587,54 @@ body {
 .pipe {
   position: absolute;
   width: 30px;
-  background: linear-gradient(90deg, #2E8B57, #3CB371);
-  border-left: 2px solid #145214;
-  border-right: 2px solid #145214;
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(90deg, #2E8B57, #3CB371, #2E8B57);
+  border-left: 3px solid #145214;
+  border-right: 3px solid #145214;
+  box-shadow: inset 5px 0 5px rgba(0, 0, 0, 0.3), inset -5px 0 5px rgba(0, 0, 0, 0.3);
 }
 
+/* Tuberías Metálicas */
 .pipe.pipe-style-1 {
-  background: linear-gradient(90deg, #4A4A4A, #6A6A6A); /* Metálico */
-  border-left: 2px solid #333;
-  border-right: 2px solid #333;
+  background: linear-gradient(90deg, #4A4A4A, #6A6A6A, #4A4A4A);
+  border-left: 3px solid #333;
+  border-right: 3px solid #333;
+  box-shadow: inset 5px 0 5px rgba(0, 0, 0, 0.4), inset -5px 0 5px rgba(0, 0, 0, 0.4), 2px 0 5px rgba(255, 255, 255, 0.3);
 }
 
+/* Tuberías de Cristal */
 .pipe.pipe-style-2 {
-  background: linear-gradient(90deg, #87CEEB, #E0FFFF); /* Cristal */
-  border-left: 2px solid #4682B4;
-  border-right: 2px solid #4682B4;
-  opacity: 0.9;
+  background: linear-gradient(90deg, #87CEEB, #E0FFFF, #87CEEB);
+  border-left: 3px solid #4682B4;
+  border-right: 3px solid #4682B4;
+  opacity: 0.85;
+  box-shadow: inset 5px 0 5px rgba(255, 255, 255, 0.3), inset -5px 0 5px rgba(255, 255, 255, 0.3), 2px 0 5px rgba(255, 255, 255, 0.5);
 }
 
+/* Tuberías de Madera */
 .pipe.pipe-style-3 {
-  background: linear-gradient(90deg, #8B4513, #D2691E); /* Madera */
-  border-left: 2px solid #5C4033;
-  border-right: 2px solid #5C4033;
+  background: linear-gradient(90deg, #8B4513, #D2691E, #8B4513);
+  border-left: 3px solid #5C4033;
+  border-right: 3px solid #5C4033;
+  box-shadow: inset 5px 0 5px rgba(0, 0, 0, 0.3), inset -5px 0 5px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+/* Añadir un patrón de vetas de madera */
+.pipe.pipe-style-3::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.1),
+    rgba(0, 0, 0, 0.1) 5px,
+    transparent 5px,
+    transparent 10px
+  );
+  opacity: 0.5;
 }
 
 .pipe.top {
@@ -570,24 +653,28 @@ body {
   width: 40px;
   height: 10px;
   background: inherit;
-  border: 2px solid #145214;
+  border: 3px solid #145214;
   left: 50%;
   transform: translateX(-50%);
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
 }
 
 .pipe.pipe-style-1.top::after,
 .pipe.pipe-style-1.bottom::before {
   border-color: #333;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.4), 0 0 3px rgba(255, 255, 255, 0.3);
 }
 
 .pipe.pipe-style-2.top::after,
 .pipe.pipe-style-2.bottom::before {
   border-color: #4682B4;
+  box-shadow: inset 0 0 3px rgba(255, াদ: 255, 255, 0.3), 0 0 3px rgba(255, 255, 255, 0.5);
 }
 
 .pipe.pipe-style-3.top::after,
 .pipe.pipe-style-3.bottom::before {
   border-color: #5C4033;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
 }
 
 .pipe.top::after {
@@ -621,17 +708,21 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.9); /* Fondo oscuro para un estilo más de videojuego */
+  background: rgba(0, 0, 0, 0.9);
   padding: 20px;
   border-radius: 15px;
   text-align: center;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-  max-width: 800px; /* Aumentado para más ancho */
-  width: 95%; /* Más ancho */
+  max-width: 800px;
+  width: 95%;
   z-index: 20;
-  border: 4px solid #FF4500; /* Borde naranja */
+  border: 4px solid #FF4500;
   color: #FFD700;
   text-shadow: 1px 1px #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .game-over.hidden {
@@ -651,8 +742,35 @@ body {
 
 .save-message {
   font-size: 0.8rem;
-  color: #32CD32; /* Verde para destacar */
+  color: #32CD32;
   margin-top: 10px;
+}
+
+/* Botón "Jugar de nuevo" */
+#restart-button {
+  margin-top: 20px;
+  padding: 10px 15px; /* Reducir el padding horizontal para ajustar mejor el texto */
+  font-size: 0.6rem; /* Reducir el tamaño de la fuente para que el texto quepa en una sola línea */
+  width: 150px; /* Aumentar el ancho para que el texto quepa en una sola línea */
+  background: #FF4500;
+  color: #FFF;
+  border: 2px solid #FFD700;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+  font-family: 'Press Start 2P', cursive;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  line-height: 1;
+  white-space: nowrap; /* Asegurar que el texto no se divida en varias líneas */
+}
+
+#restart-button:hover {
+  background: #FFD700;
+  color: #FF4500;
+  transform: scale(1.05);
 }
 
 /* Tabla de mejores puntuaciones */
@@ -759,10 +877,224 @@ button {
   cursor: pointer;
   transition: background 0.3s, transform 0.1s;
   font-family: 'Press Start 2P', cursive;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  line-height: 1;
 }
 
 button:hover {
   background: #FFD700;
   color: #FF4500;
   transform: scale(1.05);
+}
+
+/* Media Queries para dispositivos móviles */
+@media screen and (max-width: 844px) and (orientation: landscape) {
+  /* Ajustar el área de juego para que sea responsiva */
+  .game-area {
+    width: 100vw;
+    height: 60vh; /* Ajustar la altura para que quepa en la pantalla */
+    max-height: 500px;
+    border-radius: 0; /* Eliminar bordes redondeados para maximizar espacio */
+  }
+
+  /* Ajustar el tamaño del pájaro */
+  #bird {
+    width: 5vmin; /* Escalar proporcionalmente */
+    height: 5vmin;
+    left: 20vw; /* Ajustar posición inicial */
+    top: 30vh;
+  }
+
+  /* Ajustar las alas del pájaro */
+  #bird::before,
+  #bird::after {
+    width: 6vmin;
+    height: 6vmin;
+    font-size: 4vmin;
+  }
+
+  #bird.wings-style-0::before {
+    left: -4vmin;
+  }
+
+  #bird.wings-style-0::after {
+    right: -4vmin;
+  }
+
+  #bird.wings-style-1::before,
+  #bird.wings-style-2::before {
+    left: -4vmin;
+  }
+
+  #bird.wings-style-1::after,
+  #bird.wings-style-2::after {
+    right: -4vmin;
+  }
+
+  /* Ajustar el rastro */
+  .trail {
+    left: -4vmin;
+    font-size: 2vmin;
+  }
+
+  /* Ajustar las tuberías */
+  .pipe {
+    width: 4vmin;
+  }
+
+  .pipe.top::after,
+  .pipe.bottom::before {
+    width: 5vmin;
+    height: 1vmin;
+  }
+
+  /* Ajustar las monedas */
+  .coin {
+    width: 2vmin;
+    height: 2vmin;
+  }
+
+  /* Ajustar el texto de la información del juego */
+  .game-info {
+    font-size: 2vmin;
+    padding: 1vmin;
+  }
+
+  /* Ajustar los menús */
+  .menu {
+    width: 90vw;
+    max-width: 90vw;
+    padding: 2vmin;
+  }
+
+  .menu h1 {
+    font-size: 4vmin;
+  }
+
+  .menu h2 {
+    font-size: 3vmin;
+  }
+
+  .menu h3 {
+    font-size: 2.5vmin;
+  }
+
+  .character-option img {
+    width: 8vmin;
+    height: 8vmin;
+  }
+
+  .character-option p {
+    font-size: 1.8vmin;
+  }
+
+  .character-option .locked {
+    font-size: 1.5vmin;
+  }
+
+  /* Ajustar botones */
+  #play-button,
+  #shop-button,
+  #confirm-customization,
+  #back-to-menu,
+  #confirm-equip,
+  #back-to-selection,
+  #back-to-menu-from-shop,
+  #customize-character-button,
+  #restart-button,
+  button {
+    padding: 2vmin 4vmin;
+    font-size: 1.5vmin; /* Reducir el tamaño de la fuente en móviles */
+    width: auto;
+    min-width: 10vmin;
+    min-height: 6vmin;
+  }
+
+  #customize-character-button {
+    width: 20vmin; /* Ajustar el ancho en móviles */
+    font-size: 1.5vmin; /* Reducir aún más el tamaño de la fuente en móviles */
+    padding: 2vmin 3vmin;
+  }
+
+  #restart-button {
+    width: 20vmin; /* Ajustar el ancho en móviles */
+    font-size: 1.5vmin; /* Reducir aún más el tamaño de la fuente en móviles */
+    padding: 2vmin 3vmin;
+  }
+
+  .equip-button,
+  .unequip-button,
+  .shop-item button {
+    padding: 1vmin 2vmin;
+    font-size: 1.8vmin;
+    min-width: 8vmin;
+    min-height: 5vmin;
+  }
+
+  /* Ajustar la vista previa del pájaro personalizado */
+  .custom-bird {
+    width: 8vmin;
+    height: 8vmin;
+  }
+
+  .custom-bird::before,
+  .custom-bird::after {
+    width: 6vmin;
+    height: 6vmin;
+    font-size: 4vmin;
+  }
+
+  .custom-bird.wings-style-0::before {
+    left: -4vmin;
+  }
+
+  .custom-bird.wings-style-0::after {
+    right: -4vmin;
+  }
+
+  .custom-bird.wings-style-1::before,
+  .custom-bird.wings-style-2::before {
+    left: -4vmin;
+  }
+
+  .custom-bird.wings-style-1::after,
+  .custom-bird.wings-style-2::after {
+    right: -4vmin;
+  }
+
+  .customization-options label {
+    font-size: 2vmin;
+  }
+
+  /* Ajustar la pantalla de Game Over */
+  .game-over {
+    width: 90vw;
+    padding: 2vmin;
+  }
+
+  .game-over h2 {
+    font-size: 3vmin;
+  }
+
+  .game-over p {
+    font-size: 2vmin;
+  }
+
+  .high-scores h3 {
+    font-size: 2.5vmin;
+  }
+
+  #high-scores-table th,
+  #high-scores-table td {
+    font-size: 1.8vmin;
+    padding: 1vmin;
+  }
+
+  /* Ajustar la tienda */
+  .shop-item p {
+    font-size: 1.8vmin;
+  }
 }

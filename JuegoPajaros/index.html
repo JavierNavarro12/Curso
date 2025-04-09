@@ -2,12 +2,17 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Flappy Bird Simplificado</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
+  <!-- Mensaje de bloqueo para orientación vertical -->
+  <div id="orientation-lock" class="orientation-lock hidden">
+    <p>Por favor, gira tu dispositivo a modo horizontal para jugar.</p>
+  </div>
+
   <!-- Menú principal -->
   <div id="menu" class="menu">
     <h1>Flappy Bird</h1>
@@ -134,4 +139,3 @@
   <script src="juego.js"></script>
 </body>
 </html>
-<!--el ala izquierda demoniaca se ve perfecta, quiero que pongas la derecha de la misma forma pero opuesta y que copies el mismo estilo para todas las alas, ademas se ha desajustado el botón confirmar al personalizar ademas ponle un fondo al menú de personalizar y al de la tienda que pegue con los demás colores e intenta mejorar el estilo de todos los tipos de tubos para que se vean mas real sin cambiar la funciónalidad de las cosas-->
