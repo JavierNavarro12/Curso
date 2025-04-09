@@ -64,6 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let highScores = JSON.parse(localStorage.getItem('highScores')) || [];
 
+  // Variables globales para personalización (Añadidas)
+  let bodyColor = '#FFD700'; // Valor por defecto
+  let wingsColor = '#FFFFFF'; // Valor por defecto
+
   let unlockedItems = JSON.parse(localStorage.getItem('unlockedItems')) || {
     'wings-style-0': true,
     'wings-style-1': false,
@@ -273,18 +277,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateCustomBirdPreview() {
     // Verificamos si los elementos existen antes de acceder a sus propiedades
-    if (!bodyColorInput || !wingsColorInput || !customBirdPreview) {
-      console.warn('No se puede ejecutar updateCustomBirdPreview: faltan elementos en el DOM');
+    if (!customBirdPreview) {
+      console.warn('No se puede ejecutar updateCustomBirdPreview: customBirdPreview no encontrado');
       return;
     }
 
-    const bodyColor = bodyColorInput.value ? (hasCustomized ? bodyColorInput.value : '#FFD700') : '#FFD700';
-    const wingsColor = wingsColorInput.value ? (hasCustomized ? wingsColorInput.value : '#FFFFFF') : '#FFFFFF';
-
-    customBirdPreview.style.background = bodyColor;
+    customBirdPreview.style.background = bodyColor; // Usar variable global
     customBirdPreview.style.width = `${birdSize}px`;
     customBirdPreview.style.height = `${birdSize}px`;
-    customBirdPreview.style.setProperty('--wings-color', wingsColor);
+    customBirdPreview.style.setProperty('--wings-color', wingsColor); // Usar variable global
 
     customBirdPreview.classList.remove('wings-style-0', 'wings-style-1', 'wings-style-2');
     if (equippedItems['wings-style']) {
@@ -431,6 +432,8 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('selectedCharacter', selectedCharacter);
       const character = predefinedCharacters[selectedCharacter];
       birdSize = character.size;
+      bodyColor = character.bodyColor; // Actualizar variable global
+      wingsColor = character.wingsColor; // Actualizar variable global
       equipBirdSizeInput.value = birdSize;
       hasCustomized = false;
       localStorage.setItem('hasCustomized', JSON.stringify(hasCustomized));
@@ -448,7 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateCharacterOptions();
       menu.classList.add('hidden');
       customizationMenu.classList.remove('hidden');
-      updateCustomBirdPreview();
+      updateCustomBirdPreview(); // Llamada movida aquí
     });
   } else {
     console.error('Botón #customize-character-button no encontrado');
@@ -457,6 +460,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (confirmCustomization) {
     confirmCustomization.addEventListener('click', () => {
       console.log('Botón Confirmar clicado');
+      bodyColor = bodyColorInput.value; // Guardar valores
+      wingsColor = wingsColorInput.value; // Guardar valores
       hasCustomized = true;
       localStorage.setItem('hasCustomized', JSON.stringify(hasCustomized));
       customizationMenu.classList.add('hidden');
@@ -502,13 +507,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (bodyColorInput) {
-    bodyColorInput.addEventListener('input', updateCustomBirdPreview);
+    bodyColorInput.addEventListener('input', () => {
+      bodyColor = bodyColorInput.value; // Actualizar variable global
+      updateCustomBirdPreview();
+    });
   } else {
     console.error('Elemento #body-color no encontrado');
   }
 
   if (wingsColorInput) {
-    wingsColorInput.addEventListener('input', updateCustomBirdPreview);
+    wingsColorInput.addEventListener('input', () => {
+      wingsColor = wingsColorInput.value; // Actualizar variable global
+      updateCustomBirdPreview();
+    });
   } else {
     console.error('Elemento #wings-color no encontrado');
   }
@@ -533,26 +544,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function applyCharacter() {
-    let bodyColor, wingsColor, image;
+    let image;
 
     if (selectedCharacter) {
       const character = predefinedCharacters[selectedCharacter];
-      bodyColor = character.bodyColor;
-      wingsColor = character.wingsColor;
       image = character.image;
     } else {
-      // Verificamos si los elementos existen antes de acceder a sus propiedades
-      bodyColor = (hasCustomized && bodyColorInput && bodyColorInput.value) ? bodyColorInput.value : '#FFD700';
-      wingsColor = (hasCustomized && wingsColorInput && wingsColorInput.value) ? wingsColorInput.value : '#FFFFFF';
       image = null;
     }
 
-    bird.style.background = image ? `url(${image})` : bodyColor;
+    bird.style.background = image ? `url(${image})` : bodyColor; // Usar variable global
     bird.style.backgroundSize = 'cover';
     bird.style.backgroundPosition = 'center';
     bird.style.width = `${birdSize}px`;
     bird.style.height = `${birdSize}px`;
-    bird.style.setProperty('--wings-color', wingsColor);
+    bird.style.setProperty('--wings-color', wingsColor); // Usar variable global
 
     bird.classList.remove('wings-style-0', 'wings-style-1', 'wings-style-2');
     if (equippedItems['wings-style']) {
@@ -880,7 +886,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Llamada inicial a las funciones de actualización
   updateCharacterOptions();
-  updateCustomBirdPreview();
   updateShop();
   checkOrientation();
   adjustGameDimensions();
