@@ -273,30 +273,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateCustomBirdPreview() {
     // Verificamos si los elementos existen antes de acceder a sus propiedades
-    const bodyColor = bodyColorInput && bodyColorInput.value ? (hasCustomized ? bodyColorInput.value : '#FFD700') : '#FFD700';
-    const wingsColor = wingsColorInput && wingsColorInput.value ? (hasCustomized ? wingsColorInput.value : '#FFFFFF') : '#FFFFFF';
+    if (!bodyColorInput || !wingsColorInput || !customBirdPreview) {
+      console.warn('No se puede ejecutar updateCustomBirdPreview: faltan elementos en el DOM');
+      return;
+    }
 
-    if (customBirdPreview) {
-      customBirdPreview.style.background = bodyColor;
-      customBirdPreview.style.width = `${birdSize}px`;
-      customBirdPreview.style.height = `${birdSize}px`;
-      customBirdPreview.style.setProperty('--wings-color', wingsColor);
+    const bodyColor = bodyColorInput.value ? (hasCustomized ? bodyColorInput.value : '#FFD700') : '#FFD700';
+    const wingsColor = wingsColorInput.value ? (hasCustomized ? wingsColorInput.value : '#FFFFFF') : '#FFFFFF';
 
-      customBirdPreview.classList.remove('wings-style-0', 'wings-style-1', 'wings-style-2');
-      if (equippedItems['wings-style']) {
-        const style = shopItems[equippedItems['wings-style']].value;
-        if (style === 'default') {
-          customBirdPreview.classList.add('wings-style-0');
-        }
-        if (style === 'golden') {
-          customBirdPreview.classList.add('wings-style-1');
-        }
-        if (style === 'demonic') {
-          customBirdPreview.classList.add('wings-style-2');
-        }
+    customBirdPreview.style.background = bodyColor;
+    customBirdPreview.style.width = `${birdSize}px`;
+    customBirdPreview.style.height = `${birdSize}px`;
+    customBirdPreview.style.setProperty('--wings-color', wingsColor);
+
+    customBirdPreview.classList.remove('wings-style-0', 'wings-style-1', 'wings-style-2');
+    if (equippedItems['wings-style']) {
+      const style = shopItems[equippedItems['wings-style']].value;
+      if (style === 'default') {
+        customBirdPreview.classList.add('wings-style-0');
       }
-    } else {
-      console.error('Elemento #custom-bird-preview no encontrado');
+      if (style === 'golden') {
+        customBirdPreview.classList.add('wings-style-1');
+      }
+      if (style === 'demonic') {
+        customBirdPreview.classList.add('wings-style-2');
+      }
     }
   }
 
@@ -459,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
       hasCustomized = true;
       localStorage.setItem('hasCustomized', JSON.stringify(hasCustomized));
       customizationMenu.classList.add('hidden');
-      equipMenu.classList.remove('hidden');
+      equipMenu.classList.add('hidden');
       updateEquipOptions();
     });
   } else {
@@ -540,8 +541,9 @@ document.addEventListener('DOMContentLoaded', () => {
       wingsColor = character.wingsColor;
       image = character.image;
     } else {
-      bodyColor = hasCustomized && bodyColorInput && bodyColorInput.value ? bodyColorInput.value : '#FFD700';
-      wingsColor = hasCustomized && wingsColorInput && wingsColorInput.value ? wingsColorInput.value : '#FFFFFF';
+      // Verificamos si los elementos existen antes de acceder a sus propiedades
+      bodyColor = (hasCustomized && bodyColorInput && bodyColorInput.value) ? bodyColorInput.value : '#FFD700';
+      wingsColor = (hasCustomized && wingsColorInput && wingsColorInput.value) ? wingsColorInput.value : '#FFFFFF';
       image = null;
     }
 
@@ -709,6 +711,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const pipeTopRect = pipe.top.getBoundingClientRect();
       const pipeBottomRect = pipe.bottom.getBoundingClientRect();
 
+      // Añadimos depuración para verificar las dimensiones
+      console.log(`Pipe ${index} - Top Height: ${pipeTopRect.height}, Bottom Height: ${pipeBottomRect.height}, Gap: ${pipeBottomRect.top - pipeTopRect.bottom}`);
+
       const birdLeft = birdRect.left;
       const birdRight = birdRect.right;
       const birdTop = birdRect.top;
@@ -873,13 +878,9 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('Botón #restart-button no encontrado');
   }
 
-  // Llamada inicial a las funciones de actualización (solo si los elementos necesarios existen)
+  // Llamada inicial a las funciones de actualización
   updateCharacterOptions();
-  if (bodyColorInput && wingsColorInput && customBirdPreview) {
-    updateCustomBirdPreview();
-  } else {
-    console.warn('No se puede ejecutar updateCustomBirdPreview: faltan elementos en el DOM');
-  }
+  updateCustomBirdPreview();
   updateShop();
   checkOrientation();
   adjustGameDimensions();
