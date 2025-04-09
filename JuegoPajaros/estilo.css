@@ -12,6 +12,94 @@ body {
   align-items: center;
   height: 100vh;
   overflow: hidden;
+  margin: 0;
+  width: 100vw;
+}
+
+/* Pantalla de bienvenida */
+#welcome-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #87CEEB, #4682B4);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* Recuadro que contiene los elementos */
+.welcome-box {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: 4px solid #FFD700;
+  text-align: center;
+  max-width: 700px; /* Aumentamos el tamaño del recuadro */
+  width: 90%;
+}
+
+#welcome-screen h1 {
+  font-size: 1.2rem; /* Reducimos aún más el tamaño de la fuente */
+  color: #FF4500;
+  text-shadow: 2px 2px #000;
+  margin-bottom: 20px;
+  white-space: nowrap; /* Forzamos que el título esté en una sola línea */
+}
+
+.loading-bar-container {
+  width: 300px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 3px solid #FFD700;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
+  transition: opacity 0.5s ease; /* Para la desaparición suave */
+}
+
+.loading-bar-container.hidden {
+  opacity: 0;
+  height: 0;
+  margin: 0;
+}
+
+#loading-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #FF4500, #FFD700);
+  transition: width 5s linear;
+}
+
+#start-game-button {
+  margin: 20px auto 0; /* Centramos el botón con margin auto */
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: #FF4500;
+  color: #FFF;
+  border: 2px solid #FFD700;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+  font-family: 'Press Start 2P', cursive;
+  display: block; /* Aseguramos que sea un bloque para centrarlo */
+}
+
+#start-game-button:hover {
+  background: #FFD700;
+  color: #FF4500;
+  transform: scale(1.05);
+}
+
+/* Aseguramos que .hidden realmente oculte el elemento */
+.hidden {
+  display: none !important;
 }
 
 /* Mensaje de bloqueo para orientación vertical */
@@ -232,8 +320,8 @@ body {
 }
 
 #customize-character-button {
-  padding: 10px 15px; /* Reducir el padding horizontal para ajustar mejor el texto */
-  font-size: 0.6rem; /* Reducir el tamaño de la fuente para que el texto quepa en una sola línea */
+  padding: 10px 15px;
+  font-size: 0.6rem;
   background: #FF6347;
   color: #FFF;
   border: 2px solid #FFD700;
@@ -246,8 +334,8 @@ body {
   align-items: center;
   text-align: center;
   line-height: 1;
-  width: 150px; /* Aumentar el ancho para que el texto quepa en una sola línea */
-  white-space: nowrap; /* Asegurar que el texto no se divida en varias líneas */
+  width: 150px;
+  white-space: nowrap;
 }
 
 #customize-character-button:hover {
@@ -668,7 +756,7 @@ body {
 .pipe.pipe-style-2.top::after,
 .pipe.pipe-style-2.bottom::before {
   border-color: #4682B4;
-  box-shadow: inset 0 0 3px rgba(255, াদ: 255, 255, 0.3), 0 0 3px rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.3), 0 0 3px rgba(255, 255, 255, 0.5);
 }
 
 .pipe.pipe-style-3.top::after,
@@ -749,9 +837,9 @@ body {
 /* Botón "Jugar de nuevo" */
 #restart-button {
   margin-top: 20px;
-  padding: 10px 15px; /* Reducir el padding horizontal para ajustar mejor el texto */
-  font-size: 0.6rem; /* Reducir el tamaño de la fuente para que el texto quepa en una sola línea */
-  width: 150px; /* Aumentar el ancho para que el texto quepa en una sola línea */
+  padding: 10px 15px;
+  font-size: 0.6rem;
+  width: 150px;
   background: #FF4500;
   color: #FFF;
   border: 2px solid #FFD700;
@@ -764,7 +852,7 @@ body {
   align-items: center;
   text-align: center;
   line-height: 1;
-  white-space: nowrap; /* Asegurar que el texto no se divida en varias líneas */
+  white-space: nowrap;
 }
 
 #restart-button:hover {
@@ -892,19 +980,46 @@ button:hover {
 
 /* Media Queries para dispositivos móviles */
 @media screen and (max-width: 844px) and (orientation: landscape) {
+  body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+  }
+
+  /* Ajustar la pantalla de bienvenida */
+  #welcome-screen h1 {
+    font-size: 2.5vmin; /* Ajustamos el tamaño para móviles */
+  }
+
+  .welcome-box {
+    padding: 3vmin;
+    width: 80vw;
+    max-width: 80vw; /* Ajustamos el tamaño del recuadro para móviles */
+  }
+
+  .loading-bar-container {
+    width: 50vmin;
+    height: 5vmin;
+  }
+
+  #start-game-button {
+    padding: 2vmin 4vmin;
+    font-size: 2vmin;
+  }
+
   /* Ajustar el área de juego para que sea responsiva */
   .game-area {
     width: 100vw;
-    height: 60vh; /* Ajustar la altura para que quepa en la pantalla */
+    height: 60vh;
     max-height: 500px;
-    border-radius: 0; /* Eliminar bordes redondeados para maximizar espacio */
+    border-radius: 0;
   }
 
   /* Ajustar el tamaño del pájaro */
   #bird {
-    width: 5vmin; /* Escalar proporcionalmente */
+    width: 5vmin;
     height: 5vmin;
-    left: 20vw; /* Ajustar posición inicial */
+    left: 20vw;
     top: 30vh;
   }
 
@@ -968,6 +1083,7 @@ button:hover {
     width: 90vw;
     max-width: 90vw;
     padding: 2vmin;
+    box-sizing: border-box;
   }
 
   .menu h1 {
@@ -1007,21 +1123,21 @@ button:hover {
   #restart-button,
   button {
     padding: 2vmin 4vmin;
-    font-size: 1.5vmin; /* Reducir el tamaño de la fuente en móviles */
+    font-size: 1.5vmin;
     width: auto;
     min-width: 10vmin;
     min-height: 6vmin;
   }
 
   #customize-character-button {
-    width: 20vmin; /* Ajustar el ancho en móviles */
-    font-size: 1.5vmin; /* Reducir aún más el tamaño de la fuente en móviles */
+    width: 20vmin;
+    font-size: 1.5vmin;
     padding: 2vmin 3vmin;
   }
 
   #restart-button {
-    width: 20vmin; /* Ajustar el ancho en móviles */
-    font-size: 1.5vmin; /* Reducir aún más el tamaño de la fuente en móviles */
+    width: 20vmin;
+    font-size: 1.5vmin;
     padding: 2vmin 3vmin;
   }
 

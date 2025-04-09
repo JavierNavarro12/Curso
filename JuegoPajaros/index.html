@@ -2,24 +2,35 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Flappy Bird Simplificado</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flying Politics</title>
   <link rel="stylesheet" href="estilo.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- Mensaje de bloqueo para orientación vertical -->
-  <div id="orientation-lock" class="orientation-lock hidden">
+  <!-- Pantalla de bienvenida -->
+  <div id="welcome-screen">
+    <div class="welcome-box">
+      <h1>Bienvenido a Flying Politics</h1>
+      <div class="loading-bar-container">
+        <div id="loading-bar"></div>
+      </div>
+      <button id="start-game-button" class="hidden">Jugar</button>
+    </div>
+  </div>
+
+  <!-- Mensaje de bloqueo de orientación -->
+  <div id="orientation-lock" class="orientation-lock">
     <p>Por favor, gira tu dispositivo a modo horizontal para jugar.</p>
   </div>
 
   <!-- Menú principal -->
   <div id="menu" class="menu">
-    <h1>Flappy Bird</h1>
-    <h2>Selecciona un personaje</h2>
+    <h1>Flying Politics</h1>
     <div class="character-selection">
+      <h3>Selecciona un personaje</h3>
       <div class="character-options">
-        <div class="character-option unlocked" data-character="1">
+        <div class="character-option" data-character="1">
           <img src="img/character1.png" alt="Personaje 1">
           <p>Personaje 1</p>
           <span class="locked">Bloqueado</span>
@@ -47,28 +58,23 @@
       </div>
     </div>
     <div class="character-customization">
-      <h3>O personaliza tu personaje</h3>
       <button id="customize-character-button">Personalizar</button>
     </div>
     <div class="menu-buttons">
       <button id="play-button" disabled>Jugar</button>
-      <button id="shop-button">Tienda 🏪</button>
+      <button id="shop-button">Tienda</button>
     </div>
   </div>
 
   <!-- Menú de personalización -->
   <div id="customization-menu" class="menu hidden">
     <h2>Personaliza tu personaje</h2>
-    <div class="customization-options">
+    <div class="character-customization">
       <div id="custom-bird-preview" class="custom-bird"></div>
-      <label>
-        Color del cuerpo:
-        <input type="color" id="body-color" value="#FFD700">
-      </label>
-      <label>
-        Color de las alas:
-        <input type="color" id="wings-color" value="#FFFFFF">
-      </label>
+      <div class="customization-options">
+        <label>Color del cuerpo: <input type="color" id="body-color" value="#FFD700"></label>
+        <label>Color de las alas: <input type="color" id="wings-color" value="#FFFFFF"></label>
+      </div>
     </div>
     <div class="menu-buttons">
       <button id="confirm-customization">Confirmar</button>
@@ -78,13 +84,10 @@
 
   <!-- Menú de equipamiento -->
   <div id="equip-menu" class="menu hidden">
-    <h2>Equipa ítems</h2>
+    <h2>Equipa tus ítems</h2>
     <div id="equip-options"></div>
     <div class="size-control">
-      <label>
-        Tamaño del pájaro:
-        <input type="range" id="equip-bird-size" min="20" max="50" value="30">
-      </label>
+      <label>Tamaño del pájaro: <input type="range" id="equip-bird-size" min="20" max="50" value="30"></label>
     </div>
     <div class="menu-buttons">
       <button id="confirm-equip">Confirmar</button>
@@ -92,9 +95,9 @@
     </div>
   </div>
 
-  <!-- Menú de la tienda -->
+  <!-- Tienda -->
   <div id="shop-menu" class="menu hidden">
-    <h2>Tienda 🏪</h2>
+    <h2>Tienda</h2>
     <p>Monedas: <span id="shop-coins">0</span></p>
     <div id="shop-items"></div>
     <div class="menu-buttons">
@@ -120,6 +123,7 @@
     <h2>¡Game Over!</h2>
     <p>Puntuación final: <span id="final-score">0</span></p>
     <p>Monedas totales: <span id="total-coins">0</span></p>
+    <div class="save-message">Puntuación guardada.</div>
     <div class="high-scores">
       <h3>Mejores puntuaciones</h3>
       <table id="high-scores-table">
