@@ -1,40 +1,70 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const bird = document.getElementById('bird');
-  const gameArea = document.querySelector('.game-area');
-  const scoreDisplay = document.getElementById('score');
-  const coinsDisplay = document.getElementById('coins');
-  const gameOverScreen = document.getElementById('game-over');
-  const finalScoreDisplay = document.getElementById('final-score');
-  const totalCoinsDisplay = document.getElementById('total-coins');
-  const restartButton = document.getElementById('restart-button');
-  const menu = document.getElementById('menu');
-  const gameContainer = document.querySelector('.game-container');
-  const playButton = document.getElementById('play-button');
-  const shopButton = document.getElementById('shop-button');
-  const characterOptions = document.querySelectorAll('.character-option');
-  const bodyColorInput = document.getElementById('body-color');
-  const wingsColorInput = document.getElementById('wings-color');
-  const customizeCharacterButton = document.getElementById('customize-character-button');
-  const customizationMenu = document.getElementById('customization-menu');
-  const confirmCustomization = document.getElementById('confirm-customization');
-  const backToMenu = document.getElementById('back-to-menu');
-  const equipMenu = document.getElementById('equip-menu');
-  const equipOptions = document.getElementById('equip-options');
-  const equipBirdSizeInput = document.getElementById('equip-bird-size');
-  const confirmEquip = document.getElementById('confirm-equip');
-  const backToSelection = document.getElementById('back-to-selection');
-  const customBirdPreview = document.getElementById('custom-bird-preview');
-  const highScoresTableBody = document.querySelector('#high-scores-table tbody');
-  const shopMenu = document.getElementById('shop-menu');
-  const shopItemsContainer = document.getElementById('shop-items');
-  const shopCoinsDisplay = document.getElementById('shop-coins');
-  const backToMenuFromShop = document.getElementById('back-to-menu-from-shop');
-  const orientationLock = document.getElementById('orientation-lock');
-  const welcomeScreen = document.getElementById('welcome-screen');
-  const loadingBar = document.getElementById('loading-bar');
-  const loadingBarContainer = document.querySelector('.loading-bar-container');
-  const startGameButton = document.getElementById('start-game-button');
+  console.log('DOM completamente cargado, iniciando script...');
 
+  // Declaración de elementos del DOM con verificación
+  const elements = {
+    bird: document.getElementById('bird'),
+    gameArea: document.querySelector('.game-area'),
+    scoreDisplay: document.getElementById('score'),
+    coinsDisplay: document.getElementById('coins'),
+    gameOverScreen: document.getElementById('game-over'),
+    finalScoreDisplay: document.getElementById('final-score'),
+    totalCoinsDisplay: document.getElementById('total-coins'),
+    restartButton: document.getElementById('restart-button'),
+    menu: document.getElementById('menu'),
+    gameContainer: document.querySelector('.game-container'),
+    playButton: document.getElementById('play-button'),
+    shopButton: document.getElementById('shop-button'),
+    characterOptions: document.querySelectorAll('.character-option'),
+    bodyColorInput: document.getElementById('body-color'),
+    wingsColorInput: document.getElementById('wings-color'),
+    customizeCharacterButton: document.getElementById('customize-character-button'),
+    customizationMenu: document.getElementById('customization-menu'),
+    confirmCustomization: document.getElementById('confirm-customization'),
+    backToMenu: document.getElementById('back-to-menu'),
+    equipMenu: document.getElementById('equip-menu'),
+    equipOptions: document.getElementById('equip-options'),
+    equipBirdSizeInput: document.getElementById('equip-bird-size'),
+    confirmEquip: document.getElementById('confirm-equip'),
+    backToSelection: document.getElementById('back-to-selection'),
+    customBirdPreview: document.getElementById('custom-bird-preview'),
+    highScoresTableBody: document.querySelector('#high-scores-table tbody'),
+    shopMenu: document.getElementById('shop-menu'),
+    shopItemsContainer: document.getElementById('shop-items'),
+    shopCoinsDisplay: document.getElementById('shop-coins'),
+    backToMenuFromShop: document.getElementById('back-to-menu-from-shop'),
+    orientationLock: document.getElementById('orientation-lock'),
+    welcomeScreen: document.getElementById('welcome-screen'),
+    loadingBar: document.getElementById('loading-bar'),
+    loadingBarContainer: document.querySelector('.loading-bar-container'),
+    startGameButton: document.getElementById('start-game-button'),
+  };
+
+  // Verificar elementos clave
+  Object.keys(elements).forEach(key => {
+    if (!elements[key] && key !== 'characterOptions') {
+      console.error(`Elemento ${key} no encontrado en el DOM`);
+    }
+  });
+
+  // Definir shopItems primero para evitar el ReferenceError
+  const shopItems = {
+    'wings-style-0': { price: 0, description: 'Alas 🪽', type: 'wings-style', value: 'default' },
+    'wings-style-1': { price: 15, description: 'Alas Doradas 🪶', type: 'wings-style', value: 'golden' },
+    'wings-style-2': { price: 20, description: 'Alas Demoníacas 👹', type: 'wings-style', value: 'demonic' },
+    'pipe-style-1': { price: 20, description: 'Tuberías Metálicas 🛠️', type: 'pipe-style', value: 'metallic' },
+    'pipe-style-2': { price: 25, description: 'Tuberías de Cristal 💎', type: 'pipe-style', value: 'crystal' },
+    'pipe-style-3': { price: 30, description: 'Tuberías de Madera 🌳', type: 'pipe-style', value: 'wood' },
+    'character-2': { price: 25, description: 'Personaje 2 🐤', type: 'character' },
+    'character-3': { price: 25, description: 'Personaje 3 🐥', type: 'character' },
+    'character-4': { price: 25, description: 'Personaje 4 🐧', type: 'character' },
+    'character-5': { price: 25, description: 'Personaje 5 🦅', type: 'character' },
+    'trail-effect-1': { price: 30, description: 'Efecto de rastro (Estrellas) ✨', type: 'trail-effect', value: 'stars' },
+    'trail-effect-2': { price: 35, description: 'Efecto de rastro (Corazones) 💕', type: 'trail-effect', value: 'hearts' },
+    'trail-effect-3': { price: 40, description: 'Efecto de rastro (Fuego) 🔥', type: 'trail-effect', value: 'fire' }
+  };
+
+  // Variables del juego
   let birdY = 250;
   let gravity = 0.2;
   let velocity = 0;
@@ -46,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let gameActive = false;
   let pipes = [];
   let coinsInGame = [];
-  let particles = []; // Añadido para manejar las partículas del rastro
+  let particles = [];
 
   let gameHeight = 500;
   let gameWidth = 800;
@@ -58,8 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let currentDifficultyLevel = 0;
   let pipeInterval = null;
-  let selectedCharacter = localStorage.getItem('selectedCharacter') || null;
-  let birdSize = 30;
+  let selectedCharacter = localStorage.getItem('selectedCharacter') || null; // Línea 91 corregida
+  let birdSize = 30; // Línea 92
   let hasCustomized = JSON.parse(localStorage.getItem('hasCustomized')) || false;
   let characterSelected = JSON.parse(localStorage.getItem('characterSelected')) || false;
 
@@ -96,21 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
     'trail-effect': null
   };
 
-  const shopItems = {
-    'wings-style-0': { price: 0, description: 'Alas 🪽', type: 'wings-style', value: 'default' },
-    'wings-style-1': { price: 15, description: 'Alas Doradas 🪶', type: 'wings-style', value: 'golden' },
-    'wings-style-2': { price: 20, description: 'Alas Demoníacas 👹', type: 'wings-style', value: 'demonic' },
-    'pipe-style-1': { price: 20, description: 'Tuberías Metálicas 🛠️', type: 'pipe-style', value: 'metallic' },
-    'pipe-style-2': { price: 25, description: 'Tuberías de Cristal 💎', type: 'pipe-style', value: 'crystal' },
-    'pipe-style-3': { price: 30, description: 'Tuberías de Madera 🌳', type: 'pipe-style', value: 'wood' },
-    'character-2': { price: 25, description: 'Personaje 2 🐤', type: 'character' },
-    'character-3': { price: 25, description: 'Personaje 3 🐥', type: 'character' },
-    'character-4': { price: 25, description: 'Personaje 4 🐧', type: 'character' },
-    'character-5': { price: 25, description: 'Personaje 5 🦅', type: 'character' },
-    'trail-effect-1': { price: 30, description: 'Efecto de rastro (Estrellas) ✨', type: 'trail-effect', value: 'stars' },
-    'trail-effect-2': { price: 35, description: 'Efecto de rastro (Corazones) 💕', type: 'trail-effect', value: 'hearts' },
-    'trail-effect-3': { price: 40, description: 'Efecto de rastro (Fuego) 🔥', type: 'trail-effect', value: 'fire' }
-  };
+  // Validar equippedItems después de definir shopItems
+  if (!equippedItems['wings-style'] || !shopItems[equippedItems['wings-style']]) {
+    console.warn('equippedItems[\'wings-style\'] inválido, reiniciando a valor por defecto');
+    equippedItems['wings-style'] = 'wings-style-0';
+    localStorage.setItem('equippedItems', JSON.stringify(equippedItems));
+  }
 
   const predefinedCharacters = {
     1: {
@@ -148,51 +169,53 @@ document.addEventListener('DOMContentLoaded', () => {
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
   // Ocultar todos los contenedores al inicio, excepto la pantalla de bienvenida
-  menu.classList.add('hidden');
-  gameContainer.classList.add('hidden');
-  customizationMenu.classList.add('hidden');
-  equipMenu.classList.add('hidden');
-  shopMenu.classList.add('hidden');
-  gameOverScreen.classList.add('hidden');
-  orientationLock.classList.add('hidden');
+  elements.menu.classList.add('hidden');
+  elements.gameContainer.classList.add('hidden');
+  elements.customizationMenu.classList.add('hidden');
+  elements.equipMenu.classList.add('hidden');
+  elements.shopMenu.classList.add('hidden');
+  elements.gameOverScreen.classList.add('hidden');
+  elements.orientationLock.classList.add('hidden');
 
   // Iniciar la animación de la barra de carga
-  if (loadingBar) {
+  if (elements.loadingBar) {
     console.log('Iniciando animación de la barra de carga...');
-    // Forzamos un reflow para asegurar que la animación se aplique
-    loadingBar.offsetWidth; // Esto reinicia la animación
-    loadingBar.style.width = '100%';
+    elements.loadingBar.style.transition = 'width 5s linear'; // Asegurar transición
+    elements.loadingBar.offsetWidth; // Forzar reflow
+    elements.loadingBar.style.width = '100%';
   } else {
     console.error('Elemento #loading-bar no encontrado');
   }
 
-  // Mostrar el botón "Jugar" y ocultar la barra de carga después de 5 segundos
+  // Mostrar el botón "Jugar" después de 5 segundos
   setTimeout(() => {
     console.log('Ocultando barra de carga y mostrando botón Jugar...');
-    if (loadingBarContainer) {
-      loadingBarContainer.classList.add('hidden');
+    if (elements.loadingBarContainer) {
+      elements.loadingBarContainer.classList.add('hidden');
     } else {
       console.error('Elemento .loading-bar-container no encontrado');
     }
-    if (startGameButton) {
-      startGameButton.classList.remove('hidden');
+    if (elements.startGameButton) {
+      elements.startGameButton.classList.remove('hidden');
     } else {
       console.error('Elemento #start-game-button no encontrado');
     }
   }, 5000);
 
-  // Al hacer clic en "Jugar", ocultar la pantalla de bienvenida y mostrar el menú principal
-  startGameButton.addEventListener('click', () => {
-    console.log('Botón Jugar clicado');
-    welcomeScreen.classList.add('hidden');
-    menu.classList.remove('hidden');
-    customizationMenu.classList.add('hidden');
-    gameContainer.classList.add('hidden');
-    equipMenu.classList.add('hidden');
-    shopMenu.classList.add('hidden');
-    gameOverScreen.classList.add('hidden');
-    checkOrientation();
-  });
+  // Evento del botón "Jugar"
+  if (elements.startGameButton) {
+    elements.startGameButton.addEventListener('click', () => {
+      console.log('Botón Jugar clicado');
+      elements.welcomeScreen.classList.add('hidden');
+      elements.menu.classList.remove('hidden');
+      elements.customizationMenu.classList.add('hidden');
+      elements.gameContainer.classList.add('hidden');
+      elements.equipMenu.classList.add('hidden');
+      elements.shopMenu.classList.add('hidden');
+      elements.gameOverScreen.classList.add('hidden');
+      checkOrientation();
+    });
+  }
 
   function adjustGameDimensions() {
     if (isMobile) {
@@ -207,64 +230,64 @@ document.addEventListener('DOMContentLoaded', () => {
       pipeIntervalTime = 2000;
       pipeSpeed = 2;
 
-      gameArea.style.width = `${gameWidth}px`;
-      gameArea.style.height = `${gameHeight}px`;
+      elements.gameArea.style.width = `${gameWidth}px`;
+      elements.gameArea.style.height = `${gameHeight}px`;
 
-      bird.style.left = `${birdX}px`;
-      bird.style.top = `${birdY}px`;
+      elements.bird.style.left = `${birdX}px`;
+      elements.bird.style.top = `${birdY}px`;
     }
   }
 
   function checkOrientation() {
-    if (welcomeScreen && !welcomeScreen.classList.contains('hidden')) {
+    if (elements.welcomeScreen && !elements.welcomeScreen.classList.contains('hidden')) {
       return;
     }
 
     if (!isMobile) {
-      orientationLock.classList.add('hidden');
+      elements.orientationLock.classList.add('hidden');
       if (!gameActive) {
-        if (!customizationMenu.classList.contains('hidden')) {
+        if (!elements.customizationMenu.classList.contains('hidden')) {
           return;
         }
-        menu.classList.remove('hidden');
-        gameContainer.classList.add('hidden');
-        customizationMenu.classList.add('hidden');
-        equipMenu.classList.add('hidden');
-        shopMenu.classList.add('hidden');
-        gameOverScreen.classList.add('hidden');
+        elements.menu.classList.remove('hidden');
+        elements.gameContainer.classList.add('hidden');
+        elements.customizationMenu.classList.add('hidden');
+        elements.equipMenu.classList.add('hidden');
+        elements.shopMenu.classList.add('hidden');
+        elements.gameOverScreen.classList.add('hidden');
       }
       return;
     }
 
     const isLandscape = window.matchMedia("(orientation: landscape)").matches;
     if (!isLandscape) {
-      orientationLock.classList.remove('hidden');
-      gameContainer.classList.add('hidden');
-      menu.classList.add('hidden');
-      customizationMenu.classList.add('hidden');
-      equipMenu.classList.add('hidden');
-      shopMenu.classList.add('hidden');
-      gameOverScreen.classList.add('hidden');
+      elements.orientationLock.classList.remove('hidden');
+      elements.gameContainer.classList.add('hidden');
+      elements.menu.classList.add('hidden');
+      elements.customizationMenu.classList.add('hidden');
+      elements.equipMenu.classList.add('hidden');
+      elements.shopMenu.classList.add('hidden');
+      elements.gameOverScreen.classList.add('hidden');
     } else {
-      orientationLock.classList.add('hidden');
+      elements.orientationLock.classList.add('hidden');
       adjustGameDimensions();
       if (!gameActive) {
-        if (!customizationMenu.classList.contains('hidden')) {
+        if (!elements.customizationMenu.classList.contains('hidden')) {
           return;
         }
-        menu.classList.remove('hidden');
-        gameContainer.classList.add('hidden');
-        customizationMenu.classList.add('hidden');
-        equipMenu.classList.add('hidden');
-        shopMenu.classList.add('hidden');
-        gameOverScreen.classList.add('hidden');
+        elements.menu.classList.remove('hidden');
+        elements.gameContainer.classList.add('hidden');
+        elements.customizationMenu.classList.add('hidden');
+        elements.equipMenu.classList.add('hidden');
+        elements.shopMenu.classList.add('hidden');
+        elements.gameOverScreen.classList.add('hidden');
       } else {
-        gameContainer.classList.remove('hidden');
-        menu.classList.add('hidden');
-        customizationMenu.classList.add('hidden');
-        equipMenu.classList.add('hidden');
-        shopMenu.classList.add('hidden');
-        gameOverScreen.classList.add('hidden');
+        elements.gameContainer.classList.remove('hidden');
+        elements.menu.classList.add('hidden');
+        elements.customizationMenu.classList.add('hidden');
+        elements.equipMenu.classList.add('hidden');
+        elements.shopMenu.classList.add('hidden');
+        elements.gameOverScreen.classList.add('hidden');
       }
     }
   }
@@ -276,34 +299,31 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function updateCustomBirdPreview() {
-    // Verificamos si los elementos existen antes de acceder a sus propiedades
-    if (!customBirdPreview) {
+    if (!elements.customBirdPreview) {
       console.warn('No se puede ejecutar updateCustomBirdPreview: customBirdPreview no encontrado');
       return;
     }
 
-    customBirdPreview.style.background = bodyColor;
-    customBirdPreview.style.width = `${birdSize}px`;
-    customBirdPreview.style.height = `${birdSize}px`;
-    customBirdPreview.style.setProperty('--wings-color', wingsColor);
+    elements.customBirdPreview.style.background = bodyColor;
+    elements.customBirdPreview.style.width = `${birdSize}px`;
+    elements.customBirdPreview.style.height = `${birdSize}px`;
+    elements.customBirdPreview.style.setProperty('--wings-color', wingsColor);
 
-    customBirdPreview.classList.remove('wings-style-0', 'wings-style-1', 'wings-style-2');
-    if (equippedItems['wings-style']) {
+    elements.customBirdPreview.classList.remove('wings-style-0', 'wings-style-1', 'wings-style-2');
+    if (equippedItems['wings-style'] && shopItems[equippedItems['wings-style']]) {
       const style = shopItems[equippedItems['wings-style']].value;
       if (style === 'default') {
-        customBirdPreview.classList.add('wings-style-0');
-      }
-      if (style === 'golden') {
-        customBirdPreview.classList.add('wings-style-1');
-      }
-      if (style === 'demonic') {
-        customBirdPreview.classList.add('wings-style-2');
+        elements.customBirdPreview.classList.add('wings-style-0');
+      } else if (style === 'golden') {
+        elements.customBirdPreview.classList.add('wings-style-1');
+      } else if (style === 'demonic') {
+        elements.customBirdPreview.classList.add('wings-style-2');
       }
     }
   }
 
   function updateCharacterOptions() {
-    characterOptions.forEach(option => {
+    elements.characterOptions.forEach(option => {
       const characterId = option.getAttribute('data-character');
       if (unlockedItems[`character-${characterId}`]) {
         option.classList.add('unlocked');
@@ -319,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateEquipOptions() {
-    equipOptions.innerHTML = '';
+    elements.equipOptions.innerHTML = '';
 
     Object.keys(unlockedItems).forEach(item => {
       if (unlockedItems[item] && shopItems[item] && shopItems[item].type && shopItems[item].type !== 'character') {
@@ -363,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
         buttonContainer.appendChild(equipButton);
         buttonContainer.appendChild(unequipButton);
         equipItem.appendChild(buttonContainer);
-        equipOptions.appendChild(equipItem);
+        elements.equipOptions.appendChild(equipItem);
       }
     });
   }
@@ -377,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
     highScores = highScores.slice(0, 5);
     localStorage.setItem('highScores', JSON.stringify(highScores));
 
-    highScoresTableBody.innerHTML = '';
+    elements.highScoresTableBody.innerHTML = '';
     highScores.forEach((entry, index) => {
       const row = document.createElement('tr');
       row.innerHTML = `
@@ -385,13 +405,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${entry.score}</td>
         <td>${entry.date}</td>
       `;
-      highScoresTableBody.appendChild(row);
+      elements.highScoresTableBody.appendChild(row);
     });
   }
 
   function updateShop() {
-    shopCoinsDisplay.textContent = totalCoins;
-    shopItemsContainer.innerHTML = '';
+    elements.shopCoinsDisplay.textContent = totalCoins;
+    elements.shopItemsContainer.innerHTML = '';
 
     Object.keys(shopItems).forEach(item => {
       const shopItem = document.createElement('div');
@@ -417,11 +437,11 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       shopItem.appendChild(buyButton);
-      shopItemsContainer.appendChild(shopItem);
+      elements.shopItemsContainer.appendChild(shopItem);
     });
   }
 
-  characterOptions.forEach(option => {
+  elements.characterOptions.forEach(option => {
     option.addEventListener('click', () => {
       const characterId = option.getAttribute('data-character');
       if (!unlockedItems[`character-${characterId}`]) {
@@ -434,61 +454,65 @@ document.addEventListener('DOMContentLoaded', () => {
       birdSize = character.size;
       bodyColor = character.bodyColor;
       wingsColor = character.wingsColor;
-      equipBirdSizeInput.value = birdSize;
+      elements.equipBirdSizeInput.value = birdSize;
       hasCustomized = false;
       localStorage.setItem('hasCustomized', JSON.stringify(hasCustomized));
       updateCharacterOptions();
-      menu.classList.add('hidden');
-      equipMenu.classList.remove('hidden');
+      elements.menu.classList.add('hidden');
+      elements.equipMenu.classList.remove('hidden');
       updateEquipOptions();
     });
   });
 
-  if (customizeCharacterButton) {
-    customizeCharacterButton.addEventListener('click', () => {
+  if (elements.customizeCharacterButton) {
+    elements.customizeCharacterButton.addEventListener('click', () => {
       selectedCharacter = null;
       localStorage.setItem('selectedCharacter', selectedCharacter);
       updateCharacterOptions();
-      menu.classList.add('hidden');
-      customizationMenu.classList.remove('hidden');
+      elements.menu.classList.add('hidden');
+      elements.customizationMenu.classList.remove('hidden');
       updateCustomBirdPreview();
     });
   } else {
     console.error('Botón #customize-character-button no encontrado');
   }
 
-  if (confirmCustomization) {
-    confirmCustomization.addEventListener('click', () => {
+  if (elements.confirmCustomization) {
+    elements.confirmCustomization.addEventListener('click', () => {
       console.log('Botón Confirmar clicado');
-      bodyColor = bodyColorInput.value;
-      wingsColor = wingsColorInput.value;
+      bodyColor = elements.bodyColorInput.value;
+      wingsColor = elements.wingsColorInput.value;
       hasCustomized = true;
+      characterSelected = true;
       localStorage.setItem('hasCustomized', JSON.stringify(hasCustomized));
-      customizationMenu.classList.add('hidden');
-      equipMenu.classList.add('hidden');
+      localStorage.setItem('characterSelected', JSON.stringify(characterSelected));
+      elements.customizationMenu.classList.add('hidden');
+      elements.menu.classList.remove('hidden');
+      elements.playButton.disabled = false;
       updateEquipOptions();
+      applyCharacter();
     });
   } else {
     console.error('Botón #confirm-customization no encontrado');
   }
 
-  if (backToMenu) {
-    backToMenu.addEventListener('click', () => {
-      customizationMenu.classList.add('hidden');
-      menu.classList.remove('hidden');
+  if (elements.backToMenu) {
+    elements.backToMenu.addEventListener('click', () => {
+      elements.customizationMenu.classList.add('hidden');
+      elements.menu.classList.remove('hidden');
     });
   } else {
     console.error('Botón #back-to-menu no encontrado');
   }
 
-  if (confirmEquip) {
-    confirmEquip.addEventListener('click', () => {
+  if (elements.confirmEquip) {
+    elements.confirmEquip.addEventListener('click', () => {
       console.log('Botón Confirmar (Equipar) clicado');
-      birdSize = equipBirdSizeInput.value;
+      birdSize = elements.equipBirdSizeInput.value;
       applyCharacter();
-      equipMenu.classList.add('hidden');
-      menu.classList.remove('hidden');
-      playButton.disabled = false;
+      elements.equipMenu.classList.add('hidden');
+      elements.menu.classList.remove('hidden');
+      elements.playButton.disabled = false;
       characterSelected = true;
       localStorage.setItem('characterSelected', JSON.stringify(characterSelected));
     });
@@ -496,48 +520,48 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('Botón #confirm-equip no encontrado');
   }
 
-  if (backToSelection) {
-    backToSelection.addEventListener('click', () => {
-      equipMenu.classList.add('hidden');
-      menu.classList.remove('hidden');
-      playButton.disabled = !characterSelected;
+  if (elements.backToSelection) {
+    elements.backToSelection.addEventListener('click', () => {
+      elements.equipMenu.classList.add('hidden');
+      elements.menu.classList.remove('hidden');
+      elements.playButton.disabled = !characterSelected;
     });
   } else {
     console.error('Botón #back-to-selection no encontrado');
   }
 
-  if (bodyColorInput) {
-    bodyColorInput.addEventListener('input', () => {
-      bodyColor = bodyColorInput.value;
+  if (elements.bodyColorInput) {
+    elements.bodyColorInput.addEventListener('input', () => {
+      bodyColor = elements.bodyColorInput.value;
       updateCustomBirdPreview();
     });
   } else {
     console.error('Elemento #body-color no encontrado');
   }
 
-  if (wingsColorInput) {
-    wingsColorInput.addEventListener('input', () => {
-      wingsColor = wingsColorInput.value;
+  if (elements.wingsColorInput) {
+    elements.wingsColorInput.addEventListener('input', () => {
+      wingsColor = elements.wingsColorInput.value;
       updateCustomBirdPreview();
     });
   } else {
     console.error('Elemento #wings-color no encontrado');
   }
 
-  if (shopButton) {
-    shopButton.addEventListener('click', () => {
-      menu.classList.add('hidden');
-      shopMenu.classList.remove('hidden');
+  if (elements.shopButton) {
+    elements.shopButton.addEventListener('click', () => {
+      elements.menu.classList.add('hidden');
+      elements.shopMenu.classList.remove('hidden');
       updateShop();
     });
   } else {
     console.error('Botón #shop-button no encontrado');
   }
 
-  if (backToMenuFromShop) {
-    backToMenuFromShop.addEventListener('click', () => {
-      shopMenu.classList.add('hidden');
-      menu.classList.remove('hidden');
+  if (elements.backToMenuFromShop) {
+    elements.backToMenuFromShop.addEventListener('click', () => {
+      elements.shopMenu.classList.add('hidden');
+      elements.menu.classList.remove('hidden');
     });
   } else {
     console.error('Botón #back-to-menu-from-shop no encontrado');
@@ -553,35 +577,31 @@ document.addEventListener('DOMContentLoaded', () => {
       image = null;
     }
 
-    bird.style.background = image ? `url(${image})` : bodyColor;
-    bird.style.backgroundSize = 'cover';
-    bird.style.backgroundPosition = 'center';
-    bird.style.width = `${birdSize}px`;
-    bird.style.height = `${birdSize}px`;
-    bird.style.setProperty('--wings-color', wingsColor);
+    elements.bird.style.background = image ? `url(${image})` : bodyColor;
+    elements.bird.style.backgroundSize = 'cover';
+    elements.bird.style.backgroundPosition = 'center';
+    elements.bird.style.width = `${birdSize}px`;
+    elements.bird.style.height = `${birdSize}px`;
+    elements.bird.style.setProperty('--wings-color', wingsColor);
 
-    bird.classList.remove('wings-style-0', 'wings-style-1', 'wings-style-2');
-    if (equippedItems['wings-style']) {
+    elements.bird.classList.remove('wings-style-0', 'wings-style-1', 'wings-style-2');
+    if (equippedItems['wings-style'] && shopItems[equippedItems['wings-style']]) {
       const style = shopItems[equippedItems['wings-style']].value;
       if (style === 'default') {
-        bird.classList.add('wings-style-0');
-      }
-      if (style === 'golden') {
-        bird.classList.add('wings-style-1');
-      }
-      if (style === 'demonic') {
-        bird.classList.add('wings-style-2');
+        elements.bird.classList.add('wings-style-0');
+      } else if (style === 'golden') {
+        elements.bird.classList.add('wings-style-1');
+      } else if (style === 'demonic') {
+        elements.bird.classList.add('wings-style-2');
       }
     }
 
-    // Limpiar cualquier partícula existente al aplicar un nuevo personaje
     particles.forEach(particle => particle.element.remove());
     particles = [];
   }
 
-  // Nueva función para crear partículas (estrellas, corazones o fuego)
   function createParticle() {
-    if (!equippedItems['trail-effect']) return;
+    if (!equippedItems['trail-effect'] || !shopItems[equippedItems['trail-effect']]) return;
 
     const effect = shopItems[equippedItems['trail-effect']].value;
     if (effect !== 'stars' && effect !== 'hearts' && effect !== 'fire') return;
@@ -596,38 +616,33 @@ document.addEventListener('DOMContentLoaded', () => {
       particle.classList.add('particle-fire');
     }
 
-    // Posicionar la partícula detrás del pájaro
-    const birdRect = bird.getBoundingClientRect();
-    const gameAreaRect = gameArea.getBoundingClientRect();
-    const x = birdX - 10; // Un poco detrás del pájaro
-    const y = birdY + (birdSize / 2); // En el centro vertical del pájaro
+    const birdRect = elements.bird.getBoundingClientRect();
+    const gameAreaRect = elements.gameArea.getBoundingClientRect();
+    const x = birdX - 10;
+    const y = birdY + (birdSize / 2);
     particle.style.left = `${x}px`;
     particle.style.top = `${y}px`;
 
-    gameArea.appendChild(particle);
+    elements.gameArea.appendChild(particle);
 
-    // Añadir la partícula a la lista con un tiempo de vida
     particles.push({
       element: particle,
       x: x,
       y: y,
-      lifetime: 500 // 500ms de vida (ajustable)
+      lifetime: 500 // Restaurado a 500ms
     });
 
-    // Eliminar la partícula después de su tiempo de vida
     setTimeout(() => {
       particle.remove();
       particles = particles.filter(p => p.element !== particle);
-    }, 500);
+    }, 500); // Restaurado a 500ms
   }
 
-  // Nueva función para actualizar las partículas
   function updateParticles() {
     particles.forEach((particle, index) => {
-      particle.x -= pipeSpeed; // Mover las partículas con la misma velocidad que los tubos
+      particle.x -= pipeSpeed;
       particle.element.style.left = `${particle.x}px`;
 
-      // Eliminar partículas que salen de la pantalla
       if (particle.x < -10) {
         particle.element.remove();
         particles.splice(index, 1);
@@ -641,7 +656,7 @@ document.addEventListener('DOMContentLoaded', () => {
     coin.classList.add('coin');
     coin.style.left = `${pipeX + pipeWidth + 50}px`;
     coin.style.top = `${coinY}px`;
-    gameArea.appendChild(coin);
+    elements.gameArea.appendChild(coin);
     coinsInGame.push({ element: coin, x: pipeX + pipeWidth + 50, y: coinY });
   }
 
@@ -650,7 +665,7 @@ document.addEventListener('DOMContentLoaded', () => {
       coin.x -= pipeSpeed;
       coin.element.style.left = `${coin.x}px`;
 
-      const birdRect = bird.getBoundingClientRect();
+      const birdRect = elements.bird.getBoundingClientRect();
       const coinRect = coin.element.getBoundingClientRect();
 
       if (
@@ -660,7 +675,7 @@ document.addEventListener('DOMContentLoaded', () => {
         birdRect.top < coinRect.bottom
       ) {
         coins++;
-        coinsDisplay.textContent = coins;
+        elements.coinsDisplay.textContent = coins;
         coin.element.remove();
         coinsInGame.splice(index, 1);
       }
@@ -687,7 +702,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pipeBottom.style.height = `${gameHeight - pipeHeight - pipeGap}px`;
     pipeBottom.style.left = `${gameWidth}px`;
 
-    if (equippedItems['pipe-style']) {
+    if (equippedItems['pipe-style'] && shopItems[equippedItems['pipe-style']]) {
       const style = shopItems[equippedItems['pipe-style']].value;
       if (style === 'metallic') {
         pipeTop.classList.add('pipe-style-1');
@@ -706,8 +721,8 @@ document.addEventListener('DOMContentLoaded', () => {
       isMoving = true;
     }
 
-    gameArea.appendChild(pipeTop);
-    gameArea.appendChild(pipeBottom);
+    elements.gameArea.appendChild(pipeTop);
+    elements.gameArea.appendChild(pipeBottom);
 
     pipes.push({ top: pipeTop, bottom: pipeBottom, x: gameWidth, passed: false, isMoving: isMoving, baseHeight: pipeHeight, moveOffset: 0, moveTime: Date.now() });
 
@@ -722,7 +737,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (newPipeSpeed !== pipeSpeed) {
       pipeSpeed = newPipeSpeed;
       pipeIntervalTime = 2000 - (pipeSpeed - 2) * 20;
-      // Ajustar pipeGap antes de los 50 puntos
       if (score < 50) {
         pipeGap = Math.max(100, 200 - (pipeSpeed - 2) * 2);
       }
@@ -736,10 +750,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }, pipeIntervalTime);
     }
 
-    // Reducir pipeGap progresivamente después de 50 puntos
     if (score >= 50) {
-      const reductionFactor = (score - 50) * 1; // Reducir 1 píxel por cada punto después de 50
-      pipeGap = Math.max(80, 200 - reductionFactor); // No bajar de 80 píxeles
+      const reductionFactor = (score - 50) * 1;
+      pipeGap = Math.max(80, 200 - reductionFactor);
     }
   }
 
@@ -763,7 +776,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      const birdRect = bird.getBoundingClientRect();
+      const birdRect = elements.bird.getBoundingClientRect();
       const pipeTopRect = pipe.top.getBoundingClientRect();
       const pipeBottomRect = pipe.bottom.getBoundingClientRect();
 
@@ -788,14 +801,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      if (birdY <= 0 || birdY >= gameHeight - parseInt(bird.style.height)) {
+      if (birdY <= 0 || birdY >= gameHeight - parseInt(elements.bird.style.height)) {
         endGame();
         return;
       }
 
       if (pipe.x + pipeWidth < birdX && !pipe.passed) {
         score++;
-        scoreDisplay.textContent = score;
+        elements.scoreDisplay.textContent = score;
         pipe.passed = true;
         adjustDifficulty();
       }
@@ -813,32 +826,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (velocity > maxVelocity) velocity = maxVelocity;
     if (velocity < -maxVelocity) velocity = -maxVelocity;
     birdY += velocity;
-    bird.style.top = `${birdY}px`;
+    elements.bird.style.top = `${birdY}px`;
 
-    // Generar partículas cada 100ms si hay un efecto de rastro equipado
     if (gameActive && equippedItems['trail-effect']) {
-      if (!bird.lastParticleTime || Date.now() - bird.lastParticleTime > 100) {
+      if (!elements.bird.lastParticleTime || Date.now() - elements.bird.lastParticleTime > 100) { // Restaurado a 100ms
         createParticle();
-        bird.lastParticleTime = Date.now();
+        elements.bird.lastParticleTime = Date.now();
       }
     }
   }
 
   function endGame() {
     gameActive = false;
-    finalScoreDisplay.textContent = score;
+    elements.finalScoreDisplay.textContent = score;
     totalCoins += coins;
     localStorage.setItem('totalCoins', totalCoins);
-    totalCoinsDisplay.textContent = totalCoins;
+    elements.totalCoinsDisplay.textContent = totalCoins;
     updateHighScores();
 
-    gameArea.classList.add('hidden');
-    gameOverScreen.classList.remove('hidden');
-    menu.classList.add('hidden');
-    customizationMenu.classList.add('hidden');
-    equipMenu.classList.add('hidden');
-    shopMenu.classList.add('hidden');
-    gameContainer.classList.remove('hidden');
+    elements.gameArea.classList.add('hidden');
+    elements.gameOverScreen.classList.remove('hidden');
+    elements.menu.classList.add('hidden');
+    elements.customizationMenu.classList.add('hidden');
+    elements.equipMenu.classList.add('hidden');
+    elements.shopMenu.classList.add('hidden');
+    elements.gameContainer.classList.remove('hidden');
 
     pipes.forEach((pipe) => {
       pipe.top.remove();
@@ -863,13 +875,13 @@ document.addEventListener('DOMContentLoaded', () => {
     gameActive = true;
     score = 0;
     coins = 0;
-    scoreDisplay.textContent = score;
-    coinsDisplay.textContent = coins;
+    elements.scoreDisplay.textContent = score;
+    elements.coinsDisplay.textContent = coins;
     birdY = gameHeight * 0.5;
     velocity = 0;
-    bird.style.top = `${birdY}px`;
-    gameOverScreen.classList.add('hidden');
-    gameArea.classList.remove('hidden');
+    elements.bird.style.top = `${birdY}px`;
+    elements.gameOverScreen.classList.add('hidden');
+    elements.gameArea.classList.remove('hidden');
     pipes = [];
     coinsInGame = [];
     particles = [];
@@ -902,12 +914,12 @@ document.addEventListener('DOMContentLoaded', () => {
     gameLoop();
   }
 
-  if (playButton) {
-    playButton.addEventListener('click', () => {
+  if (elements.playButton) {
+    elements.playButton.addEventListener('click', () => {
       console.log('Botón Jugar clicado');
       applyCharacter();
-      menu.classList.add('hidden');
-      gameContainer.classList.remove('hidden');
+      elements.menu.classList.add('hidden');
+      elements.gameContainer.classList.remove('hidden');
       startGame();
     });
   } else {
@@ -937,20 +949,19 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
   });
 
-  if (restartButton) {
-    restartButton.addEventListener('click', () => {
-      gameOverScreen.classList.add('hidden');
-      gameContainer.classList.add('hidden');
-      menu.classList.remove('hidden');
+  if (elements.restartButton) {
+    elements.restartButton.addEventListener('click', () => {
+      elements.gameOverScreen.classList.add('hidden');
+      elements.gameContainer.classList.add('hidden');
+      elements.menu.classList.remove('hidden');
     });
   } else {
     console.error('Botón #restart-button no encontrado');
   }
 
-  // Llamada inicial a las funciones de actualización
   updateCharacterOptions();
   updateShop();
   checkOrientation();
   adjustGameDimensions();
-  playButton.disabled = !characterSelected;
+  elements.playButton.disabled = !characterSelected;
 });
