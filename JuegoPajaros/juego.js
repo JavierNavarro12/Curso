@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let gameActive = false;
   let pipes = [];
   let coinsInGame = [];
+  let particles = []; // Añadido para manejar las partículas del rastro
 
   let gameHeight = 500;
   let gameWidth = 800;
@@ -64,9 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let highScores = JSON.parse(localStorage.getItem('highScores')) || [];
 
-  // Variables globales para personalización (Añadidas)
-  let bodyColor = '#FFD700'; // Valor por defecto
-  let wingsColor = '#FFFFFF'; // Valor por defecto
+  let bodyColor = '#FFD700';
+  let wingsColor = '#FFFFFF';
 
   let unlockedItems = JSON.parse(localStorage.getItem('unlockedItems')) || {
     'wings-style-0': true,
@@ -282,10 +282,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    customBirdPreview.style.background = bodyColor; // Usar variable global
+    customBirdPreview.style.background = bodyColor;
     customBirdPreview.style.width = `${birdSize}px`;
     customBirdPreview.style.height = `${birdSize}px`;
-    customBirdPreview.style.setProperty('--wings-color', wingsColor); // Usar variable global
+    customBirdPreview.style.setProperty('--wings-color', wingsColor);
 
     customBirdPreview.classList.remove('wings-style-0', 'wings-style-1', 'wings-style-2');
     if (equippedItems['wings-style']) {
@@ -432,8 +432,8 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('selectedCharacter', selectedCharacter);
       const character = predefinedCharacters[selectedCharacter];
       birdSize = character.size;
-      bodyColor = character.bodyColor; // Actualizar variable global
-      wingsColor = character.wingsColor; // Actualizar variable global
+      bodyColor = character.bodyColor;
+      wingsColor = character.wingsColor;
       equipBirdSizeInput.value = birdSize;
       hasCustomized = false;
       localStorage.setItem('hasCustomized', JSON.stringify(hasCustomized));
@@ -451,7 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateCharacterOptions();
       menu.classList.add('hidden');
       customizationMenu.classList.remove('hidden');
-      updateCustomBirdPreview(); // Llamada movida aquí
+      updateCustomBirdPreview();
     });
   } else {
     console.error('Botón #customize-character-button no encontrado');
@@ -460,8 +460,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (confirmCustomization) {
     confirmCustomization.addEventListener('click', () => {
       console.log('Botón Confirmar clicado');
-      bodyColor = bodyColorInput.value; // Guardar valores
-      wingsColor = wingsColorInput.value; // Guardar valores
+      bodyColor = bodyColorInput.value;
+      wingsColor = wingsColorInput.value;
       hasCustomized = true;
       localStorage.setItem('hasCustomized', JSON.stringify(hasCustomized));
       customizationMenu.classList.add('hidden');
@@ -508,7 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (bodyColorInput) {
     bodyColorInput.addEventListener('input', () => {
-      bodyColor = bodyColorInput.value; // Actualizar variable global
+      bodyColor = bodyColorInput.value;
       updateCustomBirdPreview();
     });
   } else {
@@ -517,7 +517,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (wingsColorInput) {
     wingsColorInput.addEventListener('input', () => {
-      wingsColor = wingsColorInput.value; // Actualizar variable global
+      wingsColor = wingsColorInput.value;
       updateCustomBirdPreview();
     });
   } else {
@@ -553,12 +553,12 @@ document.addEventListener('DOMContentLoaded', () => {
       image = null;
     }
 
-    bird.style.background = image ? `url(${image})` : bodyColor; // Usar variable global
+    bird.style.background = image ? `url(${image})` : bodyColor;
     bird.style.backgroundSize = 'cover';
     bird.style.backgroundPosition = 'center';
     bird.style.width = `${birdSize}px`;
     bird.style.height = `${birdSize}px`;
-    bird.style.setProperty('--wings-color', wingsColor); // Usar variable global
+    bird.style.setProperty('--wings-color', wingsColor);
 
     bird.classList.remove('wings-style-0', 'wings-style-1', 'wings-style-2');
     if (equippedItems['wings-style']) {
@@ -574,24 +574,65 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    const trail = bird.querySelector('.trail');
-    trail.classList.remove('trail-effect-1', 'trail-effect-2', 'trail-effect-3');
-    trail.style.display = 'none';
-    if (equippedItems['trail-effect']) {
-      const effect = shopItems[equippedItems['trail-effect']].value;
-      if (effect === 'stars') {
-        trail.classList.add('trail-effect-1');
-        trail.style.display = 'block';
-      }
-      if (effect === 'hearts') {
-        trail.classList.add('trail-effect-2');
-        trail.style.display = 'block';
-      }
-      if (effect === 'fire') {
-        trail.classList.add('trail-effect-3');
-        trail.style.display = 'block';
-      }
+    // Limpiar cualquier partícula existente al aplicar un nuevo personaje
+    particles.forEach(particle => particle.element.remove());
+    particles = [];
+  }
+
+  // Nueva función para crear partículas (estrellas, corazones o fuego)
+  function createParticle() {
+    if (!equippedItems['trail-effect']) return;
+
+    const effect = shopItems[equippedItems['trail-effect']].value;
+    if (effect !== 'stars' && effect !== 'hearts' && effect !== 'fire') return;
+
+    const particle = document.createElement('div');
+    particle.classList.add('particle');
+    if (effect === 'stars') {
+      particle.classList.add('particle-stars');
+    } else if (effect === 'hearts') {
+      particle.classList.add('particle-hearts');
+    } else if (effect === 'fire') {
+      particle.classList.add('particle-fire');
     }
+
+    // Posicionar la partícula detrás del pájaro
+    const birdRect = bird.getBoundingClientRect();
+    const gameAreaRect = gameArea.getBoundingClientRect();
+    const x = birdX - 10; // Un poco detrás del pájaro
+    const y = birdY + (birdSize / 2); // En el centro vertical del pájaro
+    particle.style.left = `${x}px`;
+    particle.style.top = `${y}px`;
+
+    gameArea.appendChild(particle);
+
+    // Añadir la partícula a la lista con un tiempo de vida
+    particles.push({
+      element: particle,
+      x: x,
+      y: y,
+      lifetime: 500 // 500ms de vida (ajustable)
+    });
+
+    // Eliminar la partícula después de su tiempo de vida
+    setTimeout(() => {
+      particle.remove();
+      particles = particles.filter(p => p.element !== particle);
+    }, 500);
+  }
+
+  // Nueva función para actualizar las partículas
+  function updateParticles() {
+    particles.forEach((particle, index) => {
+      particle.x -= pipeSpeed; // Mover las partículas con la misma velocidad que los tubos
+      particle.element.style.left = `${particle.x}px`;
+
+      // Eliminar partículas que salen de la pantalla
+      if (particle.x < -10) {
+        particle.element.remove();
+        particles.splice(index, 1);
+      }
+    });
   }
 
   function createCoin(pipeX, pipeHeight) {
@@ -681,7 +722,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (newPipeSpeed !== pipeSpeed) {
       pipeSpeed = newPipeSpeed;
       pipeIntervalTime = 2000 - (pipeSpeed - 2) * 20;
-      pipeGap = Math.max(100, 200 - (pipeSpeed - 2) * 2);
+      // Ajustar pipeGap antes de los 50 puntos
+      if (score < 50) {
+        pipeGap = Math.max(100, 200 - (pipeSpeed - 2) * 2);
+      }
       if (pipeInterval) {
         clearInterval(pipeInterval);
       }
@@ -690,6 +734,12 @@ document.addEventListener('DOMContentLoaded', () => {
           createPipe();
         }
       }, pipeIntervalTime);
+    }
+
+    // Reducir pipeGap progresivamente después de 50 puntos
+    if (score >= 50) {
+      const reductionFactor = (score - 50) * 1; // Reducir 1 píxel por cada punto después de 50
+      pipeGap = Math.max(80, 200 - reductionFactor); // No bajar de 80 píxeles
     }
   }
 
@@ -717,7 +767,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const pipeTopRect = pipe.top.getBoundingClientRect();
       const pipeBottomRect = pipe.bottom.getBoundingClientRect();
 
-      // Añadimos depuración para verificar las dimensiones
       console.log(`Pipe ${index} - Top Height: ${pipeTopRect.height}, Bottom Height: ${pipeBottomRect.height}, Gap: ${pipeBottomRect.top - pipeTopRect.bottom}`);
 
       const birdLeft = birdRect.left;
@@ -765,6 +814,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (velocity < -maxVelocity) velocity = -maxVelocity;
     birdY += velocity;
     bird.style.top = `${birdY}px`;
+
+    // Generar partículas cada 100ms si hay un efecto de rastro equipado
+    if (gameActive && equippedItems['trail-effect']) {
+      if (!bird.lastParticleTime || Date.now() - bird.lastParticleTime > 100) {
+        createParticle();
+        bird.lastParticleTime = Date.now();
+      }
+    }
   }
 
   function endGame() {
@@ -790,8 +847,12 @@ document.addEventListener('DOMContentLoaded', () => {
     coinsInGame.forEach((coin) => {
       coin.element.remove();
     });
+    particles.forEach((particle) => {
+      particle.element.remove();
+    });
     pipes = [];
     coinsInGame = [];
+    particles = [];
     if (pipeInterval) {
       clearInterval(pipeInterval);
       pipeInterval = null;
@@ -811,6 +872,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gameArea.classList.remove('hidden');
     pipes = [];
     coinsInGame = [];
+    particles = [];
 
     pipeSpeed = 2;
     pipeIntervalTime = 2000;
@@ -833,6 +895,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateBird();
         movePipes();
         moveCoins();
+        updateParticles();
         requestAnimationFrame(gameLoop);
       }
     }

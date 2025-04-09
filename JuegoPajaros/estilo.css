@@ -638,37 +638,41 @@ body {
   animation: flap 0.5s infinite alternate-reverse;
 }
 
-/* Efectos de rastro */
-.trail {
+/* Estilos para las partículas dinámicas */
+.particle {
   position: absolute;
-  left: -30px;
-  top: 10px;
-  font-size: 12px;
-  display: none;
+  width: 10px;
+  height: 10px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 1;
+  animation: fadeOut 0.5s forwards; /* Desvanecerse en 0.5 segundos */
 }
 
-.trail.trail-effect-1::after {
-  content: '✨';
-  display: block;
-  animation: sparkle 0.5s infinite;
+.particle-stars {
+  background-image: url('img/star.png'); /* Imagen para las estrellas */
+  width: 200;
+  height: 200;
 }
 
-.trail.trail-effect-2::after {
-  content: '💕';
-  display: block;
-  animation: sparkle 0.5s infinite;
+.particle-hearts {
+  background-image: url('img/heart.png'); /* Imagen para los corazones */
 }
 
-.trail.trail-effect-3::after {
-  content: '🔥';
-  display: block;
-  animation: sparkle 0.5s infinite;
+.particle-fire {
+  background-image: url('img/flame.png'); /* Imagen para el fuego */
 }
 
-@keyframes sparkle {
-  0% { opacity: 1; }
-  50% { opacity: 0; }
-  100% { opacity: 1; }
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
 }
 
 /* Tuberías */
@@ -704,7 +708,6 @@ body {
   border-left: 3px solid #5C4033;
   border-right: 3px solid #5C4033;
   box-shadow: inset 5px 0 5px rgba(0, 0, 0, 0.3), inset -5px 0 5px rgba(0, 0, 0, 0.3);
-  /* Se eliminó position: relative */
 }
 
 /* Añadir un patrón de vetas de madera */
@@ -1052,10 +1055,10 @@ button:hover {
     right: -4vmin;
   }
 
-  /* Ajustar el rastro */
-  .trail {
-    left: -4vmin;
-    font-size: 2vmin;
+  /* Ajustar las partículas dinámicas */
+  .particle {
+    width: 2vmin;
+    height: 2vmin;
   }
 
   /* Ajustar las tuberías */
