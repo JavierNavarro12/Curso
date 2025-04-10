@@ -8,8 +8,8 @@ Esto añade un desafío único y puede ser desbloqueado como un modo especial en
 2. Power-Ups y Obstáculos Dinámicos
 Añadir elementos interactivos durante el juego puede hacerlo más emocionante.
 
-Power-Ups Flotantes:
-~~Introduce ítems que aparezcan aleatoriamente entre las tuberías, como:  
+~~Power-Ups Flotantes:
+Introduce ítems que aparezcan aleatoriamente entre las tuberías, como:  
 Escudo: Protege al pájaro de un choque con una tubería (desaparece tras el impacto).  
 Acelerador: Aumenta temporalmente la velocidad del juego, haciendo que las tuberías pasen más rápido (más desafío, más puntos).  
 Imán de Monedas: Atrae todas las monedas cercanas durante un tiempo limitado.  
