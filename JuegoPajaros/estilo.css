@@ -24,7 +24,7 @@ body {
   width: 100vw;
   height: 100vh;
   min-height: -webkit-fill-available; /* Para iOS Safari */
-  background: linear-gradient(135deg, #87CEEB 30%, #4682B4 100%); /* Ajuste del gradiente */
+  background: linear-gradient(135deg, #87CEEB 30%, #4682B4 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -33,7 +33,6 @@ body {
   font-family: 'Press Start 2P', cursive;
 }
 
-/* Recuadro que contiene los elementos */
 .welcome-box {
   background: rgba(255, 255, 255, 0.95);
   padding: 30px;
@@ -41,7 +40,7 @@ body {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   border: 4px solid #FFD700;
   text-align: center;
-  max-width: 700px;
+  max-width: 600px;
   width: 90%;
 }
 
@@ -366,8 +365,8 @@ body {
 .custom-bird::after {
   content: '';
   position: absolute;
-  width: 40px;
-  height: 40px;
+  width: var(--wings-size, 40px);
+  height: var(--wings-size, 40px);
   background-size: contain;
   background-repeat: no-repeat;
   animation: flap 0.5s infinite alternate;
@@ -377,25 +376,25 @@ body {
 .custom-bird::before,
 .custom-bird::after {
   content: '🪽';
-  font-size: 30px;
+  font-size: calc(var(--wings-size, 40px) * 0.75);
   color: var(--wings-color, #FFFFFF);
 }
 
 /* Alas por defecto (wings-style-0) */
 .custom-bird.wings-style-0::before {
   content: '🪽';
-  font-size: 30px;
+  font-size: calc(var(--wings-size, 40px) * 0.75);
   color: var(--wings-color, #FFFFFF);
-  left: -30px;
+  left: calc(var(--wings-size, 40px) * -0.75);
   top: 5px;
   transform: rotate(20deg);
 }
 
 .custom-bird.wings-style-0::after {
   content: '🪽';
-  font-size: 30px;
+  font-size: calc(var(--wings-size, 40px) * 0.75);
   color: var(--wings-color, #FFFFFF);
-  right: -30px;
+  right: calc(var(--wings-size, 40px) * -0.75);
   top: 5px;
   transform: rotate(-20deg) scaleX(-1);
 }
@@ -404,7 +403,7 @@ body {
 .custom-bird.wings-style-1::before {
   content: '';
   background-image: url('img/golden-wing-left.png');
-  left: -30px;
+  left: calc(var(--wings-size, 40px) * -0.75);
   top: 5px;
   transform: rotate(20deg);
 }
@@ -412,7 +411,7 @@ body {
 .custom-bird.wings-style-1::after {
   content: '';
   background-image: url('img/golden-wing-left.png');
-  right: -30px;
+  right: calc(var(--wings-size, 40px) * -0.75);
   top: 5px;
   transform: rotate(-20deg) scaleX(-1);
 }
@@ -421,7 +420,7 @@ body {
 .custom-bird.wings-style-2::before {
   content: '';
   background-image: url('img/demonic-wing-left.png');
-  left: -30px;
+  left: calc(var(--wings-size, 40px) * -0.75);
   top: 5px;
   transform: rotate(20deg);
 }
@@ -429,7 +428,7 @@ body {
 .custom-bird.wings-style-2::after {
   content: '';
   background-image: url('img/demonic-wing-left.png');
-  right: -30px;
+  right: calc(var(--wings-size, 40px) * -0.75);
   top: 5px;
   transform: rotate(-20deg) scaleX(-1);
 }
@@ -520,6 +519,9 @@ body {
 .game-container {
   text-align: center;
   position: relative;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .game-container.hidden {
@@ -534,17 +536,23 @@ body {
   justify-content: space-between;
   align-items: center;
   text-shadow: 1px 1px #000;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 10px;
 }
 
 .game-area {
   position: relative;
   width: 800px;
+  max-width: 90vw;
   height: 500px;
   background: linear-gradient(180deg, #87CEEB, #B0E0E6);
   border: 4px solid #FFD700;
   overflow: hidden;
   border-radius: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
 }
 
 .game-area.hidden {
@@ -569,8 +577,8 @@ body {
 #bird::after {
   content: '';
   position: absolute;
-  width: 40px;
-  height: 40px;
+  width: var(--wings-size, 40px);
+  height: var(--wings-size, 40px);
   background-size: contain;
   background-repeat: no-repeat;
   animation: flap 0.5s infinite alternate;
@@ -579,18 +587,18 @@ body {
 /* Alas por defecto (Alas - emoji 🪽) */
 #bird.wings-style-0::before {
   content: '🪽';
-  font-size: 30px;
+  font-size: calc(var(--wings-size, 40px) * 0.75);
   color: var(--wings-color, #FFFFFF);
-  left: -30px;
+  left: calc(var(--wings-size, 40px) * -0.75);
   top: 0px;
   transform: rotate(20deg);
 }
 
 #bird.wings-style-0::after {
   content: '🪽';
-  font-size: 30px;
+  font-size: calc(var(--wings-size, 40px) * 0.75);
   color: var(--wings-color, #FFFFFF);
-  right: -30px;
+  right: calc(var(--wings-size, 40px) * -0.75);
   top: 0px;
   transform: rotate(-20deg) scaleX(-1);
 }
@@ -599,7 +607,7 @@ body {
 #bird.wings-style-1::before {
   content: '';
   background-image: url('img/golden-wing-left.png');
-  left: -30px;
+  left: calc(var(--wings-size, 40px) * -0.75);
   top: 0px;
   transform: rotate(20deg);
 }
@@ -607,7 +615,7 @@ body {
 #bird.wings-style-1::after {
   content: '';
   background-image: url('img/golden-wing-left.png');
-  right: -30px;
+  right: calc(var(--wings-size, 40px) * -0.75);
   top: 0px;
   transform: rotate(-20deg) scaleX(-1);
 }
@@ -616,7 +624,7 @@ body {
 #bird.wings-style-2::before {
   content: '';
   background-image: url('img/demonic-wing-left.png');
-  left: -30px;
+  left: calc(var(--wings-size, 40px) * -0.75);
   top: 0px;
   transform: rotate(20deg);
 }
@@ -624,7 +632,7 @@ body {
 #bird.wings-style-2::after {
   content: '';
   background-image: url('img/demonic-wing-left.png');
-  right: -30px;
+  right: calc(var(--wings-size, 40px) * -0.75);
   top: 0px;
   transform: rotate(-20deg) scaleX(-1);
 }
@@ -653,8 +661,6 @@ body {
 
 .particle-stars {
   background-image: url('img/star.png');
-  width: 200;
-  height: 200;
 }
 
 .particle-hearts {
@@ -808,8 +814,8 @@ body {
   border-radius: 15px;
   text-align: center;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-  max-width: 800px;
-  width: 95%;
+  max-width: 600px;
+  width: 90%;
   z-index: 20;
   border: 4px solid #FF4500;
   color: #FFD700;
@@ -995,13 +1001,13 @@ button:hover {
 
   /* Ajustar la pantalla de bienvenida */
   #welcome-screen h1 {
-    font-size: 2.5vmin; /* Ajustamos el tamaño para móviles */
+    font-size: 2.5vmin;
   }
 
   .welcome-box {
     padding: 3vmin;
     width: 80vw;
-    max-width: 80vw; /* Ajustamos el tamaño del recuadro para móviles */
+    max-width: 80vw;
   }
 
   .loading-bar-container {
@@ -1015,6 +1021,10 @@ button:hover {
   }
 
   /* Ajustar el área de juego para que sea responsiva */
+  .game-container {
+    max-width: 100%;
+  }
+
   .game-area {
     width: 100vw;
     height: 60vh;
@@ -1033,27 +1043,27 @@ button:hover {
   /* Ajustar las alas del pájaro */
   #bird::before,
   #bird::after {
-    width: 6vmin;
-    height: 6vmin;
-    font-size: 4vmin;
+    width: calc(var(--wings-size, 40px) * 0.67);
+    height: calc(var(--wings-size, 40px) * 0.67);
+    font-size: calc(var(--wings-size, 40px) * 0.5);
   }
 
   #bird.wings-style-0::before {
-    left: -4vmin;
+    left: calc(var(--wings-size, 40px) * -0.5);
   }
 
   #bird.wings-style-0::after {
-    right: -4vmin;
+    right: calc(var(--wings-size, 40px) * -0.5);
   }
 
   #bird.wings-style-1::before,
   #bird.wings-style-2::before {
-    left: -4vmin;
+    left: calc(var(--wings-size, 40px) * -0.5);
   }
 
   #bird.wings-style-1::after,
   #bird.wings-style-2::after {
-    right: -4vmin;
+    right: calc(var(--wings-size, 40px) * -0.5);
   }
 
   /* Ajustar las partículas dinámicas */
@@ -1165,27 +1175,27 @@ button:hover {
 
   .custom-bird::before,
   .custom-bird::after {
-    width: 6vmin;
-    height: 6vmin;
-    font-size: 4vmin;
+    width: calc(var(--wings-size, 40px) * 0.67);
+    height: calc(var(--wings-size, 40px) * 0.67);
+    font-size: calc(var(--wings-size, 40px) * 0.5);
   }
 
   .custom-bird.wings-style-0::before {
-    left: -4vmin;
+    left: calc(var(--wings-size, 40px) * -0.5);
   }
 
   .custom-bird.wings-style-0::after {
-    right: -4vmin;
+    right: calc(var(--wings-size, 40px) * -0.5);
   }
 
   .custom-bird.wings-style-1::before,
   .custom-bird.wings-style-2::before {
-    left: -4vmin;
+    left: calc(var(--wings-size, 40px) * -0.5);
   }
 
   .custom-bird.wings-style-1::after,
   .custom-bird.wings-style-2::after {
-    right: -4vmin;
+    right: calc(var(--wings-size, 40px) * -0.5);
   }
 
   .customization-options label {

@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
     characterOptions: document.querySelectorAll('.character-option'),
     bodyColorInput: document.getElementById('body-color'),
     wingsColorInput: document.getElementById('wings-color'),
+    wingsSizeInput: document.getElementById('wings-size'),
+    equipWingsSizeInput: document.getElementById('equip-wings-size'),
     customizeCharacterButton: document.getElementById('customize-character-button'),
     customizationMenu: document.getElementById('customization-menu'),
     confirmCustomization: document.getElementById('confirm-customization'),
@@ -68,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let birdY = 250;
   let gravity = 0.2;
   let velocity = 0;
-  let jump = -6;
+  let jump = -6; // Valor base para escritorio
   let maxVelocity = 8;
   let score = 0;
   let coins = 0;
@@ -79,17 +81,19 @@ document.addEventListener('DOMContentLoaded', () => {
   let particles = [];
 
   let gameHeight = 500;
-  let gameWidth = 800;
+  let gameWidth = 1000; // Aumentado de 800 a 1000 para hacer la pantalla más alargada en escritorio
   let pipeWidth = 30;
-  let pipeGap = 200;
+  let pipeGap = 150; // Valor para escritorio (más pequeño para mayor dificultad)
   let pipeSpeed = 2;
   let pipeIntervalTime = 2000;
   let birdX = 150;
 
+  let basePipeGap = pipeGap; // Guardamos el valor base de pipeGap para usarlo en ajustes dinámicos
   let currentDifficultyLevel = 0;
   let pipeInterval = null;
   let selectedCharacter = localStorage.getItem('selectedCharacter') || null;
   let birdSize = 30;
+  let wingsSize = parseInt(localStorage.getItem('wingsSize')) || 40;
   let hasCustomized = JSON.parse(localStorage.getItem('hasCustomized')) || false;
   let characterSelected = JSON.parse(localStorage.getItem('characterSelected')) || false;
 
@@ -97,6 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let bodyColor = '#FFD700';
   let wingsColor = '#FFFFFF';
+
+  let hasSeenWelcomeScreen = false; // Variable para rastrear si el usuario ha visto la pantalla de carga
 
   let unlockedItems = JSON.parse(localStorage.getItem('unlockedItems')) || {
     'wings-style-0': true,
@@ -167,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-  // Ocultar todos los contenedores al inicio, excepto la pantalla de bienvenida
+  // Ocultar todos los contenedores al inicio
   elements.menu.classList.add('hidden');
   elements.gameContainer.classList.add('hidden');
   elements.customizationMenu.classList.add('hidden');
@@ -176,50 +182,56 @@ document.addEventListener('DOMContentLoaded', () => {
   elements.gameOverScreen.classList.add('hidden');
   elements.orientationLock.classList.add('hidden');
 
-  // Iniciar la animación de la barra de carga
-  if (elements.loadingBar) {
-    console.log('Iniciando animación de la barra de carga...');
-    elements.loadingBar.style.transition = 'width 5s linear';
-    elements.loadingBar.offsetWidth;
-    elements.loadingBar.style.width = '100%';
+  // Mostrar la pantalla de bienvenida solo si no es móvil o está en modo horizontal
+  if (!isMobile || window.matchMedia("(orientation: landscape)").matches) {
+    elements.welcomeScreen.classList.remove('hidden');
   } else {
-    console.error('Elemento #loading-bar no encontrado');
+    elements.welcomeScreen.classList.add('hidden');
+    elements.orientationLock.classList.remove('hidden');
   }
 
-  // Mostrar el botón "Jugar" después de 5 segundos
-  setTimeout(() => {
-    console.log('Ocultando barra de carga y mostrando botón Jugar...');
-    if (elements.loadingBarContainer) {
-      elements.loadingBarContainer.classList.add('hidden');
-    } else {
-      console.error('Elemento .loading-bar-container no encontrado');
-    }
-    if (elements.startGameButton) {
-      elements.startGameButton.classList.remove('hidden');
-    } else {
-      console.error('Elemento #start-game-button no encontrado');
-    }
-  }, 5000);
+  // Función para iniciar la animación de la barra de carga y mostrar el botón "Jugar"
+  function startLoadingAnimation() {
+    if (elements.loadingBar && elements.loadingBarContainer && elements.startGameButton) {
+      console.log('Iniciando animación de la barra de carga...');
+      elements.loadingBar.style.transition = 'width 5s linear';
+      elements.loadingBar.offsetWidth; // Reiniciar la animación
+      elements.loadingBar.style.width = '100%';
 
-  // Evento del botón "Jugar"
+      // Mostrar el botón "Jugar" cuando la animación termine
+      elements.loadingBar.addEventListener('transitionend', () => {
+        console.log('Animación de la barra de carga completada, mostrando botón Jugar...');
+        elements.loadingBarContainer.classList.add('hidden');
+        elements.startGameButton.classList.remove('hidden');
+      }, { once: true });
+    } else {
+      console.error('No se encontraron los elementos necesarios para la animación de carga');
+    }
+  }
+
+  // Función para manejar el clic en el botón "Jugar"
+  function handleStartGame() {
+    console.log('Botón Jugar clicado');
+    hasSeenWelcomeScreen = true; // Actualizamos la variable para indicar que el usuario ha visto la pantalla de carga
+    elements.welcomeScreen.classList.add('hidden');
+    elements.menu.classList.remove('hidden');
+    elements.customizationMenu.classList.add('hidden');
+    elements.gameContainer.classList.add('hidden');
+    elements.equipMenu.classList.add('hidden');
+    elements.shopMenu.classList.add('hidden');
+    elements.gameOverScreen.classList.add('hidden');
+    checkOrientation();
+  }
+
+  // Asignar eventos al botón "Jugar"
   if (elements.startGameButton) {
-    const startGameHandler = () => {
-      console.log('Botón Jugar clicado');
-      elements.welcomeScreen.classList.add('hidden');
-      elements.menu.classList.remove('hidden');
-      elements.customizationMenu.classList.add('hidden');
-      elements.gameContainer.classList.add('hidden');
-      elements.equipMenu.classList.add('hidden');
-      elements.shopMenu.classList.add('hidden');
-      elements.gameOverScreen.classList.add('hidden');
-      checkOrientation();
-    };
-
-    elements.startGameButton.addEventListener('click', startGameHandler);
+    elements.startGameButton.addEventListener('click', handleStartGame);
     elements.startGameButton.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      startGameHandler();
-    });
+      handleStartGame();
+    }, { passive: false });
+  } else {
+    console.error('Botón #start-game-button no encontrado');
   }
 
   function adjustGameDimensions() {
@@ -231,35 +243,55 @@ document.addEventListener('DOMContentLoaded', () => {
       birdX = gameWidth * 0.2;
       birdY = gameHeight * 0.5;
       pipeWidth = gameWidth * 0.04;
-      pipeGap = gameHeight * 0.4;
+      pipeGap = gameHeight * 0.45; // Hueco reducido para móviles (más difícil)
+      basePipeGap = pipeGap; // Actualizamos el valor base para móviles
       pipeIntervalTime = 2000;
       pipeSpeed = 2;
+
+      // Ajustes para reducir la oscilación y hacer el juego más fácil en móviles
+      gravity = 0.1; // Reducimos aún más la gravedad para que caiga más lento
+      jump = -3; // Salto reducido (sin cambios)
+      maxVelocity = 5; // Reducimos la velocidad máxima para limitar la oscilación
 
       elements.gameArea.style.width = `${gameWidth}px`;
       elements.gameArea.style.height = `${gameHeight}px`;
 
       elements.bird.style.left = `${birdX}px`;
       elements.bird.style.top = `${birdY}px`;
+    } else {
+      // Para escritorio, usamos los valores iniciales (gameWidth = 1000, gameHeight = 500)
+      elements.gameArea.style.width = `${gameWidth}px`;
+      elements.gameArea.style.height = `${gameHeight}px`;
+
+      pipeGap = 150;
+      basePipeGap = pipeGap; // Actualizamos el valor base para escritorio
+      jump = -6; // Valor para escritorio (sin cambios)
+
+      birdX = gameWidth * 0.15; // Ajustamos la posición del pájaro para que no esté demasiado cerca del borde
+      birdY = gameHeight * 0.5;
+      elements.bird.style.left = `${birdX}px`;
+      elements.bird.style.top = `${birdY}px`;
     }
   }
 
   function checkOrientation() {
-    if (elements.welcomeScreen && !elements.welcomeScreen.classList.contains('hidden')) {
-      return;
-    }
-
     if (!isMobile) {
       elements.orientationLock.classList.add('hidden');
-      if (!gameActive) {
-        if (!elements.customizationMenu.classList.contains('hidden')) {
-          return;
+      if (!hasSeenWelcomeScreen) {
+        elements.welcomeScreen.classList.remove('hidden');
+        startLoadingAnimation();
+      } else {
+        if (!gameActive) {
+          if (!elements.customizationMenu.classList.contains('hidden')) {
+            return;
+          }
+          elements.menu.classList.remove('hidden');
+          elements.gameContainer.classList.add('hidden');
+          elements.customizationMenu.classList.add('hidden');
+          elements.equipMenu.classList.add('hidden');
+          elements.shopMenu.classList.add('hidden');
+          elements.gameOverScreen.classList.add('hidden');
         }
-        elements.menu.classList.remove('hidden');
-        elements.gameContainer.classList.add('hidden');
-        elements.customizationMenu.classList.add('hidden');
-        elements.equipMenu.classList.add('hidden');
-        elements.shopMenu.classList.add('hidden');
-        elements.gameOverScreen.classList.add('hidden');
       }
       return;
     }
@@ -267,6 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isLandscape = window.matchMedia("(orientation: landscape)").matches;
     if (!isLandscape) {
       elements.orientationLock.classList.remove('hidden');
+      elements.welcomeScreen.classList.add('hidden');
       elements.gameContainer.classList.add('hidden');
       elements.menu.classList.add('hidden');
       elements.customizationMenu.classList.add('hidden');
@@ -276,23 +309,34 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       elements.orientationLock.classList.add('hidden');
       adjustGameDimensions();
-      if (!gameActive) {
-        if (!elements.customizationMenu.classList.contains('hidden')) {
-          return;
-        }
-        elements.menu.classList.remove('hidden');
+      if (!hasSeenWelcomeScreen) {
+        elements.welcomeScreen.classList.remove('hidden');
+        startLoadingAnimation();
         elements.gameContainer.classList.add('hidden');
-        elements.customizationMenu.classList.add('hidden');
-        elements.equipMenu.classList.add('hidden');
-        elements.shopMenu.classList.add('hidden');
-        elements.gameOverScreen.classList.add('hidden');
-      } else {
-        elements.gameContainer.classList.remove('hidden');
         elements.menu.classList.add('hidden');
         elements.customizationMenu.classList.add('hidden');
         elements.equipMenu.classList.add('hidden');
         elements.shopMenu.classList.add('hidden');
         elements.gameOverScreen.classList.add('hidden');
+      } else {
+        if (!gameActive) {
+          if (!elements.customizationMenu.classList.contains('hidden')) {
+            return;
+          }
+          elements.menu.classList.remove('hidden');
+          elements.gameContainer.classList.add('hidden');
+          elements.customizationMenu.classList.add('hidden');
+          elements.equipMenu.classList.add('hidden');
+          elements.shopMenu.classList.add('hidden');
+          elements.gameOverScreen.classList.add('hidden');
+        } else {
+          elements.gameContainer.classList.remove('hidden');
+          elements.menu.classList.add('hidden');
+          elements.customizationMenu.classList.add('hidden');
+          elements.equipMenu.classList.add('hidden');
+          elements.shopMenu.classList.add('hidden');
+          elements.gameOverScreen.classList.add('hidden');
+        }
       }
     }
   }
@@ -313,6 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.customBirdPreview.style.width = `${birdSize}px`;
     elements.customBirdPreview.style.height = `${birdSize}px`;
     elements.customBirdPreview.style.setProperty('--wings-color', wingsColor);
+    elements.customBirdPreview.style.setProperty('--wings-size', `${wingsSize}px`);
 
     elements.customBirdPreview.classList.remove('wings-style-0', 'wings-style-1', 'wings-style-2');
     if (equippedItems['wings-style'] && shopItems[equippedItems['wings-style']]) {
@@ -487,6 +532,8 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('Botón Confirmar clicado');
       bodyColor = elements.bodyColorInput.value;
       wingsColor = elements.wingsColorInput.value;
+      wingsSize = parseInt(elements.wingsSizeInput.value);
+      localStorage.setItem('wingsSize', wingsSize);
       hasCustomized = true;
       characterSelected = true;
       localStorage.setItem('hasCustomized', JSON.stringify(hasCustomized));
@@ -514,6 +561,8 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.confirmEquip.addEventListener('click', () => {
       console.log('Botón Confirmar (Equipar) clicado');
       birdSize = elements.equipBirdSizeInput.value;
+      wingsSize = parseInt(elements.equipWingsSizeInput.value);
+      localStorage.setItem('wingsSize', wingsSize);
       applyCharacter();
       elements.equipMenu.classList.add('hidden');
       elements.menu.classList.remove('hidden');
@@ -553,6 +602,32 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('Elemento #wings-color no encontrado');
   }
 
+  if (elements.wingsSizeInput) {
+    elements.wingsSizeInput.addEventListener('input', () => {
+      wingsSize = parseInt(elements.wingsSizeInput.value);
+      updateCustomBirdPreview();
+    });
+  } else {
+    console.error('Elemento #wings-size no encontrado');
+  }
+
+  if (elements.equipWingsSizeInput) {
+    elements.equipWingsSizeInput.addEventListener('input', () => {
+      wingsSize = parseInt(elements.equipWingsSizeInput.value);
+      updateCustomBirdPreview();
+      applyCharacter();
+    });
+  } else {
+    console.error('Elemento #equip-wings-size no encontrado');
+  }
+
+  if (elements.wingsSizeInput) {
+    elements.wingsSizeInput.value = wingsSize;
+  }
+  if (elements.equipWingsSizeInput) {
+    elements.equipWingsSizeInput.value = wingsSize;
+  }
+
   if (elements.shopButton) {
     elements.shopButton.addEventListener('click', () => {
       elements.menu.classList.add('hidden');
@@ -588,6 +663,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.bird.style.width = `${birdSize}px`;
     elements.bird.style.height = `${birdSize}px`;
     elements.bird.style.setProperty('--wings-color', wingsColor);
+    elements.bird.style.setProperty('--wings-size', `${wingsSize}px`);
 
     elements.bird.classList.remove('wings-style-0', 'wings-style-1', 'wings-style-2');
     if (equippedItems['wings-style'] && shopItems[equippedItems['wings-style']]) {
@@ -743,7 +819,8 @@ document.addEventListener('DOMContentLoaded', () => {
       pipeSpeed = newPipeSpeed;
       pipeIntervalTime = 2000 - (pipeSpeed - 2) * 20;
       if (score < 50) {
-        pipeGap = Math.max(100, 200 - (pipeSpeed - 2) * 2);
+        // Ajustamos pipeGap dinámicamente, pero respetando el valor base (basePipeGap)
+        pipeGap = Math.max(80, basePipeGap - (pipeSpeed - 2) * 2);
       }
       if (pipeInterval) {
         clearInterval(pipeInterval);
@@ -757,7 +834,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (score >= 50) {
       const reductionFactor = (score - 50) * 1;
-      pipeGap = Math.max(80, 200 - reductionFactor);
+      // Aseguramos que el hueco no sea menor a 80px, pero usamos basePipeGap como referencia
+      pipeGap = Math.max(80, basePipeGap - reductionFactor);
     }
   }
 
@@ -893,7 +971,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     pipeSpeed = 2;
     pipeIntervalTime = 2000;
-    pipeGap = gameHeight * 0.4;
+    pipeGap = basePipeGap; // Usamos el valor base (150 para escritorio, gameHeight * 0.45 para móviles)
     currentDifficultyLevel = 0;
 
     if (pipeInterval) {
@@ -907,16 +985,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, pipeIntervalTime);
 
-    function gameLoop() {
-      if (gameActive) {
-        updateBird();
-        movePipes();
-        moveCoins();
-        updateParticles();
-        requestAnimationFrame(gameLoop);
-      }
+    let lastTime = performance.now();
+    function gameLoop(currentTime) {
+      if (!gameActive) return;
+
+      const deltaTime = (currentTime - lastTime) / 1000;
+      lastTime = currentTime;
+
+      updateBird();
+      movePipes();
+      moveCoins();
+      updateParticles();
+
+      requestAnimationFrame(gameLoop);
     }
-    gameLoop();
+    requestAnimationFrame(gameLoop);
   }
 
   if (elements.playButton) {
@@ -933,12 +1016,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && gameActive) {
+      e.preventDefault();
       velocity = jump;
     }
   });
 
-  document.addEventListener('click', () => {
+  let lastClickTime = 0;
+  document.addEventListener('click', (e) => {
     if (gameActive) {
+      e.preventDefault(); // Evitamos comportamientos predeterminados del navegador
+      lastClickTime = Date.now();
+      console.log(`Clic detectado en: ${lastClickTime}`);
       velocity = jump;
     }
   });
@@ -948,13 +1036,13 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       velocity = jump;
     }
-  });
+  }, { passive: false });
 
   document.addEventListener('touchend', (e) => {
     if (gameActive) {
       e.preventDefault();
     }
-  });
+  }, { passive: false });
 
   if (elements.restartButton) {
     elements.restartButton.addEventListener('click', () => {
