@@ -88,8 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let currentDifficultyLevel = 0;
   let pipeInterval = null;
-  let selectedCharacter = localStorage.getItem('selectedCharacter') || null; // Línea 91 corregida
-  let birdSize = 30; // Línea 92
+  let selectedCharacter = localStorage.getItem('selectedCharacter') || null;
+  let birdSize = 30;
   let hasCustomized = JSON.parse(localStorage.getItem('hasCustomized')) || false;
   let characterSelected = JSON.parse(localStorage.getItem('characterSelected')) || false;
 
@@ -126,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
     'trail-effect': null
   };
 
-  // Validar equippedItems después de definir shopItems
   if (!equippedItems['wings-style'] || !shopItems[equippedItems['wings-style']]) {
     console.warn('equippedItems[\'wings-style\'] inválido, reiniciando a valor por defecto');
     equippedItems['wings-style'] = 'wings-style-0';
@@ -180,8 +179,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Iniciar la animación de la barra de carga
   if (elements.loadingBar) {
     console.log('Iniciando animación de la barra de carga...');
-    elements.loadingBar.style.transition = 'width 5s linear'; // Asegurar transición
-    elements.loadingBar.offsetWidth; // Forzar reflow
+    elements.loadingBar.style.transition = 'width 5s linear';
+    elements.loadingBar.offsetWidth;
     elements.loadingBar.style.width = '100%';
   } else {
     console.error('Elemento #loading-bar no encontrado');
@@ -204,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Evento del botón "Jugar"
   if (elements.startGameButton) {
-    elements.startGameButton.addEventListener('click', () => {
+    const startGameHandler = () => {
       console.log('Botón Jugar clicado');
       elements.welcomeScreen.classList.add('hidden');
       elements.menu.classList.remove('hidden');
@@ -214,6 +213,12 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.shopMenu.classList.add('hidden');
       elements.gameOverScreen.classList.add('hidden');
       checkOrientation();
+    };
+
+    elements.startGameButton.addEventListener('click', startGameHandler);
+    elements.startGameButton.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      startGameHandler();
     });
   }
 
@@ -629,13 +634,13 @@ document.addEventListener('DOMContentLoaded', () => {
       element: particle,
       x: x,
       y: y,
-      lifetime: 500 // Restaurado a 500ms
+      lifetime: 500
     });
 
     setTimeout(() => {
       particle.remove();
       particles = particles.filter(p => p.element !== particle);
-    }, 500); // Restaurado a 500ms
+    }, 500);
   }
 
   function updateParticles() {
@@ -829,7 +834,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.bird.style.top = `${birdY}px`;
 
     if (gameActive && equippedItems['trail-effect']) {
-      if (!elements.bird.lastParticleTime || Date.now() - elements.bird.lastParticleTime > 100) { // Restaurado a 100ms
+      if (!elements.bird.lastParticleTime || Date.now() - elements.bird.lastParticleTime > 100) {
         createParticle();
         elements.bird.lastParticleTime = Date.now();
       }
@@ -946,7 +951,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('touchend', (e) => {
-    e.preventDefault();
+    if (gameActive) {
+      e.preventDefault();
+    }
   });
 
   if (elements.restartButton) {
