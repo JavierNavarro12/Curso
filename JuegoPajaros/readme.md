@@ -9,11 +9,12 @@ Esto añade un desafío único y puede ser desbloqueado como un modo especial en
 Añadir elementos interactivos durante el juego puede hacerlo más emocionante.
 
 Power-Ups Flotantes:
-Introduce ítems que aparezcan aleatoriamente entre las tuberías, como:
-Escudo: Protege al pájaro de un choque con una tubería (desaparece tras el impacto).
-Acelerador: Aumenta temporalmente la velocidad del juego, haciendo que las tuberías pasen más rápido (más desafío, más puntos).
-Imán de Monedas: Atrae todas las monedas cercanas durante un tiempo limitado.
-Estos ítems podrían tener un diseño visual distintivo (por ejemplo, un escudo con un brillo azul, un rayo para el acelerador, etc.).
+~~Introduce ítems que aparezcan aleatoriamente entre las tuberías, como:  
+Escudo: Protege al pájaro de un choque con una tubería (desaparece tras el impacto).  
+Acelerador: Aumenta temporalmente la velocidad del juego, haciendo que las tuberías pasen más rápido (más desafío, más puntos).  
+Imán de Monedas: Atrae todas las monedas cercanas durante un tiempo limitado.  
+Estos ítems podrían tener un diseño visual distintivo (por ejemplo, un escudo con un brillo azul, un rayo para el acelerador, etc.).~~
+
 Obstáculos Móviles:
 Añade enemigos o trampas que se muevan verticalmente entre las tuberías, como:
 Pájaros Enemigos: Se mueven de arriba a abajo y el jugador debe esquivarlos.
