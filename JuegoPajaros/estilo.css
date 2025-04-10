@@ -1231,3 +1231,40 @@ button:hover {
     font-size: 1.8vmin;
   }
 }
+/* Power-ups */
+
+/* Power-ups */
+.powerup {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px; /* Aumenté el tamaño para que el emoji sea más visible sin fondo */
+}
+
+/* Quitamos el fondo circular y dejamos solo el emoji */
+.powerup-shield {
+  color: #00BFFF; /* Color azul para el escudo */
+  text-shadow: 0 0 5px #00BFFF; /* Sombra para visibilidad */
+}
+
+.powerup-speed {
+  color: #FF4500; /* Color naranja para la velocidad */
+  text-shadow: 0 0 5px #FF4500; /* Sombra para visibilidad */
+}
+
+.powerup-magnet {
+  color: #32CD32; /* Color verde para el imán */
+  text-shadow: 0 0 5px #32CD32; /* Sombra para visibilidad */
+}
+
+/* Media Queries para móviles */
+@media screen and (max-width: 1200px) and (orientation: landscape) {
+  .powerup {
+    width: 3vmin;
+    height: 3vmin;
+    font-size: 2.5vmin; /* Ajustado para móvil */
+  }
+}

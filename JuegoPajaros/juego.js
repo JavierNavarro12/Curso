@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gameContainer: document.querySelector('.game-container'),
     playButton: document.getElementById('play-button'),
     shopButton: document.getElementById('shop-button'),
+    powerUpsButton: document.getElementById('power-ups-button'),
     characterOptions: document.querySelectorAll('.character-option'),
     bodyColorInput: document.getElementById('body-color'),
     wingsColorInput: document.getElementById('wings-color'),
@@ -70,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let birdY = 250;
   let gravity = 0.2;
   let velocity = 0;
-  let jump = -6; // Valor base para escritorio
+  let jump = -6;
   let maxVelocity = 8;
   let score = 0;
   let coins = 0;
@@ -79,16 +80,23 @@ document.addEventListener('DOMContentLoaded', () => {
   let pipes = [];
   let coinsInGame = [];
   let particles = [];
+  let powerUps = [];
+  let powerUpsEnabled = false;
+  let activeShield = false;
+  let speedBoostActive = false;
+  let magnetActive = false;
+  let powerUpDuration = 5000;
+  let lastPowerUpType = null;
 
   let gameHeight = 500;
-  let gameWidth = 1000; // Aumentado de 800 a 1000 para hacer la pantalla más alargada en escritorio
+  let gameWidth = 1000;
   let pipeWidth = 30;
-  let pipeGap = 150; // Valor para escritorio (más pequeño para mayor dificultad)
+  let pipeGap = 150;
   let pipeSpeed = 2;
   let pipeIntervalTime = 2000;
   let birdX = 150;
 
-  let basePipeGap = pipeGap; // Guardamos el valor base de pipeGap para usarlo en ajustes dinámicos
+  let basePipeGap = pipeGap;
   let currentDifficultyLevel = 0;
   let pipeInterval = null;
   let selectedCharacter = localStorage.getItem('selectedCharacter') || null;
@@ -102,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let bodyColor = '#FFD700';
   let wingsColor = '#FFFFFF';
 
-  let hasSeenWelcomeScreen = false; // Variable para rastrear si el usuario ha visto la pantalla de carga
+  let hasSeenWelcomeScreen = false;
 
   let unlockedItems = JSON.parse(localStorage.getItem('unlockedItems')) || {
     'wings-style-0': true,
@@ -182,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
   elements.gameOverScreen.classList.add('hidden');
   elements.orientationLock.classList.add('hidden');
 
-  // Mostrar la pantalla de bienvenida solo si no es móvil o está en modo horizontal
   if (!isMobile || window.matchMedia("(orientation: landscape)").matches) {
     elements.welcomeScreen.classList.remove('hidden');
   } else {
@@ -190,15 +197,13 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.orientationLock.classList.remove('hidden');
   }
 
-  // Función para iniciar la animación de la barra de carga y mostrar el botón "Jugar"
   function startLoadingAnimation() {
     if (elements.loadingBar && elements.loadingBarContainer && elements.startGameButton) {
       console.log('Iniciando animación de la barra de carga...');
       elements.loadingBar.style.transition = 'width 5s linear';
-      elements.loadingBar.offsetWidth; // Reiniciar la animación
+      elements.loadingBar.offsetWidth;
       elements.loadingBar.style.width = '100%';
 
-      // Mostrar el botón "Jugar" cuando la animación termine
       elements.loadingBar.addEventListener('transitionend', () => {
         console.log('Animación de la barra de carga completada, mostrando botón Jugar...');
         elements.loadingBarContainer.classList.add('hidden');
@@ -209,10 +214,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Función para manejar el clic en el botón "Jugar"
   function handleStartGame() {
     console.log('Botón Jugar clicado');
-    hasSeenWelcomeScreen = true; // Actualizamos la variable para indicar que el usuario ha visto la pantalla de carga
+    hasSeenWelcomeScreen = true;
     elements.welcomeScreen.classList.add('hidden');
     elements.menu.classList.remove('hidden');
     elements.customizationMenu.classList.add('hidden');
@@ -223,7 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
     checkOrientation();
   }
 
-  // Asignar eventos al botón "Jugar"
   if (elements.startGameButton) {
     elements.startGameButton.addEventListener('click', handleStartGame);
     elements.startGameButton.addEventListener('touchstart', (e) => {
@@ -243,15 +246,14 @@ document.addEventListener('DOMContentLoaded', () => {
       birdX = gameWidth * 0.2;
       birdY = gameHeight * 0.5;
       pipeWidth = gameWidth * 0.04;
-      pipeGap = gameHeight * 0.45; // Hueco reducido para móviles (más difícil)
-      basePipeGap = pipeGap; // Actualizamos el valor base para móviles
+      pipeGap = gameHeight * 0.45;
+      basePipeGap = pipeGap;
       pipeIntervalTime = 2000;
       pipeSpeed = 2;
 
-      // Ajustes para reducir la oscilación y hacer el juego más fácil en móviles
-      gravity = 0.1; // Reducimos aún más la gravedad para que caiga más lento
-      jump = -3; // Salto reducido (sin cambios)
-      maxVelocity = 5; // Reducimos la velocidad máxima para limitar la oscilación
+      gravity = 0.1;
+      jump = -3;
+      maxVelocity = 5;
 
       elements.gameArea.style.width = `${gameWidth}px`;
       elements.gameArea.style.height = `${gameHeight}px`;
@@ -259,15 +261,14 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.bird.style.left = `${birdX}px`;
       elements.bird.style.top = `${birdY}px`;
     } else {
-      // Para escritorio, usamos los valores iniciales (gameWidth = 1000, gameHeight = 500)
       elements.gameArea.style.width = `${gameWidth}px`;
       elements.gameArea.style.height = `${gameHeight}px`;
 
       pipeGap = 150;
-      basePipeGap = pipeGap; // Actualizamos el valor base para escritorio
-      jump = -6; // Valor para escritorio (sin cambios)
+      basePipeGap = pipeGap;
+      jump = -6;
 
-      birdX = gameWidth * 0.15; // Ajustamos la posición del pájaro para que no esté demasiado cerca del borde
+      birdX = gameWidth * 0.15;
       birdY = gameHeight * 0.5;
       elements.bird.style.left = `${birdX}px`;
       elements.bird.style.top = `${birdY}px`;
@@ -638,6 +639,16 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('Botón #shop-button no encontrado');
   }
 
+  if (elements.powerUpsButton) {
+    elements.powerUpsButton.addEventListener('click', () => {
+      powerUpsEnabled = !powerUpsEnabled;
+      elements.powerUpsButton.textContent = powerUpsEnabled ? 'Power-Ups: ON' : 'Power-Ups: OFF';
+      console.log(`Power-Ups ${powerUpsEnabled ? 'activados' : 'desactivados'}`);
+    });
+  } else {
+    console.error('Botón #power-ups-button no encontrado');
+  }
+
   if (elements.backToMenuFromShop) {
     elements.backToMenuFromShop.addEventListener('click', () => {
       elements.shopMenu.classList.add('hidden');
@@ -741,10 +752,73 @@ document.addEventListener('DOMContentLoaded', () => {
     coinsInGame.push({ element: coin, x: pipeX + pipeWidth + 50, y: coinY });
   }
 
+  function createPowerUp(pipeX, pipeHeight) {
+    if (!powerUpsEnabled || Math.random() > 0.98) return; // 2% de probabilidad general
+  
+    const availablePowerUps = [
+      { type: 'speed', class: 'powerup-speed', emoji: '⚡', weight: 0.40 },  // Bajado de 0.4 a 0.35
+      { type: 'magnet', class: 'powerup-magnet', emoji: '🧲', weight: 0.40 }, // Bajado de 0.4 a 0.35
+      { type: 'shield', class: 'powerup-shield', emoji: '🛡️', weight: 0.20 }   // Subido de 0.2 a 0.3
+    ].filter(p => p.type !== lastPowerUpType);
+  
+    if (availablePowerUps.length === 0) return;
+  
+    const totalWeight = availablePowerUps.reduce((sum, p) => sum + p.weight, 0);
+    let random = Math.random() * totalWeight;
+    let selectedPowerUp = null;
+    for (const powerUp of availablePowerUps) {
+      random -= powerUp.weight;
+      if (random <= 0) {
+        selectedPowerUp = powerUp;
+        break;
+      }
+    }
+    if (!selectedPowerUp) selectedPowerUp = availablePowerUps[availablePowerUps.length - 1];
+
+    lastPowerUpType = selectedPowerUp.type;
+
+    let powerUpY = pipeHeight + pipeGap / 2 + (Math.random() * 50 - 25);
+    const powerUpX = pipeX + pipeWidth + 50;
+
+    let overlap = coinsInGame.some(coin => {
+      const distanceX = Math.abs(coin.x - powerUpX);
+      const distanceY = Math.abs(coin.y - powerUpY);
+      return distanceX < 30 && distanceY < 30;
+    });
+
+    if (overlap) {
+      powerUpY += (Math.random() > 0.5 ? 50 : -50);
+      if (powerUpY < pipeHeight + 25 || powerUpY > pipeHeight + pipeGap - 25) {
+        return;
+      }
+    }
+
+    const powerUp = document.createElement('div');
+    powerUp.classList.add('powerup', selectedPowerUp.class);
+    powerUp.textContent = selectedPowerUp.emoji;
+    powerUp.style.left = `${powerUpX}px`;
+    powerUp.style.top = `${powerUpY}px`;
+    powerUp.dataset.type = selectedPowerUp.type;
+    elements.gameArea.appendChild(powerUp);
+    powerUps.push({ element: powerUp, x: powerUpX, y: powerUpY, type: selectedPowerUp.type });
+  }
+
   function moveCoins() {
     coinsInGame.forEach((coin, index) => {
+      if (magnetActive) {
+        const birdRect = elements.bird.getBoundingClientRect();
+        const coinRect = coin.element.getBoundingClientRect();
+        const dx = birdX - coin.x;
+        const dy = birdY - coin.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < 100) {
+          coin.x += dx * 0.1;
+          coin.y += dy * 0.1;
+        }
+      }
       coin.x -= pipeSpeed;
       coin.element.style.left = `${coin.x}px`;
+      coin.element.style.top = `${coin.y}px`;
 
       const birdRect = elements.bird.getBoundingClientRect();
       const coinRect = coin.element.getBoundingClientRect();
@@ -766,6 +840,68 @@ document.addEventListener('DOMContentLoaded', () => {
         coinsInGame.splice(index, 1);
       }
     });
+  }
+
+  function movePowerUps() {
+    powerUps.forEach((powerUp, index) => {
+      powerUp.x -= pipeSpeed;
+      powerUp.element.style.left = `${powerUp.x}px`;
+
+      const birdRect = elements.bird.getBoundingClientRect();
+      const powerUpRect = powerUp.element.getBoundingClientRect();
+
+      if (
+        birdRect.right > powerUpRect.left &&
+        birdRect.left < powerUpRect.right &&
+        birdRect.bottom > powerUpRect.top &&
+        birdRect.top < powerUpRect.bottom
+      ) {
+        activatePowerUp(powerUp.type);
+        powerUp.element.remove();
+        powerUps.splice(index, 1);
+      }
+
+      if (powerUp.x < -20) {
+        powerUp.element.remove();
+        powerUps.splice(index, 1);
+      }
+    });
+  }
+
+  function activatePowerUp(type) {
+    if (type === 'shield') {
+      // Reiniciar cualquier escudo activo y aplicar uno nuevo
+      clearTimeout(elements.bird.shieldTimeout); // Limpiar timeout anterior si existe
+      activeShield = true;
+      elements.bird.style.boxShadow = '0 0 15px #00BFFF';
+      console.log('Escudo activado');
+      elements.bird.shieldTimeout = setTimeout(() => {
+        activeShield = false;
+        elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+        console.log('Escudo desactivado');
+      }, powerUpDuration);
+    } else if (type === 'speed') {
+      // Reiniciar cualquier velocidad activa y aplicar una nueva
+      clearTimeout(elements.bird.speedTimeout); // Limpiar timeout anterior si existe
+      speedBoostActive = true;
+      const originalSpeed = pipeSpeed;
+      pipeSpeed *= 1.5;
+      console.log('Aceleración activada');
+      elements.bird.speedTimeout = setTimeout(() => {
+        pipeSpeed = originalSpeed;
+        speedBoostActive = false;
+        console.log('Aceleración desactivada');
+      }, powerUpDuration);
+    } else if (type === 'magnet') {
+      // Reiniciar cualquier imán activo y aplicar uno nuevo
+      clearTimeout(elements.bird.magnetTimeout); // Limpiar timeout anterior si existe
+      magnetActive = true;
+      console.log('Imán activado');
+      elements.bird.magnetTimeout = setTimeout(() => {
+        magnetActive = false;
+        console.log('Imán desactivado');
+      }, powerUpDuration);
+    }
   }
 
   function createPipe() {
@@ -810,6 +946,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (Math.random() > 0.5) {
       createCoin(gameWidth, pipeHeight);
     }
+    createPowerUp(gameWidth, pipeHeight);
   }
 
   function adjustDifficulty() {
@@ -819,7 +956,6 @@ document.addEventListener('DOMContentLoaded', () => {
       pipeSpeed = newPipeSpeed;
       pipeIntervalTime = 2000 - (pipeSpeed - 2) * 20;
       if (score < 50) {
-        // Ajustamos pipeGap dinámicamente, pero respetando el valor base (basePipeGap)
         pipeGap = Math.max(80, basePipeGap - (pipeSpeed - 2) * 2);
       }
       if (pipeInterval) {
@@ -834,7 +970,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (score >= 50) {
       const reductionFactor = (score - 50) * 1;
-      // Aseguramos que el hueco no sea menor a 80px, pero usamos basePipeGap como referencia
       pipeGap = Math.max(80, basePipeGap - reductionFactor);
     }
   }
@@ -880,8 +1015,18 @@ document.addEventListener('DOMContentLoaded', () => {
         birdLeft < pipeRight &&
         (birdTop < pipeTopBottom || birdBottom > pipeBottomTop)
       ) {
-        endGame();
-        return;
+        if (activeShield) {
+          activeShield = false;
+          elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+          pipe.top.remove();
+          pipe.bottom.remove();
+          pipes.splice(index, 1);
+          console.log('Colisión evitada por escudo');
+          return;
+        } else {
+          endGame();
+          return;
+        }
       }
 
       if (birdY <= 0 || birdY >= gameHeight - parseInt(elements.bird.style.height)) {
@@ -945,9 +1090,20 @@ document.addEventListener('DOMContentLoaded', () => {
     particles.forEach((particle) => {
       particle.element.remove();
     });
+    powerUps.forEach((powerUp) => {
+      powerUp.element.remove();
+    });
     pipes = [];
     coinsInGame = [];
     particles = [];
+    powerUps = [];
+    activeShield = false;
+    speedBoostActive = false;
+    magnetActive = false;
+    clearTimeout(elements.bird.shieldTimeout);
+    clearTimeout(elements.bird.speedTimeout);
+    clearTimeout(elements.bird.magnetTimeout);
+    elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
     if (pipeInterval) {
       clearInterval(pipeInterval);
       pipeInterval = null;
@@ -968,10 +1124,12 @@ document.addEventListener('DOMContentLoaded', () => {
     pipes = [];
     coinsInGame = [];
     particles = [];
+    powerUps = [];
+    lastPowerUpType = null;
 
     pipeSpeed = 2;
     pipeIntervalTime = 2000;
-    pipeGap = basePipeGap; // Usamos el valor base (150 para escritorio, gameHeight * 0.45 para móviles)
+    pipeGap = basePipeGap;
     currentDifficultyLevel = 0;
 
     if (pipeInterval) {
@@ -995,6 +1153,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateBird();
       movePipes();
       moveCoins();
+      movePowerUps();
       updateParticles();
 
       requestAnimationFrame(gameLoop);
@@ -1024,7 +1183,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let lastClickTime = 0;
   document.addEventListener('click', (e) => {
     if (gameActive) {
-      e.preventDefault(); // Evitamos comportamientos predeterminados del navegador
+      e.preventDefault();
       lastClickTime = Date.now();
       console.log(`Clic detectado en: ${lastClickTime}`);
       velocity = jump;
