@@ -6,7 +6,6 @@ Modo Inverso:
 Invierte los controles: tocar la pantalla hace que el pájaro baje y soltarlo hace que suba.
 Esto añade un desafío único y puede ser desbloqueado como un modo especial en la tienda.
 2. Power-Ups y Obstáculos Dinámicos
-Añadir elementos interactivos durante el juego puede hacerlo más emocionante.
 
 ~~Power-Ups Flotantes:
 Introduce ítems que aparezcan aleatoriamente entre las tuberías, como:  

@@ -147,6 +147,8 @@ body {
   background: linear-gradient(135deg, #87CEEB, #4682B4);
   color: #FFD700;
   border: 4px solid #FF4500;
+  overflow-y: auto; /* Permitir desplazamiento si el contenido es demasiado largo */
+  max-height: 80vh; /* Limitar la altura máxima para evitar que se salga de la pantalla */
 }
 
 #customization-menu h2,
@@ -246,43 +248,60 @@ body {
 
 /* Submenú de modos de juego */
 #game-mode-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Alinear al inicio para permitir desplazamiento */
+  gap: 10px;
+  padding: 20px 10px; /* Ajustar el padding para más espacio */
+  background: rgba(255, 255, 255, 0.95);
+  border: 4px solid #FFD700;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  width: 90%; /* Ajustar al 90% del contenedor padre */
+  max-width: 400px; /* Ancho máximo para escritorio */
+  max-height: 70vh; /* Limitar la altura máxima para permitir desplazamiento */
+  overflow-y: auto; /* Permitir desplazamiento vertical */
+  margin: 0 auto; /* Centrar horizontalmente */
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  max-width: 600px;
-  width: 90%;
+  transform: translate(-50%, -50%); /* Centrar completamente */
+  box-sizing: border-box;
   z-index: 15;
-  border: 4px solid #FFD700;
 }
 
 #game-mode-menu h2 {
+  margin: 0 0 15px 0; /* Margen inferior para separar del primer botón */
   font-size: 1.2rem;
   color: #FFD700;
-  margin-bottom: 20px;
   text-shadow: 1px 1px #000;
+  text-align: center;
+  width: 100%;
+  max-width: 350px; /* Igual que los botones */
 }
 
 #game-mode-menu .menu-buttons {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
+  align-items: center;
 }
 
 #classic-mode-button,
 #power-ups-mode-button,
 #survival-mode-button,
+#inverse-mode-button,
 #back-to-main-menu {
-  padding: 10px 20px;
+  width: 100%; /* Ocupar el ancho del contenedor */
+  max-width: 350px; /* Ancho máximo para escritorio */
+  padding: 15px;
   font-size: 0.9rem;
-  width: 100%;
-  max-width: 200px;
-  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
   background: #FF4500;
   color: #FFF;
   border: 2px solid #FFD700;
@@ -290,15 +309,56 @@ body {
   cursor: pointer;
   transition: background 0.3s, transform 0.1s;
   font-family: 'Press Start 2P', cursive;
+  box-sizing: border-box;
+}
+
+#classic-mode-button .button-text,
+#power-ups-mode-button .button-text,
+#survival-mode-button .button-text,
+#inverse-mode-button .button-text,
+#back-to-main-menu .button-text {
+  flex-grow: 1;
+  text-align: center;
+  padding-right: 30px; /* Ajustado para centrar mejor el texto */
 }
 
 #classic-mode-button:hover,
 #power-ups-mode-button:hover,
 #survival-mode-button:hover,
+#inverse-mode-button:hover,
 #back-to-main-menu:hover {
   background: #FFD700;
   color: #FF4500;
   transform: scale(1.05);
+}
+
+/* Estilo para el botón de información ("i") */
+.info-button {
+  width: 24px;
+  height: 24px;
+  background-color: #ccc;
+  color: #000;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+/* Estilo para el panel de información */
+.info-panel {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #000;
+  padding: 5px;
+  z-index: 1000;
+  max-width: 200px;
+  box-sizing: border-box;
+  font-size: 0.8rem;
+  color: #000;
+  text-shadow: none;
 }
 
 /* Sección de personajes predefinidos */
@@ -854,7 +914,7 @@ body {
   animation: coin-spin 1s infinite linear;
 }
 
-@keyframes coin-spin {
+@keyframes coin-spinner {
   0% { transform: rotateY(0deg); }
   100% { transform: rotateY(360deg); }
 }
@@ -980,6 +1040,7 @@ body {
   max-height: 300px;
   overflow-y: auto;
   margin-bottom: 20px;
+  width: 100%; /* Asegurar que ocupe el ancho disponible */
 }
 
 .shop-item {
@@ -1175,9 +1236,9 @@ button:hover {
 
   /* Ajustar los power-ups */
   .powerup {
-    width: 3vmin;
-    height: 3vmin;
-    font-size: 2.5vmin;
+    width: 5vmin; /* Aumentar el tamaño para todos los power-ups en móvil */
+    height: 5vmin;
+    font-size: 4.5vmin;
   }
 
   /* Ajustar el texto de la información del juego */
@@ -1322,43 +1383,109 @@ button:hover {
     font-size: 1.8vmin;
   }
 
+  #shop-items {
+    max-height: 50vh; /* Reducir la altura máxima para dejar espacio al botón "Volver" */
+    margin-bottom: 2vmin; /* Asegurar espacio para el botón "Volver" */
+  }
+
+  #back-to-menu-from-shop {
+    margin-top: 2vmin; /* Añadir margen superior para separarlo de los ítems */
+    width: 20vmin; /* Ajustar el ancho para que sea consistente */
+    min-width: 15vmin; /* Asegurar un tamaño mínimo */
+    min-height: 6vmin; /* Asegurar un tamaño mínimo */
+    font-size: 1.5vmin; /* Ajustar el tamaño de fuente */
+    padding: 2vmin 3vmin; /* Ajustar el padding */
+  }
+
   /* Ajustar el submenú de modos de juego */
   #game-mode-menu {
     width: 90vw;
-    padding: 2vmin;
+    max-width: 300px; /* Mantener el ancho máximo */
+    height: auto; /* Altura automática para ajustarse al contenido */
+    min-height: 400px; /* Altura mínima explícita para asegurar que quepa todo */
+    max-height: 70vh; /* Limitar la altura máxima para permitir desplazamiento si es necesario */
+    padding: 15px; /* Aumentar el padding para evitar superposiciones */
+    overflow-y: auto; /* Permitir desplazamiento si el contenido excede max-height */
+    background: rgba(255, 255, 255, 0.95);
+    border: 4px solid #FFD700;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Alinear al inicio para que el contenido fluya naturalmente */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
   }
 
   #game-mode-menu h2 {
     font-size: 3vmin;
+    margin: 0 0 20px 0; /* Mantener el margen inferior, pero sin margen superior */
+    max-width: 250px;
+    color: #FFD700;
+    text-shadow: 1px 1px #000;
+    text-align: center;
+    position: relative; /* Cambiar a position: relative */
+    top: 25px; /* Mover el título hacia abajo 10px */
+    background: transparent;
+    z-index: 1;
+  }
+
+  #game-mode-menu .menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Mantener el gap ajustado */
+    width: 100%;
+    align-items: center;
+    padding-bottom: 15px; /* Añadir padding inferior para asegurar que el botón "Volver" sea visible */
   }
 
   #classic-mode-button,
   #power-ups-mode-button,
   #survival-mode-button,
+  #inverse-mode-button,
   #back-to-main-menu {
-    padding: 2vmin 4vmin;
-    font-size: 2vmin;
-    max-width: 50vmin; /* Aumentado para "Supervivencia Extrema" */
+    max-width: 250px; /* Mantener el ancho de los botones */
+    padding: 8px 10px; /* Mantener el padding ajustado */
+    font-size: 2vmin; /* Mantener el tamaño de fuente */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FF4500;
+    color: #FFF;
+    border: 2px solid #FFD700;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.1s;
+    font-family: 'Press Start 2P', cursive;
+    box-sizing: border-box;
   }
 
-  #game-mode-menu button .button-text {
-    padding-right: 4vmin; /* Ajustado para centrar el texto en móvil */
+  #classic-mode-button .button-text,
+  #power-ups-mode-button .button-text,
+  #survival-mode-button .button-text,
+  #inverse-mode-button .button-text,
+  #back-to-main-menu .button-text {
+    padding-right: 20px; /* Mantener el padding */
+    flex-grow: 1;
+    text-align: center;
   }
-}
 
-.info-button {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #ccc;
-  text-align: center;
-  line-height: 20px;
-  cursor: pointer;
-  margin-left: 5px;
-  font-size: 12px;
-}
+  .info-button {
+    width: 20px; /* Mantener el tamaño ajustado */
+    height: 20px;
+    font-size: 14px; /* Mantener el tamaño de la fuente */
+  }
 
-.info-panel {
-  max-width: 200px;
+  .info-panel {
+    max-width: 150px; /* Mantener el ancho */
+    font-size: 1.8vmin; /* Mantener el tamaño de fuente */
+    padding: 8px; /* Mantener el padding */
+    background: #fff;
+    border: 1px solid #000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Mantener la sombra */
+  }
 }

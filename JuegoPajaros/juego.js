@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     classicModeButton: document.getElementById('classic-mode-button'),
     powerUpsModeButton: document.getElementById('power-ups-mode-button'),
     survivalModeButton: document.getElementById('survival-mode-button'),
+    inverseModeButton: document.getElementById('inverse-mode-button'), // Nuevo botón para Modo Inverso
     backToMainMenu: document.getElementById('back-to-main-menu'),
   };
 
@@ -106,6 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let survivalTime = 0;
   let maxSurvivalLevel = 0;
   let gameLoopId = null; // Para almacenar el ID de requestAnimationFrame
+  let isInputActive = false; // Nueva variable para rastrear si se está tocando/presionando
+  let hasInteractedInverse = false; // Nueva variable para modo inverso
 
   let gameHeight = 500;
   let gameWidth = 1000;
@@ -571,6 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
       { button: elements.classicModeButton, mode: 'classic', desc: 'Esquiva tuberías y acumula puntos en un desafío clásico.', hasInfo: true },
       { button: elements.powerUpsModeButton, mode: 'power-ups', desc: 'Usa power-ups como escudos, velocidad y magnetismo para superar obstáculos.', hasInfo: true },
       { button: elements.survivalModeButton, mode: 'survival', desc: 'Sobrevive el mayor tiempo posible con dificultad creciente por niveles. ¡Gana 5 monedas al llegar al nivel 5!', hasInfo: true },
+      { button: elements.inverseModeButton, mode: 'inverse', desc: 'Controles invertidos: toca para bajar y suelta para subir.', hasInfo: true }, // Nuevo modo inverso
       { button: elements.backToMainMenu, mode: null, desc: '', hasInfo: false } // El botón "Volver" no tiene info
     ];
 
@@ -669,7 +673,7 @@ document.addEventListener('DOMContentLoaded', () => {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center; /* Centrar verticalmente */
+        justify-content: center; /* Centrar los elementos */
         gap: 10px;
         padding: 20px;
         background-color: #fff;
@@ -678,12 +682,14 @@ document.addEventListener('DOMContentLoaded', () => {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         width: 90%; /* Ajustar al 90% del contenedor padre */
         max-width: 400px; /* Ancho máximo para escritorio */
+        height: auto; /* Altura automática para escritorio */
         margin: 0 auto; /* Centrar horizontalmente */
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%); /* Centrar completamente */
         box-sizing: border-box;
+        overflow: hidden; /* Evitar scroll */
       }
       #game-mode-menu button {
         width: 100%; /* Ocupar el ancho del contenedor */
@@ -707,15 +713,15 @@ document.addEventListener('DOMContentLoaded', () => {
         padding-right: 30px; /* Ajustado para centrar mejor el texto */
       }
       #game-mode-menu button .info-button {
-        width: 24px;
-        height: 24px;
+        width: 20px; /* Tamaño unificado para escritorio y móvil */
+        height: 20px;
         background-color: #ccc;
         color: #000;
         border-radius: 50%;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 16px;
+        font-size: 14px; /* Tamaño de fuente unificado */
         margin-left: 10px;
         cursor: pointer;
       }
@@ -727,21 +733,26 @@ document.addEventListener('DOMContentLoaded', () => {
         #game-mode-menu {
           width: 90%;
           max-width: 300px; /* Reducir el ancho máximo en móvil */
-          max-height: 80vh; /* Limitar la altura máxima */
-          overflow-y: auto; /* Permitir desplazamiento si el contenido es demasiado largo */
+          height: auto; /* Altura automática para que quepan todos los botones */
+          padding: 10px; /* Reducir el padding para ahorrar espacio */
+          overflow: hidden; /* Evitar scroll */
+        }
+        #game-mode-menu h2 {
+          font-size: 1rem; /* Reducir el tamaño del título */
+          margin-bottom: 10px;
         }
         #game-mode-menu button {
           max-width: 250px; /* Reducir el ancho de los botones en móvil */
-          padding: 12px;
-          font-size: 16px;
+          padding: 6px; /* Reducir aún más el padding para ahorrar espacio */
+          font-size: 12px; /* Reducir el tamaño de la fuente */
         }
         #game-mode-menu button .button-text {
-          padding-right: 25px; /* Ajustar el padding en móvil */
+          padding-right: 20px; /* Ajustar el padding en móvil */
         }
         #game-mode-menu button .info-button {
-          width: 20px;
+          width: 20px; /* Tamaño unificado para móvil */
           height: 20px;
-          font-size: 14px;
+          font-size: 14px; /* Tamaño de fuente unificado */
         }
       }
     `;
@@ -933,11 +944,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }, powerUpDuration);
     } else if (type === 'speed') {
       speedBoostActive = true;
-      const originalSpeed = pipeSpeed;
-      pipeSpeed *= 1.5;
+      const originalSpeed = pipeSpeed; // Guardar la velocidad original
+      pipeSpeed = originalSpeed * 1.5; // Aumentar la velocidad
       elements.bird.speedTimeout = setTimeout(() => {
         speedBoostActive = false;
-        pipeSpeed = gameMode === 'survival' ? 2 + difficultyLevel * 0.5 : originalSpeed;
+        pipeSpeed = originalSpeed; // Restaurar la velocidad original
+        if (gameMode === 'survival') {
+          pipeSpeed = 2 + difficultyLevel * 0.5; // Ajustar según la dificultad si es modo survival
+        }
       }, powerUpDuration);
     } else if (type === 'magnet') {
       magnetActive = true;
@@ -995,13 +1009,15 @@ document.addEventListener('DOMContentLoaded', () => {
       maxSurvivalLevel = Math.max(maxSurvivalLevel, difficultyLevel);
     } else {
       elements.difficultyLevelDisplay.style.display = 'none';
-      const newPipeSpeed = 2 + Math.floor(score / 5) * 0.5;
-      if (newPipeSpeed !== pipeSpeed) {
-        pipeSpeed = newPipeSpeed;
-        pipeIntervalTime = 2000 - (pipeSpeed - 2) * 20;
-        pipeGap = score < 50 ? Math.max(80, basePipeGap - (pipeSpeed - 2) * 2) : Math.max(80, basePipeGap - (score - 50) * 1);
-        clearInterval(pipeInterval);
-        pipeInterval = setInterval(createPipe, pipeIntervalTime);
+      if (!speedBoostActive) { // Solo ajustar si no hay power-up de velocidad activo
+        const newPipeSpeed = 2 + Math.floor(score / 5) * 0.5;
+        if (newPipeSpeed !== pipeSpeed) {
+          pipeSpeed = newPipeSpeed;
+          pipeIntervalTime = 2000 - (pipeSpeed - 2) * 20;
+          pipeGap = score < 50 ? Math.max(80, basePipeGap - (pipeSpeed - 2) * 2) : Math.max(80, basePipeGap - (score - 50) * 1);
+          clearInterval(pipeInterval);
+          pipeInterval = setInterval(createPipe, pipeIntervalTime);
+        }
       }
     }
   }
@@ -1056,11 +1072,36 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateBird() {
-    velocity += gravity;
+    if (!gameActive) return;
+
+    if (gameMode === 'inverse') {
+      // Modo Inverso: sin interacción inicial no se mueve
+      if (!hasInteractedInverse) {
+        velocity = 0; // Mantener quieto hasta la primera interacción
+      } else {
+        // Tocar/presionar hace que baje, soltar hace que suba
+        if (isInputActive) {
+          velocity += gravity; // Baja con gravedad
+        } else {
+          velocity -= 0.5; // Sube cuando se suelta
+        }
+      }
+    } else {
+      // Modos normales: aplicar gravedad normalmente
+      velocity += gravity;
+      if (isInputActive) {
+        velocity = jump; // Mantener el salto mientras se presiona
+      }
+    }
+
+    // Limitar la velocidad máxima
     if (velocity > maxVelocity) velocity = maxVelocity;
     if (velocity < -maxVelocity) velocity = -maxVelocity;
+
     birdY += velocity;
     elements.bird.style.top = `${birdY}px`;
+
+    // Verificar colisión con los bordes de la pantalla
     if (birdY <= 0 || birdY + birdSize >= gameHeight) {
       if (activeShield) {
         birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize));
@@ -1070,6 +1111,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
     }
+
+    // Generar partículas si están equipadas
     if (gameActive && equippedItems['trail-effect'] && (!elements.bird.lastParticleTime || Date.now() - elements.bird.lastParticleTime > 100)) {
       createParticle();
       elements.bird.lastParticleTime = Date.now();
@@ -1079,17 +1122,40 @@ document.addEventListener('DOMContentLoaded', () => {
   function jumpHandler(e) {
     if (!gameActive) return;
     e.preventDefault();
-    velocity = jump;
+    isInputActive = true;
+    if (gameMode === 'inverse') {
+      hasInteractedInverse = true; // Registrar la primera interacción
+      velocity = gravity; // Iniciar bajada
+    } else {
+      velocity = jump; // Modos normales: salto hacia arriba
+    }
   }
 
-  // Añadir event listeners para el salto una sola vez al inicio
+  function releaseHandler(e) {
+    if (!gameActive) return;
+    e.preventDefault();
+    isInputActive = false;
+    if (gameMode === 'inverse') {
+      hasInteractedInverse = true; // Registrar interacción
+      velocity = -0.5; // Subir al soltar
+    }
+    // En modos normales, la gravedad se encarga
+  }
+
+  // Añadir event listeners para los controles
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space') jumpHandler(e);
   });
 
-  document.addEventListener('click', jumpHandler);
+  document.addEventListener('keyup', (e) => {
+    if (e.code === 'Space') releaseHandler(e);
+  });
+
+  document.addEventListener('mousedown', jumpHandler);
+  document.addEventListener('mouseup', releaseHandler);
 
   document.addEventListener('touchstart', jumpHandler, { passive: false });
+  document.addEventListener('touchend', releaseHandler, { passive: false });
 
   function startGame() {
     if (!characterSelected) {
@@ -1123,6 +1189,8 @@ document.addEventListener('DOMContentLoaded', () => {
       maxVelocity = 8;
     }
     velocity = 0; // Reiniciar velocity
+    isInputActive = false; // Reiniciar estado de entrada
+    hasInteractedInverse = false; // Reiniciar interacción para modo inverso
     birdY = (gameHeight - birdSize) / 2; // Centrar el pájaro según su tamaño
     birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize)); // Asegurar que esté dentro de los límites
     elements.bird.style.top = `${birdY}px`;
@@ -1217,23 +1285,20 @@ document.addEventListener('DOMContentLoaded', () => {
     clearTimeout(elements.bird.speedTimeout);
     clearTimeout(elements.bird.magnetTimeout);
     elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
-    if (gameMode !== 'survival') {
-      elements.difficultyLevelDisplay.style.display = 'none';
-    }
   }
 
   if (elements.restartButton) {
     elements.restartButton.addEventListener('click', () => {
       elements.gameOverScreen.classList.add('hidden');
-      elements.menu.classList.remove('hidden');
-      elements.gameContainer.classList.add('hidden');
-      elements.gameArea.classList.add('hidden');
+      elements.gameModeMenu.classList.remove('hidden');
     });
   }
 
-  // Inicializar dimensiones del juego
+  // Inicializar el juego
   adjustGameDimensions();
   checkOrientation();
-  // Forzar actualización inicial de los personajes para asegurar que character-1 esté desbloqueado
   updateCharacterOptions();
+  updateEquipOptions();
+  applyCharacter();
+  updateCustomBirdPreview();
 });
