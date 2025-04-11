@@ -982,14 +982,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function adjustDifficulty() {
     if (gameMode === 'survival') {
-      survivalTime += 16;
-      const newDifficultyLevel = Math.floor(survivalTime / 10000) + 1;
+      const newDifficultyLevel = Math.floor(survivalTime / 10000) + 1; // Subir de nivel cada 10 segundos
       if (newDifficultyLevel !== difficultyLevel) {
         difficultyLevel = newDifficultyLevel;
         elements.difficultyLevelDisplay.textContent = `Nivel ${difficultyLevel}`;
-        pipeSpeed = 2 + difficultyLevel * 0.5;
-        pipeGap = Math.max(100, basePipeGap - difficultyLevel * 10);
-        pipeIntervalTime = Math.max(1000, 2000 - difficultyLevel * 100);
+        pipeSpeed = 2 + difficultyLevel * 0.5; // Aumentar velocidad de las tuberías
+        pipeGap = Math.max(100, basePipeGap - difficultyLevel * 10); // Reducir el espacio entre tuberías
+        pipeIntervalTime = Math.max(1000, 2000 - difficultyLevel * 100); // Reducir el intervalo entre tuberías
         clearInterval(pipeInterval);
         pipeInterval = setInterval(createPipe, pipeIntervalTime);
       }
@@ -1047,7 +1046,6 @@ document.addEventListener('DOMContentLoaded', () => {
         score++;
         elements.scoreDisplay.textContent = score;
         pipe.passed = true;
-        adjustDifficulty();
       }
       if (pipe.x + pipeWidth < -pipeWidth) {
         pipe.top.remove();
@@ -1156,13 +1154,21 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastTime = performance.now();
     function gameLoop(currentTime) {
       if (!gameActive) return;
-      const deltaTime = (currentTime - lastTime) / 1000;
+      const deltaTime = currentTime - lastTime; // Tiempo en milisegundos desde el último frame
       lastTime = currentTime;
+
+      // Actualizar survivalTime en cada frame si estamos en modo survival
+      if (gameMode === 'survival') {
+        survivalTime += deltaTime;
+      }
+
       updateBird();
       movePipes();
       moveCoins();
       movePowerUps();
       updateParticles();
+      adjustDifficulty(); // Llamar a adjustDifficulty en cada frame
+
       gameLoopId = requestAnimationFrame(gameLoop);
     }
     gameLoopId = requestAnimationFrame(gameLoop);
