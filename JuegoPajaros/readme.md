@@ -2,10 +2,10 @@
 Las tuberías se generan más rápido o con huecos más pequeños a medida que pasa el tiempo.
 Podrías añadir un indicador de "dificultad" que suba con el tiempo (por ejemplo, "Nivel 1", "Nivel 2", etc.).
 Recompensa: Más monedas o desbloqueo de ítems exclusivos al sobrevivir más tiempo.~~
-Modo Inverso:
+~~Modo Inverso:
 Invierte los controles: tocar la pantalla hace que el pájaro baje y soltarlo hace que suba.
 Esto añade un desafío único y puede ser desbloqueado como un modo especial en la tienda.
-2. Power-Ups y Obstáculos Dinámicos
+2. Power-Ups y Obstáculos Dinámicos~~
 
 ~~Power-Ups Flotantes:
 Introduce ítems que aparezcan aleatoriamente entre las tuberías, como:  

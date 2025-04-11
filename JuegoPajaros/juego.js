@@ -1070,22 +1070,17 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-
   function updateBird() {
     if (!gameActive) return;
-
+  
     if (gameMode === 'inverse') {
-      // Modo Inverso: sin interacción inicial no se mueve
-      if (!hasInteractedInverse) {
-        velocity = 0; // Mantener quieto hasta la primera interacción
+      // Modo Inverso: aplicar gravedad desde el inicio
+      if (isInputActive) {
+        velocity += gravity; // Baja con gravedad cuando se presiona
       } else {
-        // Tocar/presionar hace que baje, soltar hace que suba
-        if (isInputActive) {
-          velocity += gravity; // Baja con gravedad
-        } else {
-          velocity -= 0.5; // Sube cuando se suelta
-        }
+        velocity -= 0.5; // Sube cuando se suelta
       }
+      hasInteractedInverse = true; // Marcar como interactuado desde el inicio para consistencia
     } else {
       // Modos normales: aplicar gravedad normalmente
       velocity += gravity;
@@ -1093,14 +1088,14 @@ document.addEventListener('DOMContentLoaded', () => {
         velocity = jump; // Mantener el salto mientras se presiona
       }
     }
-
+  
     // Limitar la velocidad máxima
     if (velocity > maxVelocity) velocity = maxVelocity;
     if (velocity < -maxVelocity) velocity = -maxVelocity;
-
+  
     birdY += velocity;
     elements.bird.style.top = `${birdY}px`;
-
+  
     // Verificar colisión con los bordes de la pantalla
     if (birdY <= 0 || birdY + birdSize >= gameHeight) {
       if (activeShield) {
@@ -1111,7 +1106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
     }
-
+  
     // Generar partículas si están equipadas
     if (gameActive && equippedItems['trail-effect'] && (!elements.bird.lastParticleTime || Date.now() - elements.bird.lastParticleTime > 100)) {
       createParticle();
