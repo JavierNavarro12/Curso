@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Definir shopItems
+  // Definir shopItems con los nuevos temas de fondo
   const shopItems = {
     'wings-style-0': { price: 0, description: 'Alas 🪽', type: 'wings-style', value: 'default' },
     'wings-style-1': { price: 15, description: 'Alas Doradas 🪶', type: 'wings-style', value: 'golden' },
@@ -80,7 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
     'character-5': { price: 25, description: 'Personaje 5 🦅', type: 'character' },
     'trail-effect-1': { price: 30, description: 'Efecto de rastro (Estrellas) ✨', type: 'trail-effect', value: 'stars' },
     'trail-effect-2': { price: 35, description: 'Efecto de rastro (Corazones) 💕', type: 'trail-effect', value: 'hearts' },
-    'trail-effect-3': { price: 40, description: 'Efecto de rastro (Fuego) 🔥', type: 'trail-effect', value: 'fire' }
+    'trail-effect-3': { price: 40, description: 'Efecto de rastro (Fuego) 🔥', type: 'trail-effect', value: 'fire' },
+    'bg-night': { price: 20, description: 'Fondo Noche 🌙', type: 'background', value: 'night' },
+    'bg-space': { price: 25, description: 'Fondo Espacio 🚀', type: 'background', value: 'space' },
+    'bg-forest': { price: 20, description: 'Fondo Bosque 🌲', type: 'background', value: 'forest' }
   };
 
   // Variables del juego
@@ -146,7 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
     'character-5': false,
     'trail-effect-1': false,
     'trail-effect-2': false,
-    'trail-effect-3': false
+    'trail-effect-3': false,
+    'bg-night': false,
+    'bg-space': false,
+    'bg-forest': false
   };
 
   if (!unlockedItems['character-1']) {
@@ -157,7 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let equippedItems = JSON.parse(localStorage.getItem('equippedItems')) || {
     'wings-style': 'wings-style-0',
     'pipe-style': null,
-    'trail-effect': null
+    'trail-effect': null,
+    'background': null
   };
 
   if (!equippedItems['wings-style'] || !shopItems[equippedItems['wings-style']]) {
@@ -391,17 +398,19 @@ document.addEventListener('DOMContentLoaded', () => {
           updateEquipOptions();
           applyCharacter();
           updateCustomBirdPreview();
+          applyBackground();
         });
         const unequipButton = document.createElement('button');
         unequipButton.classList.add('unequip-button');
         unequipButton.textContent = 'Desequipar';
         unequipButton.disabled = equippedItems[shopItems[item].type] !== item;
         unequipButton.addEventListener('click', () => {
-          equippedItems[shopItems[item].type] = 'wings-style-0';
+          equippedItems[shopItems[item].type] = shopItems[item].type === 'wings-style' ? 'wings-style-0' : null;
           localStorage.setItem('equippedItems', JSON.stringify(equippedItems));
           updateEquipOptions();
           applyCharacter();
           updateCustomBirdPreview();
+          applyBackground();
         });
         buttonContainer.appendChild(equipButton);
         buttonContainer.appendChild(unequipButton);
@@ -506,6 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
       velocity = 0; // Reiniciar velocity
       updateEquipOptions();
       applyCharacter();
+      applyBackground();
     });
   }
 
@@ -523,6 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('wingsSize', wingsSize);
       velocity = 0; // Reiniciar velocity
       applyCharacter();
+      applyBackground();
       elements.equipMenu.classList.add('hidden');
       elements.menu.classList.remove('hidden');
       elements.playButton.disabled = false;
@@ -782,6 +793,15 @@ document.addEventListener('DOMContentLoaded', () => {
     birdY = (gameHeight - birdSize) / 2;
     birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize)); // Asegurar que esté dentro de los límites
     elements.bird.style.top = `${birdY}px`;
+  }
+
+  // Nueva función para aplicar el fondo seleccionado
+  function applyBackground() {
+    elements.gameArea.classList.remove('bg-night', 'bg-space', 'bg-forest');
+    if (equippedItems['background']) {
+      const bg = shopItems[equippedItems['background']].value;
+      elements.gameArea.classList.add(`bg-${bg}`);
+    }
   }
 
   function createParticle() {
@@ -1070,6 +1090,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
   function updateBird() {
     if (!gameActive) return;
   
@@ -1208,6 +1229,7 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.gameArea.appendChild(elements.difficultyLevelDisplay);
     }
     applyCharacter();
+    applyBackground();
     elements.gameModeMenu.classList.add('hidden');
     elements.gameContainer.classList.remove('hidden');
     elements.gameOverScreen.classList.add('hidden');
@@ -1295,5 +1317,6 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCharacterOptions();
   updateEquipOptions();
   applyCharacter();
+  applyBackground();
   updateCustomBirdPreview();
 });

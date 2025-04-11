@@ -1489,3 +1489,19 @@ button:hover {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Mantener la sombra */
   }
 }
+
+/* Temas de fondo */
+.game-area.bg-night {
+  background: url('img/night-bg.jpg') no-repeat center center;
+  background-size: cover;
+}
+
+.game-area.bg-space {
+  background: url('img/space-bg.jpg') no-repeat center center;
+  background-size: cover;
+}
+
+.game-area.bg-forest {
+  background: url('img/forest-bg.jpg') no-repeat center center;
+  background-size: cover;
+}
