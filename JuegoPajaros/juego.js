@@ -238,21 +238,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Función para calcular el nivel basado en XP
   function calculateLevelFromXP(xp) {
+    // Si el XP es 0, devolver nivel 0 para nuevos jugadores
+    if (xp === 0) {
+      return 0;
+    }
+    
     let newLevel = 0;
     for (let i = 0; i < levelThresholds.length; i++) {
       if (xp < levelThresholds[i].xp) {
         newLevel = i;
         break;
       }
-    }
-    // Si el XP supera el último umbral, asignar el nivel máximo
-    if (xp >= levelThresholds[levelThresholds.length - 1].xp) {
-      newLevel = levelThresholds.length;
+      // Si el XP es mayor o igual al último umbral, asignar el nivel máximo
+      if (i === levelThresholds.length - 1 && xp >= levelThresholds[i].xp) {
+        newLevel = levelThresholds.length;
+      }
     }
     return newLevel;
   }
 
-  // Asegurar que el nivel inicial sea 0 si no hay XP
+  // Inicialización de playerLevel y playerXP
   if (!localStorage.getItem('playerLevel') && !localStorage.getItem('playerXP')) {
     playerLevel = 0;
     playerXP = 0;
@@ -1262,7 +1267,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (distance < 100) {
           coin.x += dx * 0.3;
           coin.y += dy * 0.3;
-          if (distance < 20) {
+          if (dietance < 20) {
             coins += gameMode === 'survival' ? difficultyLevel : 1;
             playerXP += 5; // Ganar 5 XP por moneda
             localStorage.setItem('playerXP', playerXP);
