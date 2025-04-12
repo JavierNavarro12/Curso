@@ -208,12 +208,6 @@ body {
   flex-wrap: wrap;
 }
 
-#progress-button:hover {
-  background: #FFD700;
-  color: #FF4500;
-  transform: scale(1.05);
-}
-
 /* Estilo para el contenedor de estadísticas en el menú de progreso */
 .progress-stats {
   width: 100%;
@@ -263,22 +257,17 @@ body {
   justify-content: center;
   align-items: center;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 3px;
   flex-wrap: wrap;
 }
 
+/* Estilo base para los botones del menú principal */
 #play-button,
 #shop-button,
-#progress-button,
-#confirm-customization,
-#back-to-menu,
-#confirm-equip,
-#back-to-selection,
-#back-to-menu-from-shop,
-#back-to-menu-from-progress {
+#progress-button {
   padding: 10px 20px;
-  font-size: 0.9rem;
-  width: 120px;
+  font-size: 0.9rem; /* Tamaño de fuente uniforme */
+  width: 120px; /* Tamaño uniforme para todos los botones */
   background: #FF4500;
   color: #FFF;
   border: 2px solid #FFD700;
@@ -291,6 +280,7 @@ body {
   align-items: center;
   text-align: center;
   line-height: 1;
+  box-sizing: border-box;
 }
 
 #play-button:disabled {
@@ -300,16 +290,68 @@ body {
   cursor: not-allowed;
 }
 
+/* Efecto hover para todos los botones */
 #play-button:hover:not(:disabled),
 #shop-button:hover,
+#progress-button:hover {
+  background: #FFD700;
+  color: #FF4500;
+  transform: scale(1.05);
+}
+
+/* Estilo base para otros botones de submenús */
+#classic-mode-button,
+#power-ups-mode-button,
+#survival-mode-button,
+#inverse-mode-button,
+#back-to-main-menu,
+#confirm-customization,
+#back-to-menu,
+#confirm-equip,
+#back-to-selection,
+#back-to-menu-from-shop,
+#back-to-menu-from-progress {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  width: 120px; /* Tamaño uniforme para los botones */
+  background: #FF4500;
+  color: #FFF;
+  border: 2px solid #FFD700; /* Borde amarillo para todos los botones */
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+  font-family: 'Press Start 2P', cursive;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+/* Ajuste específico para los botones del submenú de modos de juego */
+#classic-mode-button,
+#power-ups-mode-button,
+#survival-mode-button,
+#inverse-mode-button,
+#back-to-main-menu {
+  justify-content: space-between; /* Para el texto y el botón de info */
+}
+
+/* Efecto hover para otros botones */
+#classic-mode-button:hover,
+#power-ups-mode-button:hover,
+#survival-mode-button:hover,
+#inverse-mode-button:hover,
+#back-to-main-menu:hover,
 #confirm-customization:hover,
 #back-to-menu:hover,
 #confirm-equip:hover,
 #back-to-selection:hover,
 #back-to-menu-from-shop:hover,
 #back-to-menu-from-progress:hover {
-  background: #FFD700;
-  color: #FF4500;
+  background: #FFD700; /* Fondo amarillo al pasar el mouse */
+  color: #FF4500; /* Texto cambia a color naranja */
   transform: scale(1.05);
 }
 
@@ -356,29 +398,6 @@ body {
   align-items: center;
 }
 
-#classic-mode-button,
-#power-ups-mode-button,
-#survival-mode-button,
-#inverse-mode-button,
-#back-to-main-menu {
-  width: 100%;
-  max-width: 350px;
-  padding: 15px;
-  font-size: 0.9rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-  background: #FF4500;
-  color: #FFF;
-  border: 2px solid #FFD700;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.1s;
-  font-family: 'Press Start 2P', cursive;
-  box-sizing: border-box;
-}
-
 #classic-mode-button .button-text,
 #power-ups-mode-button .button-text,
 #survival-mode-button .button-text,
@@ -387,16 +406,6 @@ body {
   flex-grow: 1;
   text-align: center;
   padding-right: 30px;
-}
-
-#classic-mode-button:hover,
-#power-ups-mode-button:hover,
-#survival-mode-button:hover,
-#inverse-mode-button:hover,
-#back-to-main-menu:hover {
-  background: #FFD700;
-  color: #FF4500;
-  transform: scale(1.05);
 }
 
 /* Estilo para el botón de información ("i") */
@@ -1325,6 +1334,10 @@ button:hover {
     max-width: 90vw;
     padding: 2vmin;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .menu h1 {
@@ -1352,9 +1365,32 @@ button:hover {
     font-size: 1.5vmin;
   }
 
-  /* Ajustar botones */
+  /* Ajustar botones del menú principal */
   #play-button,
   #shop-button,
+  #progress-button {
+    padding: 1.5vmin 3vmin;
+    font-size: 1.5vmin !important; /* Forzamos el mismo tamaño de fuente */
+    width: 15vmin; /* Tamaño uniforme en móvil */
+    min-width: 120px; /* Tamaño mínimo para consistencia */
+    height: 6vmin; /* Altura uniforme */
+    box-sizing: border-box;
+  }
+
+  /* Asegurar que el contenedor de botones esté centrado */
+  .menu-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; /* Espaciado reducido para mejor ajuste */
+    flex-wrap: nowrap; /* Evitar que los botones se envuelvan */
+  }
+
+  /* Ajustar otros botones */
+  #classic-mode-button,
+  #power-ups-mode-button,
+  #survival-mode-button,
+  #inverse-mode-button,
   #confirm-customization,
   #back-to-menu,
   #confirm-equip,
@@ -1369,12 +1405,20 @@ button:hover {
     min-height: 6vmin;
   }
 
-  #progress-button {
-    padding: 2vmin 4vmin;
+  /* Ajustar el botón "Volver" del submenú de modos de juego */
+  #back-to-main-menu {
+    width: 15vmin;
+    min-width: 12vmin;
+    padding: 1.5vmin 2vmin;
     font-size: 1.5vmin;
-    width: auto;
-    min-width: 10vmin;
-    min-height: 6vmin;
+  }
+
+  /* Ajustar el botón "Volver" del menú de progreso */
+  #back-to-menu-from-progress {
+    width: 15vmin; /* Reducimos el tamaño para dejar más espacio */
+    min-width: 12vmin;
+    padding: 1.5vmin 2vmin;
+    font-size: 1.5vmin;
   }
 
   #customize-character-button {
@@ -1508,12 +1552,6 @@ button:hover {
     font-size: 1.5vmin;
   }
 
-  #back-to-menu-from-progress {
-    width: 20vmin;
-    font-size: 1.5vmin;
-    padding: 2vmin 3vmin;
-  }
-
   /* Ajustar el submenú de modos de juego */
   #game-mode-menu {
     width: 90vw;
@@ -1558,37 +1596,6 @@ button:hover {
     width: 100%;
     align-items: center;
     padding-bottom: 15px;
-  }
-
-  #classic-mode-button,
-  #power-ups-mode-button,
-  #survival-mode-button,
-  #inverse-mode-button,
-  #back-to-main-menu {
-    max-width: 250px;
-    padding: 8px 10px;
-    font-size: 2vmin;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #FF4500;
-    color: #FFF;
-    border: 2px solid #FFD700;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.1s;
-    font-family: 'Press Start 2P', cursive;
-    box-sizing: border-box;
-  }
-
-  #classic-mode-button .button-text,
-  #power-ups-mode-button .button-text,
-  #survival-mode-button .button-text,
-  #inverse-mode-button .button-text,
-  #back-to-main-menu .button-text {
-    padding-right: 20px;
-    flex-grow: 1;
-    text-align: center;
   }
 
   .info-button {
@@ -1640,7 +1647,6 @@ button:hover {
   background: linear-gradient(90deg, #32CD32, #FFD700);
   transition: width 0.5s ease;
 }
-
 
 /* Estilo para el nivel en game-info */
 .game-info span {

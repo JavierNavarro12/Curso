@@ -244,22 +244,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Función para manejar desbloqueos por nivel
   function handleLevelUnlocks() {
-    const unlocks = levelUnlocks.filter(unlock => unlock.level === playerLevel);
-    if (unlocks.length > 0) {
-      let message = `¡Enhorabuena por llegar al nivel ${playerLevel}! Has desbloqueado: `;
-      unlocks.forEach(unlock => {
-        if (!unlockedItems[unlock.item]) {
-          unlockedItems[unlock.item] = true;
-          localStorage.setItem('unlockedItems', JSON.stringify(unlockedItems));
-          message += `${unlock.description}, `;
-        }
-      });
-      message = message.slice(0, -2); // Eliminar última coma y espacio
+    let unlockedSomething = false;
+    let unlockMessages = [];
+
+    // Revisar cada desbloqueo definido en levelUnlocks
+    levelUnlocks.forEach(unlock => {
+      // Verificar si el nivel actual desbloquea este ítem
+      if (playerLevel >= unlock.level && !unlockedItems[unlock.item]) {
+        unlockedItems[unlock.item] = true;
+        unlockedSomething = true;
+        unlockMessages.push(unlock.description);
+        console.log(`Desbloqueado: ${unlock.description} en el nivel ${unlock.level}`);
+      }
+    });
+
+    // Guardar los ítems desbloqueados en localStorage
+    localStorage.setItem('unlockedItems', JSON.stringify(unlockedItems));
+
+    // Si se desbloqueó algo, mostrar el mensaje
+    if (unlockedSomething) {
+      const message = `¡Enhorabuena por llegar al nivel ${playerLevel}! Has desbloqueado: ${unlockMessages.join(', ')}.`;
       elements.unlockMessage.textContent = message;
       elements.unlockMessage.classList.remove('hidden');
+      updateCharacterOptions();
+      updateShop();
+      setupProgressMenu();
     } else {
       elements.unlockMessage.classList.add('hidden');
     }
+
+    return unlockedSomething;
   }
 
   // Función para actualizar nivel y desbloqueos
@@ -866,6 +880,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    // Ajuste: Eliminar estilos de posición absoluta para progressButton
+    elements.progressButton.style.position = '';
+    elements.progressButton.style.top = '';
+    elements.progressButton.style.left = '';
+
+    // Dentro de initializeModeButtons(), en la sección de estilos
     const styleSheet = document.createElement('style');
     styleSheet.innerHTML = `
       #game-mode-menu {
@@ -971,19 +991,21 @@ document.addEventListener('DOMContentLoaded', () => {
         box-sizing: border-box;
       }
       #progress-button {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        padding: 5px 10px;
-        font-size: 16px;
+        width: 120px; /* Tamaño uniforme con "Jugar" y "Tienda" */
+        padding: 10px 20px;
+        font-size: 0.9rem;
         background-color: #ff4500;
         color: #fff;
-        border: 2px solid #000;
+        border: 2px solid #FFD700; /* Borde amarillo */
         border-radius: 5px;
         cursor: pointer;
+        box-sizing: border-box;
+        transition: background 0.3s, transform 0.1s;
       }
       #progress-button:hover {
-        background-color: #ff6347;
+        background-color: #FFD700; /* Fondo amarillo al pasar el mouse */
+        color: #ff4500; /* Texto cambia a naranja */
+        transform: scale(1.05);
       }
       #progress-menu {
         display: flex;
@@ -1040,14 +1062,16 @@ document.addEventListener('DOMContentLoaded', () => {
         font-weight: bold;
       }
       #back-to-menu-from-progress {
-        margin-top: 10px;
+        width: 120px; /* Tamaño uniforme con otros botones */
         padding: 10px 20px;
-        font-size: 16px;
+        font-size: 0.9rem;
         background-color: #ff4500;
         color: #fff;
         border: 2px solid #000;
         border-radius: 5px;
         cursor: pointer;
+        box-sizing: border-box;
+        transition: background 0.3s, transform 0.1s;
       }
       #back-to-menu-from-progress:hover {
         background-color: #ff6347;
@@ -1068,10 +1092,10 @@ document.addEventListener('DOMContentLoaded', () => {
           padding: 10px;
         }
         #progress-button {
-          top: 5px;
-          left: 5px;
-          padding: 3px 6px;
-          font-size: 12px;
+          width: 15vmin; /* Ajustado para ser igual a "Jugar" y "Tienda" */
+          min-width: 12vmin;
+          padding: 1.5vmin 3vmin; /* Ajuste proporcional */
+          font-size: 1.2vmin; /* Texto más pequeño para mantener proporción */
         }
         #progress-menu {
           width: 90%;
@@ -1088,8 +1112,10 @@ document.addEventListener('DOMContentLoaded', () => {
           font-size: 14px;
         }
         #back-to-menu-from-progress {
-          padding: 5px 10px;
-          font-size: 14px;
+          width: 12vmin; /* Reducido aún más para dejar más espacio */
+          min-width: 10vmin;
+          padding: 1vmin 1.5vmin; /* Padding más pequeño */
+          font-size: 1.2vmin; /* Texto más pequeño */
         }
       }
     `;
