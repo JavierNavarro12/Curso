@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let score = 0;
   let coins = 0;
   let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
-  let playerLevel = parseInt(localStorage.getItem('playerLevel')) || 1;
+  let playerLevel = parseInt(localStorage.getItem('playerLevel')) || 0; // Inicia en 0 para nuevos jugadores
   let playerXP = parseInt(localStorage.getItem('playerXP')) || 0;
   let gameActive = false;
   let pipes = [];
@@ -230,16 +230,38 @@ document.addEventListener('DOMContentLoaded', () => {
     { level: 30, xp: 94750 },
   ];
 
-  // Forzar nivel 4 y 605 XP para que coincida con la imagen
-  playerLevel = 4;
-  playerXP = 605;
-  localStorage.setItem('playerLevel', playerLevel);
-  localStorage.setItem('playerXP', playerXP);
-
   // Función para obtener XP requerida para el siguiente nivel
   function getNextLevelXP(currentLevel) {
     const nextLevel = levelThresholds.find(threshold => threshold.level === currentLevel + 1);
     return nextLevel ? nextLevel.xp : levelThresholds[levelThresholds.length - 1].xp;
+  }
+
+  // Función para calcular el nivel basado en XP
+  function calculateLevelFromXP(xp) {
+    let newLevel = 0;
+    for (let i = 0; i < levelThresholds.length; i++) {
+      if (xp < levelThresholds[i].xp) {
+        newLevel = i;
+        break;
+      }
+    }
+    // Si el XP supera el último umbral, asignar el nivel máximo
+    if (xp >= levelThresholds[levelThresholds.length - 1].xp) {
+      newLevel = levelThresholds.length;
+    }
+    return newLevel;
+  }
+
+  // Asegurar que el nivel inicial sea 0 si no hay XP
+  if (!localStorage.getItem('playerLevel') && !localStorage.getItem('playerXP')) {
+    playerLevel = 0;
+    playerXP = 0;
+    localStorage.setItem('playerLevel', playerLevel);
+    localStorage.setItem('playerXP', playerXP);
+  } else {
+    // Recalcular el nivel basado en el XP almacenado para evitar inconsistencias
+    playerLevel = calculateLevelFromXP(playerXP);
+    localStorage.setItem('playerLevel', playerLevel);
   }
 
   // Función para manejar desbloqueos por nivel
@@ -278,15 +300,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Función para actualizar nivel y desbloqueos
   function updateLevel() {
-    let newLevel = playerLevel;
-    for (let i = levelThresholds.length - 1; i >= 0; i--) {
-      if (playerXP >= levelThresholds[i].xp) {
-        newLevel = levelThresholds[i].level;
-        break;
-      }
-    }
+    // Calcular el nivel basado en el XP actual
+    const newLevel = calculateLevelFromXP(playerXP);
 
-    if (newLevel > playerLevel) {
+    if (newLevel !== playerLevel) {
       // Subida de nivel
       playerLevel = newLevel;
       localStorage.setItem('playerLevel', playerLevel);
@@ -315,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.progressXpDisplay) elements.progressXpDisplay.textContent = `${playerXP}/${getNextLevelXP(playerLevel)}`;
 
     // Actualizar barra de XP
-    const currentLevelXP = levelThresholds.find(threshold => threshold.level === playerLevel).xp;
+    const currentLevelXP = playerLevel === 0 ? 0 : levelThresholds[playerLevel - 1]?.xp || 0;
     const nextLevelXP = getNextLevelXP(playerLevel);
     const xpProgress = nextLevelXP > currentLevelXP ? ((playerXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100 : 100;
     elements.xpBar.style.width = `${xpProgress}%`;
@@ -355,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.progressXpDisplay.textContent = `${playerXP}/${getNextLevelXP(playerLevel)}`;
     
     // Calcular el porcentaje de XP
-    const currentLevelXP = levelThresholds.find(threshold => threshold.level === playerLevel).xp;
+    const currentLevelXP = playerLevel === 0 ? 0 : levelThresholds[playerLevel - 1]?.xp || 0;
     const nextLevelXP = getNextLevelXP(playerLevel);
     const xpProgress = nextLevelXP > currentLevelXP 
       ? Math.min(100, ((playerXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100)
