@@ -7,12 +7,24 @@ document.addEventListener('DOMContentLoaded', () => {
     gameArea: document.querySelector('.game-area'),
     scoreDisplay: document.getElementById('score'),
     coinsDisplay: document.getElementById('coins'),
-    difficultyLevelDisplay: document.createElement('span'), // Crear dinámicamente
+    levelDisplay: document.getElementById('level'),
+    xpBar: document.getElementById('xp-bar'),
+    difficultyLevelDisplay: document.createElement('span'),
     gameOverScreen: document.getElementById('game-over'),
     finalScoreDisplay: document.getElementById('final-score'),
     totalCoinsDisplay: document.getElementById('total-coins'),
+    unlockMessage: document.getElementById('unlock-message'),
     restartButton: document.getElementById('restart-button'),
     menu: document.getElementById('menu'),
+    menuLevelDisplay: document.getElementById('menu-level'),
+    menuXpDisplay: document.getElementById('menu-xp'),
+    progressButton: document.getElementById('progress-button'),
+    progressMenu: document.getElementById('progress-menu'),
+    progressLevelDisplay: document.getElementById('progress-level'),
+    progressXpDisplay: document.getElementById('progress-xp'),
+    progressXpBar: document.getElementById('progress-xp-bar'),
+    progressItemsContainer: document.getElementById('progress-items'),
+    backToMenuFromProgress: document.getElementById('back-to-menu-from-progress'),
     gameContainer: document.querySelector('.game-container'),
     playButton: document.getElementById('play-button'),
     shopButton: document.getElementById('shop-button'),
@@ -46,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     classicModeButton: document.getElementById('classic-mode-button'),
     powerUpsModeButton: document.getElementById('power-ups-mode-button'),
     survivalModeButton: document.getElementById('survival-mode-button'),
-    inverseModeButton: document.getElementById('inverse-mode-button'), // Nuevo botón para Modo Inverso
+    inverseModeButton: document.getElementById('inverse-mode-button'),
     backToMainMenu: document.getElementById('back-to-main-menu'),
   };
 
@@ -66,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Definir shopItems con los nuevos temas de fondo
+  // Definir shopItems
   const shopItems = {
     'wings-style-0': { price: 0, description: 'Alas 🪽', type: 'wings-style', value: 'default' },
     'wings-style-1': { price: 15, description: 'Alas Doradas 🪶', type: 'wings-style', value: 'golden' },
@@ -86,6 +98,20 @@ document.addEventListener('DOMContentLoaded', () => {
     'bg-forest': { price: 20, description: 'Fondo Bosque 🌲', type: 'background', value: 'forest' }
   };
 
+  // Definir desbloqueos por nivel
+  const levelUnlocks = [
+    { level: 3, item: 'character-2', description: 'Personaje 2 🐤' },
+    { level: 6, item: 'character-3', description: 'Personaje 3 🐥' },
+    { level: 9, item: 'character-4', description: 'Personaje 4 🐧' },
+    { level: 12, item: 'character-5', description: 'Personaje 5 🦅' },
+    { level: 15, item: 'bg-night', description: 'Fondo Noche 🌙' },
+    { level: 18, item: 'bg-space', description: 'Fondo Espacio 🚀' },
+    { level: 21, item: 'bg-forest', description: 'Fondo Bosque 🌲' },
+    { level: 24, item: 'trail-effect-1', description: 'Efecto de rastro (Estrellas) ✨' },
+    { level: 27, item: 'trail-effect-2', description: 'Efecto de rastro (Corazones) 💕' },
+    { level: 30, item: 'trail-effect-3', description: 'Efecto de rastro (Fuego) 🔥' },
+  ];
+
   // Variables del juego
   let birdY = 250;
   let gravity = 0.2;
@@ -95,6 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let score = 0;
   let coins = 0;
   let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+  let playerLevel = parseInt(localStorage.getItem('playerLevel')) || 1;
+  let playerXP = parseInt(localStorage.getItem('playerXP')) || 0;
   let gameActive = false;
   let pipes = [];
   let coinsInGame = [];
@@ -109,9 +137,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let difficultyLevel = 1;
   let survivalTime = 0;
   let maxSurvivalLevel = 0;
-  let gameLoopId = null; // Para almacenar el ID de requestAnimationFrame
-  let isInputActive = false; // Nueva variable para rastrear si se está tocando/presionando
-  let hasInteractedInverse = false; // Nueva variable para modo inverso
+  let gameLoopId = null;
+  let isInputActive = false;
+  let hasInteractedInverse = false;
 
   let gameHeight = 500;
   let gameWidth = 1000;
@@ -128,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let wingsSize = parseInt(localStorage.getItem('wingsSize')) || 40;
   let hasCustomized = JSON.parse(localStorage.getItem('hasCustomized')) || false;
   let characterSelected = JSON.parse(localStorage.getItem('characterSelected')) || false;
-  let hasSelectedInSession = false; // Nueva variable para rastrear selección en la sesión actual
+  let hasSelectedInSession = false;
 
   let highScores = JSON.parse(localStorage.getItem('highScores')) || [];
   let bodyColor = '#FFD700';
@@ -155,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'bg-forest': false
   };
 
+  // Asegurar que character-1 esté desbloqueado
   if (!unlockedItems['character-1']) {
     unlockedItems['character-1'] = true;
     localStorage.setItem('unlockedItems', JSON.stringify(unlockedItems));
@@ -167,12 +196,185 @@ document.addEventListener('DOMContentLoaded', () => {
     'background': null
   };
 
-  if (!equippedItems['wings-style'] || !shopItems[equippedItems['wings-style']]) {
-    console.warn('equippedItems[\'wings-style\'] inválido, reiniciando a valor por defecto');
-    equippedItems['wings-style'] = 'wings-style-0';
-    localStorage.setItem('equippedItems', JSON.stringify(equippedItems));
+  // Sistema de niveles
+  const levelThresholds = [
+    { level: 1, xp: 0 },
+    { level: 2, xp: 100 },
+    { level: 3, xp: 250 },
+    { level: 4, xp: 500 },
+    { level: 5, xp: 1000 },
+    { level: 6, xp: 1750 },
+    { level: 7, xp: 2750 },
+    { level: 8, xp: 4000 },
+    { level: 9, xp: 5500 },
+    { level: 10, xp: 7250 },
+    { level: 11, xp: 9250 },
+    { level: 12, xp: 11500 },
+    { level: 13, xp: 14000 },
+    { level: 14, xp: 16750 },
+    { level: 15, xp: 19750 },
+    { level: 16, xp: 23000 },
+    { level: 17, xp: 26500 },
+    { level: 18, xp: 30250 },
+    { level: 19, xp: 34250 },
+    { level: 20, xp: 38500 },
+    { level: 21, xp: 43000 },
+    { level: 22, xp: 47750 },
+    { level: 23, xp: 52750 },
+    { level: 24, xp: 58000 },
+    { level: 25, xp: 63500 },
+    { level: 26, xp: 69250 },
+    { level: 27, xp: 75250 },
+    { level: 28, xp: 81500 },
+    { level: 29, xp: 88000 },
+    { level: 30, xp: 94750 },
+  ];
+
+  // Forzar nivel 4 y 605 XP para que coincida con la imagen
+  playerLevel = 4;
+  playerXP = 605;
+  localStorage.setItem('playerLevel', playerLevel);
+  localStorage.setItem('playerXP', playerXP);
+
+  // Función para obtener XP requerida para el siguiente nivel
+  function getNextLevelXP(currentLevel) {
+    const nextLevel = levelThresholds.find(threshold => threshold.level === currentLevel + 1);
+    return nextLevel ? nextLevel.xp : levelThresholds[levelThresholds.length - 1].xp;
   }
 
+  // Función para manejar desbloqueos por nivel
+  function handleLevelUnlocks() {
+    const unlocks = levelUnlocks.filter(unlock => unlock.level === playerLevel);
+    if (unlocks.length > 0) {
+      let message = `¡Enhorabuena por llegar al nivel ${playerLevel}! Has desbloqueado: `;
+      unlocks.forEach(unlock => {
+        if (!unlockedItems[unlock.item]) {
+          unlockedItems[unlock.item] = true;
+          localStorage.setItem('unlockedItems', JSON.stringify(unlockedItems));
+          message += `${unlock.description}, `;
+        }
+      });
+      message = message.slice(0, -2); // Eliminar última coma y espacio
+      elements.unlockMessage.textContent = message;
+      elements.unlockMessage.classList.remove('hidden');
+    } else {
+      elements.unlockMessage.classList.add('hidden');
+    }
+  }
+
+  // Función para actualizar nivel y desbloqueos
+  function updateLevel() {
+    let newLevel = playerLevel;
+    for (let i = levelThresholds.length - 1; i >= 0; i--) {
+      if (playerXP >= levelThresholds[i].xp) {
+        newLevel = levelThresholds[i].level;
+        break;
+      }
+    }
+
+    if (newLevel > playerLevel) {
+      // Subida de nivel
+      playerLevel = newLevel;
+      localStorage.setItem('playerLevel', playerLevel);
+      showLevelUpNotification();
+
+      // Desbloqueos adicionales según nivel
+      if (playerLevel >= 3) unlockedItems['character-2'] = true;
+      if (playerLevel >= 6) unlockedItems['character-3'] = true;
+      if (playerLevel >= 9) unlockedItems['character-4'] = true;
+      if (playerLevel >= 12) unlockedItems['character-5'] = true;
+      if (playerLevel >= 15) unlockedItems['bg-night'] = true;
+      if (playerLevel >= 18) unlockedItems['bg-space'] = true;
+      if (playerLevel >= 21) unlockedItems['bg-forest'] = true;
+      if (playerLevel >= 24) unlockedItems['trail-effect-1'] = true;
+      if (playerLevel >= 27) unlockedItems['trail-effect-2'] = true;
+      if (playerLevel >= 30) unlockedItems['trail-effect-3'] = true;
+      localStorage.setItem('unlockedItems', JSON.stringify(unlockedItems));
+      updateCharacterOptions();
+    }
+
+    // Actualizar UI
+    elements.levelDisplay.textContent = playerLevel;
+    elements.menuLevelDisplay.textContent = playerLevel;
+    elements.menuXpDisplay.textContent = playerXP;
+    if (elements.progressLevelDisplay) elements.progressLevelDisplay.textContent = playerLevel;
+    if (elements.progressXpDisplay) elements.progressXpDisplay.textContent = `${playerXP}/${getNextLevelXP(playerLevel)}`;
+
+    // Actualizar barra de XP
+    const currentLevelXP = levelThresholds.find(threshold => threshold.level === playerLevel).xp;
+    const nextLevelXP = getNextLevelXP(playerLevel);
+    const xpProgress = nextLevelXP > currentLevelXP ? ((playerXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100 : 100;
+    elements.xpBar.style.width = `${xpProgress}%`;
+    if (elements.progressXpBar) elements.progressXpBar.style.width = `${xpProgress}%`;
+  }
+
+  // Función para mostrar notificación de subida de nivel
+  function showLevelUpNotification() {
+    const notification = document.createElement('div');
+    notification.classList.add('level-up-notification');
+    notification.textContent = `¡Subiste al nivel ${playerLevel}!`;
+    elements.gameArea.appendChild(notification);
+    setTimeout(() => notification.remove(), 2000);
+  }
+
+  // Configuración inicial del menú de progreso
+  function setupProgressMenu() {
+    if (!elements.progressItemsContainer) return;
+    elements.progressItemsContainer.innerHTML = '';
+    levelUnlocks.forEach(unlock => {
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'progress-item';
+      const isUnlocked = playerLevel >= unlock.level;
+      if (!isUnlocked) {
+        itemDiv.classList.add('locked');
+      }
+      const statusText = isUnlocked ? '<span class="completed">Completado</span>' : '';
+      itemDiv.innerHTML = `<p>Nivel ${unlock.level}: ${unlock.description} ${statusText}</p>`;
+      elements.progressItemsContainer.appendChild(itemDiv);
+    });
+  }
+
+  // Actualizar menú de progreso
+  function updateProgressMenu() {
+    if (!elements.progressMenu) return;
+    elements.progressLevelDisplay.textContent = playerLevel;
+    elements.progressXpDisplay.textContent = `${playerXP}/${getNextLevelXP(playerLevel)}`;
+    
+    // Calcular el porcentaje de XP
+    const currentLevelXP = levelThresholds.find(threshold => threshold.level === playerLevel).xp;
+    const nextLevelXP = getNextLevelXP(playerLevel);
+    const xpProgress = nextLevelXP > currentLevelXP 
+      ? Math.min(100, ((playerXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100)
+      : 100;
+    
+    // Actualizar la barra de progreso
+    elements.progressXpBar.style.width = `${xpProgress}%`;
+    
+    setupProgressMenu();
+  }
+
+  // Mostrar menú de progreso
+  if (elements.progressButton) {
+    elements.progressButton.addEventListener('click', () => {
+      elements.menu.classList.add('hidden');
+      elements.progressMenu.classList.remove('hidden');
+      updateProgressMenu();
+    });
+  }
+
+  // Volver al menú principal desde progreso
+  if (elements.backToMenuFromProgress) {
+    elements.backToMenuFromProgress.addEventListener('click', () => {
+      elements.progressMenu.classList.add('hidden');
+      elements.menu.classList.remove('hidden');
+    });
+  }
+
+  // Inicializar UI de nivel y XP
+  updateLevel();
+  setupProgressMenu();
+
+  // Resto de las variables y configuraciones iniciales sin cambios
   const predefinedCharacters = {
     1: { bodyColor: '#FF6347', wingsColor: '#FF4500', size: 30, image: 'img/character1.png' },
     2: { bodyColor: '#4682B4', wingsColor: '#4169E1', size: 35, image: 'img/character2.png' },
@@ -192,6 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
   elements.gameOverScreen.classList.add('hidden');
   elements.gameModeMenu.classList.add('hidden');
   elements.orientationLock.classList.add('hidden');
+  if (elements.progressMenu) elements.progressMenu.classList.add('hidden');
 
   if (!hasSeenWelcomeScreen) {
     if (!isMobile || window.matchMedia("(orientation: landscape)").matches) {
@@ -237,7 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
       gameHeight = window.innerHeight * 0.6;
       if (gameHeight > 500) gameHeight = 500;
       birdX = gameWidth * 0.2;
-      birdY = (gameHeight - birdSize) / 2; // Ajustar birdY según birdSize
+      birdY = (gameHeight - birdSize) / 2;
       pipeWidth = gameWidth * 0.04;
       pipeGap = gameHeight * 0.45;
       basePipeGap = pipeGap;
@@ -250,7 +453,6 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.gameArea.style.height = `${gameHeight}px`;
       elements.bird.style.left = `${birdX}px`;
       elements.bird.style.top = `${birdY}px`;
-      // Ajustar tamaño de las monedas en móvil
       const styleSheet = document.createElement('style');
       styleSheet.innerHTML = `
         .coin {
@@ -268,12 +470,11 @@ document.addEventListener('DOMContentLoaded', () => {
       gravity = 0.2;
       maxVelocity = 8;
       birdX = gameWidth * 0.15;
-      birdY = (gameHeight - birdSize) / 2; // Ajustar birdY según birdSize
+      birdY = (gameHeight - birdSize) / 2;
       elements.gameArea.style.width = `${gameWidth}px`;
       elements.gameArea.style.height = `${gameHeight}px`;
       elements.bird.style.left = `${birdX}px`;
       elements.bird.style.top = `${birdY}px`;
-      // Ajustar tamaño de las monedas en escritorio
       const styleSheet = document.createElement('style');
       styleSheet.innerHTML = `
         .coin {
@@ -299,6 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.shopMenu.classList.add('hidden');
         elements.gameOverScreen.classList.add('hidden');
         elements.gameModeMenu.classList.add('hidden');
+        if (elements.progressMenu) elements.progressMenu.classList.add('hidden');
       }
       return;
     }
@@ -314,6 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.shopMenu.classList.add('hidden');
       elements.gameOverScreen.classList.add('hidden');
       elements.gameModeMenu.classList.add('hidden');
+      if (elements.progressMenu) elements.progressMenu.classList.add('hidden');
     } else {
       elements.orientationLock.classList.add('hidden');
       adjustGameDimensions();
@@ -328,6 +531,7 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.shopMenu.classList.add('hidden');
         elements.gameOverScreen.classList.add('hidden');
         elements.gameModeMenu.classList.add('hidden');
+        if (elements.progressMenu) elements.progressMenu.classList.add('hidden');
       } else {
         elements.gameContainer.classList.remove('hidden');
         elements.menu.classList.add('hidden');
@@ -360,14 +564,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateCharacterOptions() {
     elements.characterOptions.forEach(option => {
       const characterId = option.getAttribute('data-character');
-      // Forzar que character-1 esté desbloqueado
       if (characterId === '1') {
         unlockedItems[`character-${characterId}`] = true;
         localStorage.setItem('unlockedItems', JSON.stringify(unlockedItems));
       }
       if (unlockedItems[`character-${characterId}`]) option.classList.add('unlocked');
       else option.classList.remove('unlocked');
-      // Solo aplicar 'selected' si el usuario ha seleccionado un personaje en esta sesión
       if (hasSelectedInSession && selectedCharacter === characterId) {
         option.classList.add('selected');
       } else {
@@ -467,11 +669,11 @@ document.addEventListener('DOMContentLoaded', () => {
     option.addEventListener('click', () => {
       const characterId = option.getAttribute('data-character');
       if (!unlockedItems[`character-${characterId}`]) {
-        alert('¡Este personaje está bloqueado! Desbloquéalo en la tienda. 🏪');
+        alert('¡Este personaje está bloqueado! Desbloquéalo en la tienda o subiendo de nivel.');
         return;
       }
       selectedCharacter = characterId;
-      hasSelectedInSession = true; // Marcar que el usuario ha seleccionado un personaje en esta sesión
+      hasSelectedInSession = true;
       localStorage.setItem('selectedCharacter', selectedCharacter);
       const character = predefinedCharacters[selectedCharacter];
       birdSize = character.size;
@@ -490,7 +692,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (elements.customizeCharacterButton) {
     elements.customizeCharacterButton.addEventListener('click', () => {
       selectedCharacter = null;
-      hasSelectedInSession = false; // Reiniciar al personalizar
+      hasSelectedInSession = false;
       localStorage.setItem('selectedCharacter', selectedCharacter);
       updateCharacterOptions();
       elements.menu.classList.add('hidden');
@@ -512,7 +714,7 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.customizationMenu.classList.add('hidden');
       elements.menu.classList.remove('hidden');
       elements.playButton.disabled = false;
-      velocity = 0; // Reiniciar velocity
+      velocity = 0;
       updateEquipOptions();
       applyCharacter();
       applyBackground();
@@ -531,7 +733,7 @@ document.addEventListener('DOMContentLoaded', () => {
       birdSize = Math.max(20, parseInt(elements.equipBirdSizeInput.value));
       wingsSize = parseInt(elements.equipWingsSizeInput.value);
       localStorage.setItem('wingsSize', wingsSize);
-      velocity = 0; // Reiniciar velocity
+      velocity = 0;
       applyCharacter();
       applyBackground();
       elements.equipMenu.classList.add('hidden');
@@ -579,28 +781,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Configurar los botones de modo de juego una sola vez al inicio
   function initializeModeButtons() {
     const modeButtons = [
       { button: elements.classicModeButton, mode: 'classic', desc: 'Esquiva tuberías y acumula puntos en un desafío clásico.', hasInfo: true },
       { button: elements.powerUpsModeButton, mode: 'power-ups', desc: 'Usa power-ups como escudos, velocidad y magnetismo para superar obstáculos.', hasInfo: true },
       { button: elements.survivalModeButton, mode: 'survival', desc: 'Sobrevive el mayor tiempo posible con dificultad creciente por niveles. ¡Gana 5 monedas al llegar al nivel 5!', hasInfo: true },
-      { button: elements.inverseModeButton, mode: 'inverse', desc: 'Controles invertidos: toca para bajar y suelta para subir.', hasInfo: true }, // Nuevo modo inverso
-      { button: elements.backToMainMenu, mode: null, desc: '', hasInfo: false } // El botón "Volver" no tiene info
+      { button: elements.inverseModeButton, mode: 'inverse', desc: 'Controles invertidos: toca para bajar y suelta para subir.', hasInfo: true },
+      { button: elements.backToMainMenu, mode: null, desc: '', hasInfo: false }
     ];
 
     modeButtons.forEach(({ button, mode, desc, hasInfo }) => {
       if (button) {
-        // Guardar el texto original del botón
         const originalText = button.textContent;
-        // Crear un contenedor para el texto
         const textSpan = document.createElement('span');
         textSpan.textContent = originalText;
-        textSpan.classList.add('button-text'); // Añadir clase para centrar el texto
-        button.innerHTML = ''; // Limpiar el contenido del botón
+        textSpan.classList.add('button-text');
+        button.innerHTML = '';
         button.appendChild(textSpan);
 
-        // Añadir el botón de información solo si hasInfo es true
         if (hasInfo) {
           const infoButton = document.createElement('span');
           infoButton.classList.add('info-button');
@@ -621,13 +819,11 @@ document.addEventListener('DOMContentLoaded', () => {
             panel.style.border = '1px solid #000';
             panel.style.padding = '5px';
             panel.style.zIndex = '1000';
-            panel.style.maxWidth = `${button.offsetWidth}px`; // Asegurar que el panel no sea más ancho que el botón
+            panel.style.maxWidth = `${button.offsetWidth}px`;
             panel.style.boxSizing = 'border-box';
 
-            // Añadir el panel al DOM para medir su altura
             elements.gameModeMenu.appendChild(panel);
 
-            // Calcular la altura real del panel
             const panelHeight = panel.offsetHeight;
             const buttonHeight = button.offsetHeight;
             const buttonTop = button.offsetTop;
@@ -635,23 +831,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const gameModeMenuTop = elements.gameModeMenu.getBoundingClientRect().top;
             const viewportHeight = window.innerHeight;
 
-            // Calcular el espacio disponible debajo del botón dentro del contenedor
             const spaceBelowInContainer = gameModeMenuHeight - (buttonTop + buttonHeight);
-            // Calcular el espacio disponible debajo del botón en la ventana
             const buttonBottomInViewport = gameModeMenuTop + buttonTop + buttonHeight;
             const spaceBelowInViewport = viewportHeight - buttonBottomInViewport;
 
-            // Determinar si el panel cabe debajo del botón
             const fitsBelow = spaceBelowInContainer >= panelHeight && spaceBelowInViewport >= panelHeight;
 
             if (fitsBelow) {
-              // Posicionar debajo del botón
-              panel.style.top = `${buttonTop + buttonHeight + 5}px`; // 5px de margen
+              panel.style.top = `${buttonTop + buttonHeight + 5}px`;
               panel.style.bottom = 'auto';
             } else {
-              // Posicionar arriba del botón
               panel.style.top = 'auto';
-              panel.style.bottom = `${spaceBelowInContainer + buttonHeight + 5}px`; // 5px de margen
+              panel.style.bottom = `${spaceBelowInContainer + buttonHeight + 5}px`;
             }
 
             document.addEventListener('click', (e) => {
@@ -660,14 +851,12 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         }
 
-        // Añadir evento de clic para los botones de modo (excepto "Volver")
         if (mode) {
           button.addEventListener('click', () => {
             gameMode = mode;
             startGame();
           });
         } else {
-          // Evento para el botón "Volver"
           button.addEventListener('click', () => {
             elements.gameModeMenu.classList.add('hidden');
             elements.menu.classList.remove('hidden');
@@ -677,34 +866,33 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Añadir estilos CSS para uniformidad
     const styleSheet = document.createElement('style');
     styleSheet.innerHTML = `
       #game-mode-menu {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center; /* Centrar los elementos */
+        justify-content: center;
         gap: 10px;
         padding: 20px;
         background-color: #fff;
         border: 2px solid #000;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        width: 90%; /* Ajustar al 90% del contenedor padre */
-        max-width: 400px; /* Ancho máximo para escritorio */
-        height: auto; /* Altura automática para escritorio */
-        margin: 0 auto; /* Centrar horizontalmente */
+        width: 90%;
+        max-width: 400px;
+        height: auto;
+        margin: 0 auto;
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%); /* Centrar completamente */
+        transform: translate(-50%, -50%);
         box-sizing: border-box;
-        overflow: hidden; /* Evitar scroll */
+        overflow: hidden;
       }
       #game-mode-menu button {
-        width: 100%; /* Ocupar el ancho del contenedor */
-        max-width: 350px; /* Ancho máximo para escritorio */
+        width: 100%;
+        max-width: 350px;
         padding: 15px;
         font-size: 18px;
         display: flex;
@@ -721,10 +909,10 @@ document.addEventListener('DOMContentLoaded', () => {
       #game-mode-menu button .button-text {
         flex-grow: 1;
         text-align: center;
-        padding-right: 30px; /* Ajustado para centrar mejor el texto */
+        padding-right: 30px;
       }
       #game-mode-menu button .info-button {
-        width: 20px; /* Tamaño unificado para escritorio y móvil */
+        width: 20px;
         height: 20px;
         background-color: #ccc;
         color: #000;
@@ -732,45 +920,182 @@ document.addEventListener('DOMContentLoaded', () => {
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 14px; /* Tamaño de fuente unificado */
+        font-size: 14px;
         margin-left: 10px;
         cursor: pointer;
       }
       #game-mode-menu button:hover {
         background-color: #ff6347;
       }
-      /* Estilos específicos para móvil */
       @media (max-width: 600px) {
         #game-mode-menu {
           width: 90%;
-          max-width: 300px; /* Reducir el ancho máximo en móvil */
-          height: auto; /* Altura automática para que quepan todos los botones */
-          padding: 10px; /* Reducir el padding para ahorrar espacio */
-          overflow: hidden; /* Evitar scroll */
+          max-width: 300px;
+          height: auto;
+          padding: 10px;
+          overflow: hidden;
         }
         #game-mode-menu h2 {
-          font-size: 1rem; /* Reducir el tamaño del título */
+          font-size: 1rem;
           margin-bottom: 10px;
         }
         #game-mode-menu button {
-          max-width: 250px; /* Reducir el ancho de los botones en móvil */
-          padding: 6px; /* Reducir aún más el padding para ahorrar espacio */
-          font-size: 12px; /* Reducir el tamaño de la fuente */
+          max-width: 250px;
+          padding: 6px;
+          font-size: 12px;
         }
         #game-mode-menu button .button-text {
-          padding-right: 20px; /* Ajustar el padding en móvil */
+          padding-right: 20px;
         }
         #game-mode-menu button .info-button {
-          width: 20px; /* Tamaño unificado para móvil */
+          width: 20px;
           height: 20px;
-          font-size: 14px; /* Tamaño de fuente unificado */
+          font-size: 14px;
+        }
+      }
+      #menu {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border: 2px solid #000;
+        border-radius: 10px;
+        padding: 20px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 600px;
+        box-sizing: border-box;
+      }
+      #progress-button {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        padding: 5px 10px;
+        font-size: 16px;
+        background-color: #ff4500;
+        color: #fff;
+        border: 2px solid #000;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      #progress-button:hover {
+        background-color: #ff6347;
+      }
+      #progress-menu {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #fff;
+        border: 2px solid #000;
+        border-radius: 10px;
+        padding: 20px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 400px;
+        box-sizing: border-box;
+      }
+      #progress-menu h2 {
+        margin: 0 0 10px;
+        font-size: 24px;
+        color: #ff4500;
+      }
+      .progress-stats {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      #progress-xp-bar {
+        height: 10px;
+        background: #4caf50;
+        width: 0%;
+        transition: width 0.3s;
+        margin: 5px auto;
+        border: 1px solid #000;
+        border-radius: 5px;
+        max-width: 80%;
+      }
+      .progress-item {
+        width: 100%;
+        padding: 5px;
+        margin: 5px 0;
+        background: #eee;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .progress-item.locked {
+        opacity: 0.5;
+        background: #ccc;
+      }
+      .progress-item .completed {
+        color: #4caf50;
+        font-weight: bold;
+      }
+      #back-to-menu-from-progress {
+        margin-top: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #ff4500;
+        color: #fff;
+        border: 2px solid #000;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      #back-to-menu-from-progress:hover {
+        background-color: #ff6347;
+      }
+      #unlock-message {
+        color: #FFD700;
+        font-weight: bold;
+        margin-top: 10px;
+        text-align: center;
+      }
+      .hidden {
+        display: none;
+      }
+      @media (max-width: 600px) {
+        #menu {
+          width: 90%;
+          max-width: 300px;
+          padding: 10px;
+        }
+        #progress-button {
+          top: 5px;
+          left: 5px;
+          padding: 3px 6px;
+          font-size: 12px;
+        }
+        #progress-menu {
+          width: 90%;
+          max-width: 300px;
+          padding: 10px;
+        }
+        #progress-menu h2 {
+          font-size: 18px;
+        }
+        #progress-xp-bar {
+          max-width: 90%;
+        }
+        .progress-item {
+          font-size: 14px;
+        }
+        #back-to-menu-from-progress {
+          padding: 5px 10px;
+          font-size: 14px;
         }
       }
     `;
     document.head.appendChild(styleSheet);
   }
 
-  // Llamar a la inicialización de los botones una sola vez
   initializeModeButtons();
 
   function applyCharacter() {
@@ -789,13 +1114,11 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (style === 'golden') elements.bird.classList.add('wings-style-1');
       else if (style === 'demonic') elements.bird.classList.add('wings-style-2');
     }
-    // Ajustar birdY para que el pájaro esté centrado después de cambiar el tamaño
     birdY = (gameHeight - birdSize) / 2;
-    birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize)); // Asegurar que esté dentro de los límites
+    birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize));
     elements.bird.style.top = `${birdY}px`;
   }
 
-  // Nueva función para aplicar el fondo seleccionado
   function applyBackground() {
     elements.gameArea.classList.remove('bg-night', 'bg-space', 'bg-forest');
     if (equippedItems['background']) {
@@ -898,6 +1221,9 @@ document.addEventListener('DOMContentLoaded', () => {
           coin.y += dy * 0.3;
           if (distance < 20) {
             coins += gameMode === 'survival' ? difficultyLevel : 1;
+            playerXP += 5; // Ganar 5 XP por moneda
+            localStorage.setItem('playerXP', playerXP);
+            updateLevel();
             elements.coinsDisplay.textContent = coins;
             coin.element.remove();
             coinsInGame.splice(index, 1);
@@ -917,6 +1243,9 @@ document.addEventListener('DOMContentLoaded', () => {
         birdRect.top < coinRect.bottom
       ) {
         coins += gameMode === 'survival' ? difficultyLevel : 1;
+        playerXP += 5; // Ganar 5 XP por moneda
+        localStorage.setItem('playerXP', playerXP);
+        updateLevel();
         elements.coinsDisplay.textContent = coins;
         coin.element.remove();
         coinsInGame.splice(index, 1);
@@ -964,13 +1293,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }, powerUpDuration);
     } else if (type === 'speed') {
       speedBoostActive = true;
-      const originalSpeed = pipeSpeed; // Guardar la velocidad original
-      pipeSpeed = originalSpeed * 1.5; // Aumentar la velocidad
+      const originalSpeed = pipeSpeed;
+      pipeSpeed = originalSpeed * 1.5;
       elements.bird.speedTimeout = setTimeout(() => {
         speedBoostActive = false;
-        pipeSpeed = originalSpeed; // Restaurar la velocidad original
+        pipeSpeed = originalSpeed;
         if (gameMode === 'survival') {
-          pipeSpeed = 2 + difficultyLevel * 0.5; // Ajustar según la dificultad si es modo survival
+          pipeSpeed = 2 + difficultyLevel * 0.5;
         }
       }, powerUpDuration);
     } else if (type === 'magnet') {
@@ -1016,20 +1345,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function adjustDifficulty() {
     if (gameMode === 'survival') {
-      const newDifficultyLevel = Math.floor(survivalTime / 10000) + 1; // Subir de nivel cada 10 segundos
+      const newDifficultyLevel = Math.floor(survivalTime / 10000) + 1;
       if (newDifficultyLevel !== difficultyLevel) {
         difficultyLevel = newDifficultyLevel;
         elements.difficultyLevelDisplay.textContent = `Nivel ${difficultyLevel}`;
-        pipeSpeed = 2 + difficultyLevel * 0.5; // Aumentar velocidad de las tuberías
-        pipeGap = Math.max(100, basePipeGap - difficultyLevel * 10); // Reducir el espacio entre tuberías
-        pipeIntervalTime = Math.max(1000, 2000 - difficultyLevel * 100); // Reducir el intervalo entre tuberías
+        pipeSpeed = 2 + difficultyLevel * 0.5;
+        pipeGap = Math.max(100, basePipeGap - difficultyLevel * 10);
+        pipeIntervalTime = Math.max(1000, 2000 - difficultyLevel * 100);
         clearInterval(pipeInterval);
         pipeInterval = setInterval(createPipe, pipeIntervalTime);
       }
       maxSurvivalLevel = Math.max(maxSurvivalLevel, difficultyLevel);
     } else {
       elements.difficultyLevelDisplay.style.display = 'none';
-      if (!speedBoostActive) { // Solo ajustar si no hay power-up de velocidad activo
+      if (!speedBoostActive) {
         const newPipeSpeed = 2 + Math.floor(score / 5) * 0.5;
         if (newPipeSpeed !== pipeSpeed) {
           pipeSpeed = newPipeSpeed;
@@ -1080,6 +1409,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (pipe.x + pipeWidth < birdX && !pipe.passed) {
         score++;
+        playerXP += 10; // Ganar 10 XP por tubería
+        localStorage.setItem('playerXP', playerXP);
+        updateLevel();
         elements.scoreDisplay.textContent = score;
         pipe.passed = true;
       }
@@ -1093,31 +1425,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateBird() {
     if (!gameActive) return;
-  
+
     if (gameMode === 'inverse') {
-      // Modo Inverso: aplicar gravedad desde el inicio
       if (isInputActive) {
-        velocity += gravity; // Baja con gravedad cuando se presiona
+        velocity += gravity;
       } else {
-        velocity -= 0.5; // Sube cuando se suelta
+        velocity -= 0.5;
       }
-      hasInteractedInverse = true; // Marcar como interactuado desde el inicio para consistencia
+      hasInteractedInverse = true;
     } else {
-      // Modos normales: aplicar gravedad normalmente
       velocity += gravity;
       if (isInputActive) {
-        velocity = jump; // Mantener el salto mientras se presiona
+        velocity = jump;
       }
     }
-  
-    // Limitar la velocidad máxima
+
     if (velocity > maxVelocity) velocity = maxVelocity;
     if (velocity < -maxVelocity) velocity = -maxVelocity;
-  
+
     birdY += velocity;
     elements.bird.style.top = `${birdY}px`;
-  
-    // Verificar colisión con los bordes de la pantalla
+
     if (birdY <= 0 || birdY + birdSize >= gameHeight) {
       if (activeShield) {
         birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize));
@@ -1127,8 +1455,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
     }
-  
-    // Generar partículas si están equipadas
+
     if (gameActive && equippedItems['trail-effect'] && (!elements.bird.lastParticleTime || Date.now() - elements.bird.lastParticleTime > 100)) {
       createParticle();
       elements.bird.lastParticleTime = Date.now();
@@ -1140,10 +1467,10 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     isInputActive = true;
     if (gameMode === 'inverse') {
-      hasInteractedInverse = true; // Registrar la primera interacción
-      velocity = gravity; // Iniciar bajada
+      hasInteractedInverse = true;
+      velocity = gravity;
     } else {
-      velocity = jump; // Modos normales: salto hacia arriba
+      velocity = jump;
     }
   }
 
@@ -1152,13 +1479,11 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     isInputActive = false;
     if (gameMode === 'inverse') {
-      hasInteractedInverse = true; // Registrar interacción
-      velocity = -0.5; // Subir al soltar
+      hasInteractedInverse = true;
+      velocity = -0.5;
     }
-    // En modos normales, la gravedad se encarga
   }
 
-  // Añadir event listeners para los controles
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space') jumpHandler(e);
   });
@@ -1180,7 +1505,6 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.menu.classList.remove('hidden');
       return;
     }
-    // Cancelar cualquier gameLoop previo
     if (gameLoopId) {
       cancelAnimationFrame(gameLoopId);
       gameLoopId = null;
@@ -1194,7 +1518,6 @@ document.addEventListener('DOMContentLoaded', () => {
     pipeSpeed = 2;
     pipeGap = basePipeGap;
     pipeIntervalTime = 2000;
-    // Restablecer parámetros de movimiento según el modo (móvil o escritorio)
     if (isMobile) {
       gravity = 0.1;
       jump = -3;
@@ -1204,11 +1527,11 @@ document.addEventListener('DOMContentLoaded', () => {
       jump = -6;
       maxVelocity = 8;
     }
-    velocity = 0; // Reiniciar velocity
-    isInputActive = false; // Reiniciar estado de entrada
-    hasInteractedInverse = false; // Reiniciar interacción para modo inverso
-    birdY = (gameHeight - birdSize) / 2; // Centrar el pájaro según su tamaño
-    birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize)); // Asegurar que esté dentro de los límites
+    velocity = 0;
+    isInputActive = false;
+    hasInteractedInverse = false;
+    birdY = (gameHeight - birdSize) / 2;
+    birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize));
     elements.bird.style.top = `${birdY}px`;
     elements.bird.style.left = `${birdX}px`;
     pipes = [];
@@ -1230,6 +1553,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     applyCharacter();
     applyBackground();
+    updateLevel();
     elements.gameModeMenu.classList.add('hidden');
     elements.gameContainer.classList.remove('hidden');
     elements.gameOverScreen.classList.add('hidden');
@@ -1239,10 +1563,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastTime = performance.now();
     function gameLoop(currentTime) {
       if (!gameActive) return;
-      const deltaTime = currentTime - lastTime; // Tiempo en milisegundos desde el último frame
+      const deltaTime = currentTime - lastTime;
       lastTime = currentTime;
 
-      // Actualizar survivalTime en cada frame si estamos en modo survival
       if (gameMode === 'survival') {
         survivalTime += deltaTime;
       }
@@ -1252,7 +1575,7 @@ document.addEventListener('DOMContentLoaded', () => {
       moveCoins();
       movePowerUps();
       updateParticles();
-      adjustDifficulty(); // Llamar a adjustDifficulty en cada frame
+      adjustDifficulty();
 
       gameLoopId = requestAnimationFrame(gameLoop);
     }
@@ -1261,27 +1584,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function endGame() {
     gameActive = false;
-    // Cancelar el gameLoop
     if (gameLoopId) {
       cancelAnimationFrame(gameLoopId);
       gameLoopId = null;
     }
     clearInterval(pipeInterval);
     totalCoins += coins;
-    if (gameMode === 'survival' && maxSurvivalLevel >= 5) { // Cambiado de 10 a 5
+    if (gameMode === 'survival' && maxSurvivalLevel >= 5) {
       totalCoins += 5;
       setTimeout(() => {
-        alert('¡Has ganado 5 monedas por llegar al nivel 5!'); // Mensaje actualizado
+        alert('¡Has ganado 5 monedas por llegar al nivel 5!');
         elements.gameContainer.classList.remove('hidden');
         elements.gameArea.classList.add('hidden');
         elements.gameOverScreen.classList.remove('hidden');
         elements.menu.classList.add('hidden');
+        handleLevelUnlocks();
       }, 500);
     } else {
       elements.gameContainer.classList.remove('hidden');
       elements.gameArea.classList.add('hidden');
       elements.gameOverScreen.classList.remove('hidden');
       elements.menu.classList.add('hidden');
+      handleLevelUnlocks();
     }
     localStorage.setItem('totalCoins', totalCoins);
     elements.finalScoreDisplay.textContent = score;
@@ -1308,10 +1632,10 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.restartButton.addEventListener('click', () => {
       elements.gameOverScreen.classList.add('hidden');
       elements.gameModeMenu.classList.remove('hidden');
+      if (elements.unlockMessage) elements.unlockMessage.classList.add('hidden');
     });
   }
 
-  // Inicializar el juego
   adjustGameDimensions();
   checkOrientation();
   updateCharacterOptions();

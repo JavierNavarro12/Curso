@@ -14,7 +14,6 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-L06DMHH1G7');
 </script>
 
@@ -36,46 +35,50 @@
   </div>
 
   <!-- Menú principal -->
-  <div id="menu" class="menu hidden">
-    <h1>FLYING POLITICS</h1>
-    <h2>Selecciona un personaje</h2>
-    <div class="character-selection">
-      <div class="character-options">
-        <div class="character-option" data-character="1">
-          <img src="img/character1.png" alt="Personaje 1">
-          <p>Personaje 1</p>
-          <span class="locked">Bloqueado</span>
-        </div>
-        <div class="character-option" data-character="2">
-          <img src="img/character2.png" alt="Personaje 2">
-          <p>Personaje 2</p>
-          <span class="locked">Bloqueado</span>
-        </div>
-        <div class="character-option" data-character="3">
-          <img src="img/character3.png" alt="Personaje 3">
-          <p>Personaje 3</p>
-          <span class="locked">Bloqueado</span>
-        </div>
-        <div class="character-option" data-character="4">
-          <img src="img/character4.png" alt="Personaje 4">
-          <p>Personaje 4</p>
-          <span class="locked">Bloqueado</span>
-        </div>
-        <div class="character-option" data-character="5">
-          <img src="img/character5.png" alt="Personaje 5">
-          <p>Personaje 5</p>
-          <span class="locked">Bloqueado</span>
-        </div>
+<div id="menu" class="menu hidden">
+  <h1>FLYING POLITICS</h1>
+  <div class="menu-stats">
+    <p>Nivel: <span id="menu-level">1</span> | XP: <span id="menu-xp">0</span></p>
+  </div>
+  <h2>Selecciona un personaje</h2>
+  <div class="character-selection">
+    <div class="character-options">
+      <div class="character-option" data-character="1">
+        <img src="img/character1.png" alt="Personaje 1">
+        <p>Personaje 1</p>
+        <span class="locked">Bloqueado</span>
+      </div>
+      <div class="character-option" data-character="2">
+        <img src="img/character2.png" alt="Personaje 2">
+        <p>Personaje 2</p>
+        <span class="locked">Bloqueado</span>
+      </div>
+      <div class="character-option" data-character="3">
+        <img src="img/character3.png" alt="Personaje 3">
+        <p>Personaje 3</p>
+        <span class="locked">Bloqueado</span>
+      </div>
+      <div class="character-option" data-character="4">
+        <img src="img/character4.png" alt="Personaje 4">
+        <p>Personaje 4</p>
+        <span class="locked">Bloqueado</span>
+      </div>
+      <div class="character-option" data-character="5">
+        <img src="img/character5.png" alt="Personaje 5">
+        <p>Personaje 5</p>
+        <span class="locked">Bloqueado</span>
       </div>
     </div>
-    <div class="character-customization">
-      <button id="customize-character-button">Personalizar</button>
-    </div>
-    <div class="menu-buttons">
-      <button id="play-button" disabled>Jugar</button>
-      <button id="shop-button">Tienda</button>
-    </div>
   </div>
+  <div class="character-customization">
+    <button id="customize-character-button">Personalizar</button>
+  </div>
+  <div class="menu-buttons">
+    <button id="play-button" disabled>Jugar</button>
+    <button id="shop-button">Tienda</button>
+    <button id="progress-button">Progreso</button>
+  </div>
+</div>
 
   <!-- Submenú de modos de juego -->
   <div id="game-mode-menu" class="menu hidden">
@@ -84,7 +87,7 @@
       <button id="classic-mode-button">Modo Clásico</button>
       <button id="power-ups-mode-button">Clásico con Power-Ups</button>
       <button id="survival-mode-button">Supervivencia Extrema</button>
-      <button id="inverse-mode-button">Modo Inverso</button> <!-- Nuevo botón -->
+      <button id="inverse-mode-button">Modo Inverso</button>
       <button id="back-to-main-menu">Volver</button>
     </div>
   </div>
@@ -143,11 +146,29 @@
     </div>
   </div>
 
+  <!-- Menú de progreso -->
+<div id="progress-menu" class="menu hidden">
+  <h2>Progreso</h2>
+  <div class="progress-stats">
+    <p>Nivel: <span id="progress-level">1</span></p>
+    <p>XP: <span id="progress-xp">0</span></p>
+  </div>
+  <h3>Desbloqueos por nivel</h3>
+  <div id="progress-items"></div>
+  <div class="menu-buttons">
+    <button id="back-to-menu-from-progress">Volver</button>
+  </div>
+</div>
+
   <!-- Área del juego -->
   <div id="game-container" class="game-container hidden">
     <div class="game-info">
       <span>Puntuación: <span id="score">0</span></span>
       <span>Monedas: <span id="coins">0</span></span>
+      <span>Nivel: <span id="level">1</span></span>
+      <div class="xp-bar-container">
+        <div id="xp-bar"></div>
+      </div>
     </div>
     <div class="game-area">
       <div id="bird">
@@ -161,6 +182,7 @@
     <h2>¡Game Over!</h2>
     <p>Puntuación final: <span id="final-score">0</span></p>
     <p>Monedas totales: <span id="total-coins">0</span></p>
+    <div id="unlock-message" class="hidden"></div>
     <div class="high-scores">
       <h3>Mejores puntuaciones</h3>
       <table id="high-scores-table">

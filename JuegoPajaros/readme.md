@@ -48,25 +48,25 @@ Colores del Cuerpo: Más colores para el pájaro (rojo, azul, verde, etc.).
 Accesorios: Gorros, gafas, o colas que se vean en el pájaro durante el juego.
 Efectos de Partículas: Diferentes partículas al volar (por ejemplo, estrellas, corazones, fuego).
 Estos ítems podrían comprarse en la tienda o desbloquearse con logros.
-Temas de Fondo:
+~~Temas de Fondo:
 Permite a los jugadores cambiar el fondo del juego (.game-area):
 Día/Noche: Un fondo nocturno con estrellas y luna.
 Espacio: Fondo con planetas y estrellas fugaces.
 Bosque: Fondo con árboles y niebla.
-Podrías añadir una animación suave para el cambio de fondo (por ejemplo, un transition en el background).
+Podrías añadir una animación suave para el cambio de fondo (por ejemplo, un transition en el background).~~
 Estilos de Tuberías:
 Añade más estilos de tuberías que el jugador pueda desbloquear:
 Tuberías de Lava: Con un efecto de lava brillante.
 Tuberías Futuristas: Con luces de neón.
 Tuberías de Hielo: Con un efecto de escarcha.
-5. Sistema de Niveles y Progresión
+~~5. Sistema de Niveles y Progresión
 Introduce un sistema de progresión para que los jugadores sientan que están avanzando.
 
 Niveles del Jugador:
 Añade un sistema de experiencia (XP). Por ejemplo:
 Ganas XP por cada tubería que pasas o moneda que recoges.
 Subir de nivel desbloquea nuevos ítems, modos de juego o personajes.
-Muestra el nivel del jugador en el menú principal (por ejemplo, "Nivel 5").
+Muestra el nivel del jugador en el menú principal (por ejemplo, "Nivel 5").~~
 Mapas o Mundos:
 Divide el juego en "mundos" con diferentes temas visuales y dificultades:
 Mundo 1: Cielo Claro (el actual).

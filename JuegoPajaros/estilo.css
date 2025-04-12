@@ -143,28 +143,32 @@ body {
 }
 
 #customization-menu,
-#shop-menu {
+#shop-menu,
+#progress-menu {
   background: linear-gradient(135deg, #87CEEB, #4682B4);
   color: #FFD700;
   border: 4px solid #FF4500;
-  overflow-y: auto; /* Permitir desplazamiento si el contenido es demasiado largo */
-  max-height: 80vh; /* Limitar la altura máxima para evitar que se salga de la pantalla */
+  overflow-y: auto;
+  max-height: 80vh;
 }
 
 #customization-menu h2,
-#shop-menu h2 {
+#shop-menu h2,
+#progress-menu h2 {
   color: #FFD700;
   text-shadow: 1px 1px #000;
 }
 
 #customization-menu p,
-#shop-menu p {
+#shop-menu p,
+#progress-menu p {
   color: #FFD700;
   text-shadow: 1px 1px #000;
 }
 
 #customization-menu label,
-#shop-menu label {
+#shop-menu label,
+#progress-menu label {
   color: #FFD700;
   text-shadow: 1px 1px #000;
 }
@@ -194,10 +198,70 @@ body {
   text-shadow: 1px 1px #000;
 }
 
+/* Contenedor para las estadísticas del menú principal */
+.menu-stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+#progress-button:hover {
+  background: #FFD700;
+  color: #FF4500;
+  transform: scale(1.05);
+}
+
+/* Estilo para el contenedor de estadísticas en el menú de progreso */
+.progress-stats {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.progress-stats p {
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+/* Estilo para los ítems de progreso */
+.progress-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  border: 1px solid #FFD700;
+  margin-bottom: 5px;
+}
+
+.progress-item p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #FFD700;
+  text-shadow: 1px 1px #000;
+}
+
+.progress-item.locked p {
+  color: #999;
+}
+
+.progress-item .completed {
+  color: #32CD32;
+  font-size: 0.7rem;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
 /* Contenedor para los botones del menú */
 .menu-buttons {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 10px;
   margin-top: 20px;
   flex-wrap: wrap;
@@ -205,11 +269,13 @@ body {
 
 #play-button,
 #shop-button,
+#progress-button,
 #confirm-customization,
 #back-to-menu,
 #confirm-equip,
 #back-to-selection,
-#back-to-menu-from-shop {
+#back-to-menu-from-shop,
+#back-to-menu-from-progress {
   padding: 10px 20px;
   font-size: 0.9rem;
   width: 120px;
@@ -240,7 +306,8 @@ body {
 #back-to-menu:hover,
 #confirm-equip:hover,
 #back-to-selection:hover,
-#back-to-menu-from-shop:hover {
+#back-to-menu-from-shop:hover,
+#back-to-menu-from-progress:hover {
   background: #FFD700;
   color: #FF4500;
   transform: scale(1.05);
@@ -251,34 +318,34 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* Alinear al inicio para permitir desplazamiento */
+  justify-content: flex-start;
   gap: 10px;
-  padding: 20px 10px; /* Ajustar el padding para más espacio */
+  padding: 20px 10px;
   background: rgba(255, 255, 255, 0.95);
   border: 4px solid #FFD700;
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  width: 90%; /* Ajustar al 90% del contenedor padre */
-  max-width: 400px; /* Ancho máximo para escritorio */
-  max-height: 70vh; /* Limitar la altura máxima para permitir desplazamiento */
-  overflow-y: auto; /* Permitir desplazamiento vertical */
-  margin: 0 auto; /* Centrar horizontalmente */
+  width: 90%;
+  max-width: 400px;
+  max-height: 70vh;
+  overflow-y: auto;
+  margin: 0 auto;
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* Centrar completamente */
+  transform: translate(-50%, -50%);
   box-sizing: border-box;
   z-index: 15;
 }
 
 #game-mode-menu h2 {
-  margin: 0 0 15px 0; /* Margen inferior para separar del primer botón */
+  margin: 0 0 15px 0;
   font-size: 1.2rem;
   color: #FFD700;
   text-shadow: 1px 1px #000;
   text-align: center;
   width: 100%;
-  max-width: 350px; /* Igual que los botones */
+  max-width: 350px;
 }
 
 #game-mode-menu .menu-buttons {
@@ -294,8 +361,8 @@ body {
 #survival-mode-button,
 #inverse-mode-button,
 #back-to-main-menu {
-  width: 100%; /* Ocupar el ancho del contenedor */
-  max-width: 350px; /* Ancho máximo para escritorio */
+  width: 100%;
+  max-width: 350px;
   padding: 15px;
   font-size: 0.9rem;
   display: flex;
@@ -319,7 +386,7 @@ body {
 #back-to-main-menu .button-text {
   flex-grow: 1;
   text-align: center;
-  padding-right: 30px; /* Ajustado para centrar mejor el texto */
+  padding-right: 30px;
 }
 
 #classic-mode-button:hover,
@@ -788,14 +855,8 @@ body {
 }
 
 @keyframes fadeOut {
-  0% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.5);
-  }
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.5); }
 }
 
 /* Tuberías */
@@ -957,6 +1018,17 @@ body {
   margin-bottom: 5px;
 }
 
+/* Mensaje de desbloqueo */
+#unlock-message {
+  font-size: 0.9rem;
+  color: #32CD32;
+  margin: 10px 0;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  border: 1px solid #FFD700;
+}
+
 .save-message {
   font-size: 0.8rem;
   color: #32CD32;
@@ -1040,7 +1112,7 @@ body {
   max-height: 300px;
   overflow-y: auto;
   margin-bottom: 20px;
-  width: 100%; /* Asegurar que ocupe el ancho disponible */
+  width: 100%;
 }
 
 .shop-item {
@@ -1236,7 +1308,7 @@ button:hover {
 
   /* Ajustar los power-ups */
   .powerup {
-    width: 5vmin; /* Aumentar el tamaño para todos los power-ups en móvil */
+    width: 5vmin;
     height: 5vmin;
     font-size: 4.5vmin;
   }
@@ -1288,9 +1360,16 @@ button:hover {
   #confirm-equip,
   #back-to-selection,
   #back-to-menu-from-shop,
-  #customize-character-button,
-  #restart-button,
+  #back-to-menu-from-progress,
   button {
+    padding: 2vmin 4vmin;
+    font-size: 1.5vmin;
+    width: auto;
+    min-width: 10vmin;
+    min-height: 6vmin;
+  }
+
+  #progress-button {
     padding: 2vmin 4vmin;
     font-size: 1.5vmin;
     width: auto;
@@ -1368,6 +1447,12 @@ button:hover {
     font-size: 2vmin;
   }
 
+  #unlock-message {
+    font-size: 2vmin;
+    padding: 1vmin 2vmin;
+    margin: 2vmin 0;
+  }
+
   .high-scores h3 {
     font-size: 2.5vmin;
   }
@@ -1384,28 +1469,60 @@ button:hover {
   }
 
   #shop-items {
-    max-height: 50vh; /* Reducir la altura máxima para dejar espacio al botón "Volver" */
-    margin-bottom: 2vmin; /* Asegurar espacio para el botón "Volver" */
+    max-height: 50vh;
+    margin-bottom: 2vmin;
   }
 
   #back-to-menu-from-shop {
-    margin-top: 2vmin; /* Añadir margen superior para separarlo de los ítems */
-    width: 20vmin; /* Ajustar el ancho para que sea consistente */
-    min-width: 15vmin; /* Asegurar un tamaño mínimo */
-    min-height: 6vmin; /* Asegurar un tamaño mínimo */
-    font-size: 1.5vmin; /* Ajustar el tamaño de fuente */
-    padding: 2vmin 3vmin; /* Ajustar el padding */
+    margin-top: 2vmin;
+    width: 20vmin;
+    min-width: 15vmin;
+    min-height: 6vmin;
+    font-size: 1.5vmin;
+    padding: 2vmin 3vmin;
+  }
+
+  /* Ajustar el menú de progreso */
+  #progress-menu {
+    width: 90vw;
+    max-width: 90vw;
+    padding: 2vmin;
+    box-sizing: border-box;
+  }
+
+  #progress-items {
+    max-height: 50vh;
+    overflow-y: auto;
+    margin-bottom: 2vmin;
+  }
+
+  .progress-stats p {
+    font-size: 2vmin;
+  }
+
+  .progress-item p {
+    font-size: 1.8vmin;
+  }
+
+  .progress-item .completed {
+    font-size: 1.5vmin;
+  }
+
+  #back-to-menu-from-progress {
+    width: 20vmin;
+    font-size: 1.5vmin;
+    padding: 2vmin 3vmin;
   }
 
   /* Ajustar el submenú de modos de juego */
   #game-mode-menu {
     width: 90vw;
-    max-width: 300px; /* Mantener el ancho máximo */
-    height: auto; /* Altura automática para ajustarse al contenido */
-    min-height: 400px; /* Altura mínima explícita para asegurar que quepa todo */
-    max-height: 70vh; /* Limitar la altura máxima para permitir desplazamiento si es necesario */
-    padding: 15px; /* Aumentar el padding para evitar superposiciones */
-    overflow-y: auto; /* Permitir desplazamiento si el contenido excede max-height */
+    max-width: 300px;
+    height: auto;
+    min-height: 400px;
+    max-height: 70vh;
+    padding: 15px;
+    overflow-y: auto;
     background: rgba(255, 255, 255, 0.95);
     border: 4px solid #FFD700;
     border-radius: 15px;
@@ -1413,7 +1530,7 @@ button:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Alinear al inicio para que el contenido fluya naturalmente */
+    justify-content: flex-start;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -1423,13 +1540,13 @@ button:hover {
 
   #game-mode-menu h2 {
     font-size: 3vmin;
-    margin: 0 0 20px 0; /* Mantener el margen inferior, pero sin margen superior */
+    margin: 0 0 20px 0;
     max-width: 250px;
     color: #FFD700;
     text-shadow: 1px 1px #000;
     text-align: center;
-    position: relative; /* Cambiar a position: relative */
-    top: 25px; /* Mover el título hacia abajo 10px */
+    position: relative;
+    top: 25px;
     background: transparent;
     z-index: 1;
   }
@@ -1437,10 +1554,10 @@ button:hover {
   #game-mode-menu .menu-buttons {
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Mantener el gap ajustado */
+    gap: 8px;
     width: 100%;
     align-items: center;
-    padding-bottom: 15px; /* Añadir padding inferior para asegurar que el botón "Volver" sea visible */
+    padding-bottom: 15px;
   }
 
   #classic-mode-button,
@@ -1448,9 +1565,9 @@ button:hover {
   #survival-mode-button,
   #inverse-mode-button,
   #back-to-main-menu {
-    max-width: 250px; /* Mantener el ancho de los botones */
-    padding: 8px 10px; /* Mantener el padding ajustado */
-    font-size: 2vmin; /* Mantener el tamaño de fuente */
+    max-width: 250px;
+    padding: 8px 10px;
+    font-size: 2vmin;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1469,24 +1586,24 @@ button:hover {
   #survival-mode-button .button-text,
   #inverse-mode-button .button-text,
   #back-to-main-menu .button-text {
-    padding-right: 20px; /* Mantener el padding */
+    padding-right: 20px;
     flex-grow: 1;
     text-align: center;
   }
 
   .info-button {
-    width: 20px; /* Mantener el tamaño ajustado */
+    width: 20px;
     height: 20px;
-    font-size: 14px; /* Mantener el tamaño de la fuente */
+    font-size: 14px;
   }
 
   .info-panel {
-    max-width: 150px; /* Mantener el ancho */
-    font-size: 1.8vmin; /* Mantener el tamaño de fuente */
-    padding: 8px; /* Mantener el padding */
+    max-width: 150px;
+    font-size: 1.8vmin;
+    padding: 8px;
     background: #fff;
     border: 1px solid #000;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Mantener la sombra */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -1504,4 +1621,71 @@ button:hover {
 .game-area.bg-forest {
   background: url('img/forest-bg.jpg') no-repeat center center;
   background-size: cover;
+}
+
+/* Barra de XP */
+.xp-bar-container {
+  width: 100px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid #FFD700;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-left: 10px;
+}
+
+#xp-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #32CD32, #FFD700);
+  transition: width 0.5s ease;
+}
+
+
+/* Estilo para el nivel en game-info */
+.game-info span {
+  font-size: 0.8rem;
+  color: #FFD700;
+  text-shadow: 1px 1px #000;
+}
+
+/* Notificación de subida de nivel */
+.level-up-notification {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #FFD700;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1rem;
+  z-index: 100;
+  animation: fadeOutUp 2s forwards;
+}
+
+@keyframes fadeOutUp {
+  0% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -50px); }
+}
+
+/* Ajustes para móviles */
+@media screen and (max-width: 1200px) and (orientation: landscape) {
+  .xp-bar-container {
+    width: 15vmin;
+    height: 2vmin;
+  }
+
+  .game-info span {
+    font-size: 1.5vmin;
+  }
+
+  #menu p {
+    font-size: 2vmin;
+  }
+
+  .level-up-notification {
+    font-size: 2vmin;
+    padding: 2vmin 4vmin;
+  }
 }
