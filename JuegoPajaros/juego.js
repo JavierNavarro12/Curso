@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let score = 0;
   let coins = 0;
   let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
-  let playerLevel = parseInt(localStorage.getItem('playerLevel')) || 0; // Inicia en 0 para nuevos jugadores
+  let playerLevel = parseInt(localStorage.getItem('playerLevel')) || 0;
   let playerXP = parseInt(localStorage.getItem('playerXP')) || 0;
   let gameActive = false;
   let pipes = [];
@@ -238,7 +238,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Función para calcular el nivel basado en XP
   function calculateLevelFromXP(xp) {
-    // Si el XP es 0, devolver nivel 0 para nuevos jugadores
     if (xp === 0) {
       return 0;
     }
@@ -249,7 +248,6 @@ document.addEventListener('DOMContentLoaded', () => {
         newLevel = i;
         break;
       }
-      // Si el XP es mayor o igual al último umbral, asignar el nivel máximo
       if (i === levelThresholds.length - 1 && xp >= levelThresholds[i].xp) {
         newLevel = levelThresholds.length;
       }
@@ -264,7 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('playerLevel', playerLevel);
     localStorage.setItem('playerXP', playerXP);
   } else {
-    // Recalcular el nivel basado en el XP almacenado para evitar inconsistencias
     playerLevel = calculateLevelFromXP(playerXP);
     localStorage.setItem('playerLevel', playerLevel);
   }
@@ -273,31 +270,37 @@ document.addEventListener('DOMContentLoaded', () => {
   function handleLevelUnlocks() {
     let unlockedSomething = false;
     let unlockMessages = [];
+    let previousLevel = parseInt(localStorage.getItem('lastCheckedLevel')) || 0;
 
-    // Revisar cada desbloqueo definido en levelUnlocks
-    levelUnlocks.forEach(unlock => {
-      // Verificar si el nivel actual desbloquea este ítem
-      if (playerLevel >= unlock.level && !unlockedItems[unlock.item]) {
-        unlockedItems[unlock.item] = true;
-        unlockedSomething = true;
-        unlockMessages.push(unlock.description);
-        console.log(`Desbloqueado: ${unlock.description} en el nivel ${unlock.level}`);
-      }
-    });
+    // Revisar todos los niveles desde el último verificado hasta el nivel actual
+    for (let level = previousLevel + 1; level <= playerLevel; level++) {
+      const unlocksForLevel = levelUnlocks.filter(unlock => unlock.level === level);
+      unlocksForLevel.forEach(unlock => {
+        if (!unlockedItems[unlock.item]) {
+          unlockedItems[unlock.item] = true;
+          unlockedSomething = true;
+          unlockMessages.push(unlock.description);
+          console.log(`Desbloqueado: ${unlock.description} en el nivel ${unlock.level}`);
+        }
+      });
+    }
 
-    // Guardar los ítems desbloqueados en localStorage
+    // Actualizar el último nivel verificado
+    localStorage.setItem('lastCheckedLevel', playerLevel);
     localStorage.setItem('unlockedItems', JSON.stringify(unlockedItems));
 
-    // Si se desbloqueó algo, mostrar el mensaje
+    // Mostrar mensaje si se desbloqueó algo
     if (unlockedSomething) {
       const message = `¡Enhorabuena por llegar al nivel ${playerLevel}! Has desbloqueado: ${unlockMessages.join(', ')}.`;
       elements.unlockMessage.textContent = message;
       elements.unlockMessage.classList.remove('hidden');
+      console.log('Mensaje de desbloqueo mostrado:', message);
       updateCharacterOptions();
       updateShop();
       setupProgressMenu();
     } else {
       elements.unlockMessage.classList.add('hidden');
+      console.log('No hay nuevos desbloqueos para el nivel', playerLevel);
     }
 
     return unlockedSomething;
@@ -305,28 +308,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Función para actualizar nivel y desbloqueos
   function updateLevel() {
-    // Calcular el nivel basado en el XP actual
-    const newLevel = calculateLevelFromXP(playerXP);
+    const oldLevel = playerLevel;
+    playerLevel = calculateLevelFromXP(playerXP);
+    localStorage.setItem('playerLevel', playerLevel);
+    localStorage.setItem('playerXP', playerXP);
 
-    if (newLevel !== playerLevel) {
-      // Subida de nivel
-      playerLevel = newLevel;
-      localStorage.setItem('playerLevel', playerLevel);
+    if (playerLevel > oldLevel) {
       showLevelUpNotification();
-
-      // Desbloqueos adicionales según nivel
-      if (playerLevel >= 3) unlockedItems['character-2'] = true;
-      if (playerLevel >= 6) unlockedItems['character-3'] = true;
-      if (playerLevel >= 9) unlockedItems['character-4'] = true;
-      if (playerLevel >= 12) unlockedItems['character-5'] = true;
-      if (playerLevel >= 15) unlockedItems['bg-night'] = true;
-      if (playerLevel >= 18) unlockedItems['bg-space'] = true;
-      if (playerLevel >= 21) unlockedItems['bg-forest'] = true;
-      if (playerLevel >= 24) unlockedItems['trail-effect-1'] = true;
-      if (playerLevel >= 27) unlockedItems['trail-effect-2'] = true;
-      if (playerLevel >= 30) unlockedItems['trail-effect-3'] = true;
-      localStorage.setItem('unlockedItems', JSON.stringify(unlockedItems));
-      updateCharacterOptions();
+      handleLevelUnlocks(); // Verificar desbloqueos inmediatamente al subir de nivel
     }
 
     // Actualizar UI
@@ -376,14 +365,12 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.progressLevelDisplay.textContent = playerLevel;
     elements.progressXpDisplay.textContent = `${playerXP}/${getNextLevelXP(playerLevel)}`;
     
-    // Calcular el porcentaje de XP
     const currentLevelXP = playerLevel === 0 ? 0 : levelThresholds[playerLevel - 1]?.xp || 0;
     const nextLevelXP = getNextLevelXP(playerLevel);
     const xpProgress = nextLevelXP > currentLevelXP 
       ? Math.min(100, ((playerXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100)
       : 100;
     
-    // Actualizar la barra de progreso
     elements.progressXpBar.style.width = `${xpProgress}%`;
     
     setupProgressMenu();
@@ -410,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateLevel();
   setupProgressMenu();
 
-  // Resto de las variables y configuraciones iniciales sin cambios
+  // Resto de las variables y configuraciones iniciales
   const predefinedCharacters = {
     1: { bodyColor: '#FF6347', wingsColor: '#FF4500', size: 30, image: 'img/character1.png' },
     2: { bodyColor: '#4682B4', wingsColor: '#4169E1', size: 35, image: 'img/character2.png' },
@@ -1013,20 +1000,20 @@ document.addEventListener('DOMContentLoaded', () => {
         box-sizing: border-box;
       }
       #progress-button {
-        width: 120px; /* Tamaño uniforme con "Jugar" y "Tienda" */
+        width: 120px;
         padding: 10px 20px;
         font-size: 0.9rem;
         background-color: #ff4500;
         color: #fff;
-        border: 2px solid #FFD700; /* Borde amarillo */
+        border: 2px solid #FFD700;
         border-radius: 5px;
         cursor: pointer;
         box-sizing: border-box;
         transition: background 0.3s, transform 0.1s;
       }
       #progress-button:hover {
-        background-color: #FFD700; /* Fondo amarillo al pasar el mouse */
-        color: #ff4500; /* Texto cambia a naranja */
+        background-color: #FFD700;
+        color: #ff4500;
         transform: scale(1.05);
       }
       #progress-menu {
@@ -1084,7 +1071,7 @@ document.addEventListener('DOMContentLoaded', () => {
         font-weight: bold;
       }
       #back-to-menu-from-progress {
-        width: 120px; /* Tamaño uniforme con otros botones */
+        width: 120px;
         padding: 10px 20px;
         font-size: 0.9rem;
         background-color: #ff4500;
@@ -1114,10 +1101,10 @@ document.addEventListener('DOMContentLoaded', () => {
           padding: 10px;
         }
         #progress-button {
-          width: 15vmin; /* Ajustado para ser igual a "Jugar" y "Tienda" */
+          width: 15vmin;
           min-width: 12vmin;
-          padding: 1.5vmin 3vmin; /* Ajuste proporcional */
-          font-size: 1.2vmin; /* Texto más pequeño para mantener proporción */
+          padding: 1.5vmin 3vmin;
+          font-size: 1.2vmin;
         }
         #progress-menu {
           width: 90%;
@@ -1134,10 +1121,10 @@ document.addEventListener('DOMContentLoaded', () => {
           font-size: 14px;
         }
         #back-to-menu-from-progress {
-          width: 12vmin; /* Reducido aún más para dejar más espacio */
+          width: 12vmin;
           min-width: 10vmin;
-          padding: 1vmin 1.5vmin; /* Padding más pequeño */
-          font-size: 1.2vmin; /* Texto más pequeño */
+          padding: 1vmin 1.5vmin;
+          font-size: 1.2vmin;
         }
       }
     `;
@@ -1267,7 +1254,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (distance < 100) {
           coin.x += dx * 0.3;
           coin.y += dy * 0.3;
-          if (dietance < 20) {
+          if (distance < 20) {
             coins += gameMode === 'survival' ? difficultyLevel : 1;
             playerXP += 5; // Ganar 5 XP por moneda
             localStorage.setItem('playerXP', playerXP);
@@ -1638,8 +1625,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     clearInterval(pipeInterval);
     totalCoins += coins;
+    localStorage.setItem('totalCoins', totalCoins);
+    
+    // Asegurar que el nivel esté actualizado antes de verificar desbloqueos
+    updateLevel();
+
     if (gameMode === 'survival' && maxSurvivalLevel >= 5) {
       totalCoins += 5;
+      localStorage.setItem('totalCoins', totalCoins);
       setTimeout(() => {
         alert('¡Has ganado 5 monedas por llegar al nivel 5!');
         elements.gameContainer.classList.remove('hidden');
@@ -1655,7 +1648,7 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.menu.classList.add('hidden');
       handleLevelUnlocks();
     }
-    localStorage.setItem('totalCoins', totalCoins);
+    
     elements.finalScoreDisplay.textContent = score;
     elements.totalCoinsDisplay.textContent = totalCoins;
     updateHighScores();
