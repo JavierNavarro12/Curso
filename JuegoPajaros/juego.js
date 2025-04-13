@@ -172,21 +172,21 @@ document.addEventListener('DOMContentLoaded', () => {
       id: 'survivor-novice',
       name: 'Superviviente Novato',
       description: 'Sobrevive 60 segundos sin chocar',
-      condition: () => survivalTime >= 60000, // Eliminado gameMode === 'survival'
+      condition: () => survivalTime >= 60000,
       reward: { coins: 10, xp: 100 }
     },
     {
       id: 'survivor-medium',
       name: 'Superviviente Medio',
       description: 'Sobrevive 120 segundos sin chocar',
-      condition: () => survivalTime >= 120000, // Eliminado gameMode === 'survival'
+      condition: () => survivalTime >= 120000,
       reward: { coins: 20, xp: 200 }
     },
     {
       id: 'survivor-pro',
       name: 'Superviviente Pro',
       description: 'Sobrevive 180 segundos sin chocar',
-      condition: () => survivalTime >= 180000, // Eliminado gameMode === 'survival'
+      condition: () => survivalTime >= 180000,
       reward: { coins: 30, xp: 300 }
     }
   ];
@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let lastPowerUpType = null;
   let difficultyLevel = 1;
   let survivalTime = 0;
-  let survivalStartTime = 0; // Nueva variable para medir tiempo real
+  let survivalStartTime = 0;
   let maxSurvivalLevel = 0;
   let gameLoopId = null;
   let isInputActive = false;
@@ -1526,29 +1526,26 @@ document.addEventListener('DOMContentLoaded', () => {
     clearTimeout(elements.bird.shieldTimeout);
     clearTimeout(elements.bird.speedTimeout);
     clearTimeout(elements.bird.magnetTimeout);
+    elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
     if (type === 'shield') {
-      activeShield = true;
-      elements.bird.style.boxShadow = '0 0 15px #00BFFF';
-      elements.bird.shieldTimeout = setTimeout(() => {
-        activeShield = false;
-        elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
-      }, powerUpDuration);
+        activeShield = true;
+        elements.bird.style.boxShadow = '0 0 15px #00BFFF';
     } else if (type === 'speed') {
-      speedBoostActive = true;
-      const originalSpeed = pipeSpeed;
-      pipeSpeed = originalSpeed * 1.5;
-      elements.bird.speedTimeout = setTimeout(() => {
-        speedBoostActive = false;
-        pipeSpeed = originalSpeed;
-        if (gameMode === 'survival') {
-          pipeSpeed = 2 + difficultyLevel * 0.5;
-        }
-      }, powerUpDuration);
+        speedBoostActive = true;
+        const originalSpeed = pipeSpeed;
+        pipeSpeed = originalSpeed * 1.5;
+        elements.bird.speedTimeout = setTimeout(() => {
+            speedBoostActive = false;
+            pipeSpeed = originalSpeed;
+            if (gameMode === 'survival') {
+                pipeSpeed = 2 + difficultyLevel * 0.5;
+            }
+        }, powerUpDuration);
     } else if (type === 'magnet') {
-      magnetActive = true;
-      elements.bird.magnetTimeout = setTimeout(() => {
-        magnetActive = false;
-      }, powerUpDuration);
+        magnetActive = true;
+        elements.bird.magnetTimeout = setTimeout(() => {
+            magnetActive = false;
+        }, powerUpDuration);
     }
   }
 
@@ -1615,57 +1612,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function movePipes() {
     pipes.forEach((pipe, index) => {
-      pipe.x -= pipeSpeed;
-      pipe.top.style.left = `${pipe.x}px`;
-      pipe.bottom.style.left = `${pipe.x}px`;
-      if (pipe.isMoving) {
-        const elapsedTime = (Date.now() - pipe.moveTime) % 2000;
-        const progress = elapsedTime / 2000;
-        pipe.moveOffset = 50 * Math.sin(progress * 2 * Math.PI);
-        const newTopHeight = pipe.baseHeight + pipe.moveOffset;
-        const newBottomHeight = gameHeight - newTopHeight - pipeGap;
-        if (newTopHeight >= 50 && newBottomHeight >= 50) {
-          pipe.top.style.height = `${newTopHeight}px`;
-          pipe.bottom.style.height = `${newBottomHeight}px`;
+        pipe.x -= pipeSpeed;
+        pipe.top.style.left = `${pipe.x}px`;
+        pipe.bottom.style.left = `${pipe.x}px`;
+        if (pipe.isMoving) {
+            const elapsedTime = (Date.now() - pipe.moveTime) % 2000;
+            const progress = elapsedTime / 2000;
+            pipe.moveOffset = 50 * Math.sin(progress * 2 * Math.PI);
+            const newTopHeight = pipe.baseHeight + pipe.moveOffset;
+            const newBottomHeight = gameHeight - newTopHeight - pipeGap;
+            if (newTopHeight >= 50 && newBottomHeight >= 50) {
+                pipe.top.style.height = `${newTopHeight}px`;
+                pipe.bottom.style.height = `${newBottomHeight}px`;
+            }
         }
-      }
-      const birdRect = elements.bird.getBoundingClientRect();
-      const pipeTopRect = pipe.top.getBoundingClientRect();
-      const pipeBottomRect = pipe.bottom.getBoundingClientRect();
-      const isColliding =
-        birdRect.right > pipeTopRect.left &&
-        birdRect.left < pipeTopRect.right &&
-        (birdRect.top < pipeTopRect.bottom || birdRect.bottom > pipeBottomRect.top);
-      if (isColliding && !activeShield) {
-        if (gameMode === 'power-ups') {
-          activeShield = true;
-          elements.bird.style.boxShadow = '0 0 15px #00BFFF';
-          setTimeout(() => {
-            activeShield = false;
-            elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
-          }, 1000);
-        } else {
-          endGame();
+        const birdRect = elements.bird.getBoundingClientRect();
+        const pipeTopRect = pipe.top.getBoundingClientRect();
+        const pipeBottomRect = pipe.bottom.getBoundingClientRect();
+        const isColliding =
+            birdRect.right > pipeTopRect.left &&
+            birdRect.left < pipeTopRect.right &&
+            (birdRect.top < pipeTopRect.bottom || birdRect.bottom > pipeBottomRect.top);
+        if (isColliding) {
+            if (gameMode === 'power-ups' && activeShield) {
+                activeShield = false;
+                elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+                pipe.top.remove();
+                pipe.bottom.remove();
+                pipes.splice(index, 1);
+                return; // Evita cualquier acción adicional para esta tubería
+            } else {
+                endGame();
+                return;
+            }
         }
-      }
-      if (pipe.x + pipeWidth < birdX && !pipe.passed) {
-        pipe.passed = true;
-        score++;
-        playerXP += 10;
-        localStorage.setItem('playerXP', playerXP);
-        updateLevel();
-        elements.scoreDisplay.textContent = score;
-        checkAchievements();
-      }
-      if (pipe.x < -pipeWidth) {
-        pipe.top.remove();
-        pipe.bottom.remove();
-        pipes.splice(index, 1);
-      }
+        if (pipe.x + pipeWidth < birdX && !pipe.passed) {
+            pipe.passed = true;
+            score++;
+            playerXP += 10;
+            localStorage.setItem('playerXP', playerXP);
+            updateLevel();
+            elements.scoreDisplay.textContent = score;
+            checkAchievements();
+        }
+        if (pipe.x < -pipeWidth) {
+            pipe.top.remove();
+            pipe.bottom.remove();
+            pipes.splice(index, 1);
+        }
     });
-  }
+}
 
-  function endGame() {
+function endGame() {
     gameActive = false;
     isInputActive = false;
     cancelAnimationFrame(gameLoopId);
@@ -1683,49 +1681,40 @@ document.addEventListener('DOMContentLoaded', () => {
     updateHighScores();
     checkAchievements();
     if (gameMode === 'survival' && maxSurvivalLevel >= 5) {
-      totalCoins += 5;
-      localStorage.setItem('totalCoins', totalCoins);
-      elements.unlockMessage.textContent = '¡Has alcanzado el nivel 5 en modo Supervivencia! Recompensa: 5 monedas.';
-      elements.unlockMessage.classList.remove('hidden');
-      setTimeout(() => elements.unlockMessage.classList.add('hidden'), 3000);
+        totalCoins += 5;
+        localStorage.setItem('totalCoins', totalCoins);
+        elements.unlockMessage.textContent = '¡Has ganado 5 monedas por alcanzar el nivel 5 en modo Supervivencia!';
+        elements.unlockMessage.classList.remove('hidden');
     }
     elements.finalScoreDisplay.textContent = score;
     elements.totalCoinsDisplay.textContent = totalCoins;
     elements.gameContainer.classList.add('hidden');
     elements.gameOverScreen.classList.remove('hidden');
-    elements.gameArea.innerHTML = '';
-    elements.bird.style.display = 'block';
-    pipes = [];
-    coinsInGame = [];
-    particles = [];
-    powerUps = [];
-    elements.difficultyLevelDisplay.style.display = 'none';
-  }
+    elements.unlockMessage.classList.remove('hidden');
+    setTimeout(() => {
+        elements.unlockMessage.classList.add('hidden');
+    }, 5000);
+}
 
-  function gameLoop(timestamp) {
+  function gameLoop() {
     if (!gameActive) return;
     velocity += gravity;
-    if (velocity > maxVelocity) velocity = maxVelocity;
+    velocity = Math.min(velocity, maxVelocity);
     birdY += velocity;
-    birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize));
+    if (birdY > gameHeight - birdSize || birdY < 0) {
+      endGame();
+      return;
+    }
     elements.bird.style.top = `${birdY}px`;
+    if (Math.random() < 0.3) createParticle();
+    updateParticles();
     movePipes();
     moveCoins();
     movePowerUps();
-    updateParticles();
-    if (equippedItems['trail-effect'] && Math.random() < 0.1) createParticle();
-    if (birdY <= 0 || birdY >= gameHeight - birdSize) {
-      if (!activeShield) {
-        endGame();
-      } else {
-        velocity = 0;
-        birdY = birdY <= 0 ? 0 : gameHeight - birdSize;
-      }
-    }
-    // Actualizar survivalTime en todos los modos
-    survivalTime = Date.now() - survivalStartTime;
     adjustDifficulty();
-    checkAchievements();
+    if (gameMode === 'survival') {
+      survivalTime = Date.now() - survivalStartTime;
+    }
     gameLoopId = requestAnimationFrame(gameLoop);
   }
 
@@ -1737,114 +1726,93 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     adjustGameDimensions();
-    applyCharacter();
-    applyBackground();
     elements.gameModeMenu.classList.add('hidden');
     elements.gameContainer.classList.remove('hidden');
-    elements.gameArea.innerHTML = '';
-    elements.gameArea.appendChild(elements.bird);
-    if (gameMode === 'survival') {
-      elements.difficultyLevelDisplay.style.display = 'block';
-      elements.gameArea.appendChild(elements.difficultyLevelDisplay);
-    }
-    gameActive = true;
-    isInputActive = true;
-    hasInteractedInverse = false;
-    score = 0;
-    coins = 0;
+    elements.scoreDisplay.textContent = score = 0;
+    elements.coinsDisplay.textContent = coins = 0;
+    elements.levelDisplay.textContent = playerLevel;
+    elements.xpBar.style.width = '0%';
+    birdY = (gameHeight - birdSize) / 2;
+    velocity = 0;
+    pipes.forEach(pipe => {
+      pipe.top.remove();
+      pipe.bottom.remove();
+    });
+    coinsInGame.forEach(coin => coin.element.remove());
+    powerUps.forEach(powerUp => powerUp.element.remove());
+    particles.forEach(particle => particle.element.remove());
     pipes = [];
     coinsInGame = [];
-    particles = [];
     powerUps = [];
-    velocity = 0;
-    survivalTime = 0;
-    survivalStartTime = Date.now(); // Inicializar survivalStartTime
-    maxSurvivalLevel = 0;
-    difficultyLevel = 1;
+    particles = [];
+    activeShield = false;
+    speedBoostActive = false;
+    magnetActive = false;
+    lastPowerUpType = null;
     pipeSpeed = 2;
     pipeGap = basePipeGap;
     pipeIntervalTime = 2000;
-    elements.scoreDisplay.textContent = score;
-    elements.coinsDisplay.textContent = coins;
-    elements.levelDisplay.textContent = playerLevel;
-    elements.bird.style.top = `${birdY}px`;
-    elements.bird.style.left = `${birdX}px`;
+    difficultyLevel = 1;
+    survivalTime = 0;
+    maxSurvivalLevel = 0;
+    elements.difficultyLevelDisplay.textContent = `Nivel ${difficultyLevel}`;
+    if (gameMode === 'survival') {
+      elements.gameArea.appendChild(elements.difficultyLevelDisplay);
+      elements.difficultyLevelDisplay.style.display = 'block';
+    } else {
+      elements.difficultyLevelDisplay.style.display = 'none';
+    }
     clearInterval(pipeInterval);
     pipeInterval = setInterval(createPipe, pipeIntervalTime);
-    if (gameMode === 'survival') {
-      elements.difficultyLevelDisplay.textContent = `Nivel ${difficultyLevel}`;
-    }
+    applyCharacter();
+    applyBackground();
+    gameActive = true;
+    isInputActive = true;
+    hasInteractedInverse = false;
+    survivalStartTime = Date.now();
     gameLoopId = requestAnimationFrame(gameLoop);
   }
 
-  function handleJump() {
-    if (!gameActive || !isInputActive) return;
-    if (gameMode === 'inverse' && hasInteractedInverse) {
-      velocity = Math.min(velocity + 1, maxVelocity);
+  function handleInput(e) {
+    if (!isInputActive || !gameActive) return;
+    e.preventDefault();
+    if (gameMode === 'inverse') {
+      hasInteractedInverse = true;
     } else {
       velocity = jump;
     }
   }
 
-  function handleRelease() {
-    if (!gameActive || !isInputActive) return;
-    if (gameMode === 'inverse' && hasInteractedInverse) {
+  function handleInputEnd(e) {
+    if (!isInputActive || !gameActive || gameMode !== 'inverse') return;
+    e.preventDefault();
+    if (hasInteractedInverse) {
       velocity = jump;
     }
   }
 
-  function handleInputStart(e) {
-    e.preventDefault();
-    if (!gameActive || !isInputActive) return;
-    if (gameMode === 'inverse') hasInteractedInverse = true;
-    handleJump();
-  }
-
-  function handleInputEnd(e) {
-    e.preventDefault();
-    if (!gameActive || !isInputActive) return;
-    handleRelease();
-  }
-
   document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space') {
-      e.preventDefault();
-      handleJump();
-    }
+    if (e.code === 'Space') handleInput(e);
   });
 
-  document.addEventListener('keyup', (e) => {
-    if (e.code === 'Space') {
-      e.preventDefault();
-      handleRelease();
-    }
-  });
+  document.addEventListener('mousedown', handleInput);
+  document.addEventListener('touchstart', handleInput, { passive: false });
 
-  elements.gameArea.addEventListener('mousedown', handleInputStart);
-  elements.gameArea.addEventListener('mouseup', handleInputEnd);
-  elements.gameArea.addEventListener('touchstart', handleInputStart, { passive: false });
-  elements.gameArea.addEventListener('touchend', handleInputEnd, { passive: false });
+  document.addEventListener('mouseup', handleInputEnd);
+  document.addEventListener('touchend', handleInputEnd, { passive: false });
 
   if (elements.restartButton) {
     elements.restartButton.addEventListener('click', () => {
       elements.gameOverScreen.classList.add('hidden');
-      elements.menu.classList.remove('hidden');
+      elements.gameModeMenu.classList.remove('hidden');
     });
   }
 
-  elements.bird.style.left = `${birdX}px`;
-  elements.bird.style.top = `${birdY}px`;
-
   updateCharacterOptions();
   updateEquipOptions();
+  updateShop();
   applyCharacter();
   applyBackground();
-  elements.menu.classList.remove('hidden');
-  elements.shopCoinsDisplay.textContent = totalCoins;
   checkOrientation();
-  if (!hasSeenWelcomeScreen) {
-    startLoadingAnimation();
-  }
-
-  console.log('Script inicializado correctamente.');
+  handleLevelUnlocks();
 });
