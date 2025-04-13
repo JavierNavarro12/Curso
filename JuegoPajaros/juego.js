@@ -60,6 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
     survivalModeButton: document.getElementById('survival-mode-button'),
     inverseModeButton: document.getElementById('inverse-mode-button'),
     backToMainMenu: document.getElementById('back-to-main-menu'),
+    achievementsButton: document.getElementById('achievements-button'),
+    achievementsMenu: document.getElementById('achievements-menu'),
+    achievementsItemsContainer: document.getElementById('achievements-items'),
+    backToMenuFromAchievements: document.getElementById('back-to-menu-from-achievements'),
+    achievementsNotification: document.getElementById('achievements-notification'),
   };
 
   // Configurar el elemento difficultyLevelDisplay
@@ -112,6 +117,80 @@ document.addEventListener('DOMContentLoaded', () => {
     { level: 30, item: 'trail-effect-3', description: 'Efecto de rastro (Fuego) 🔥' },
   ];
 
+  // Definir logros
+  const achievements = [
+    {
+      id: 'score-novice',
+      name: 'Puntuación Novato',
+      description: 'Alcanza 10 puntos',
+      condition: () => score >= 10,
+      reward: { coins: 5, xp: 50 }
+    },
+    {
+      id: 'score-medium',
+      name: 'Puntuación Media',
+      description: 'Alcanza 20 puntos',
+      condition: () => score >= 20,
+      reward: { coins: 10, xp: 100 }
+    },
+    {
+      id: 'score-hard',
+      name: 'Puntuación Difícil',
+      description: 'Alcanza 50 puntos',
+      condition: () => score >= 50,
+      reward: { coins: 20, xp: 200 }
+    },
+    {
+      id: 'score-pro',
+      name: 'Puntuación Pro',
+      description: 'Alcanza 100 puntos',
+      condition: () => score >= 100,
+      reward: { coins: 50, xp: 500 }
+    },
+    {
+      id: 'collector-1',
+      name: 'Coleccionista 1',
+      description: 'Recoge 50 monedas en total',
+      condition: () => totalCoins >= 50,
+      reward: { coins: 15, xp: 150 }
+    },
+    {
+      id: 'collector-2',
+      name: 'Coleccionista 2',
+      description: 'Recoge 100 monedas en total',
+      condition: () => totalCoins >= 100,
+      reward: { coins: 25, xp: 250 }
+    },
+    {
+      id: 'collector-3',
+      name: 'Coleccionista 3',
+      description: 'Recoge 150 monedas en total',
+      condition: () => totalCoins >= 150,
+      reward: { coins: 35, xp: 350 }
+    },
+    {
+      id: 'survivor-novice',
+      name: 'Superviviente Novato',
+      description: 'Sobrevive 60 segundos sin chocar',
+      condition: () => survivalTime >= 60000, // Eliminado gameMode === 'survival'
+      reward: { coins: 10, xp: 100 }
+    },
+    {
+      id: 'survivor-medium',
+      name: 'Superviviente Medio',
+      description: 'Sobrevive 120 segundos sin chocar',
+      condition: () => survivalTime >= 120000, // Eliminado gameMode === 'survival'
+      reward: { coins: 20, xp: 200 }
+    },
+    {
+      id: 'survivor-pro',
+      name: 'Superviviente Pro',
+      description: 'Sobrevive 180 segundos sin chocar',
+      condition: () => survivalTime >= 180000, // Eliminado gameMode === 'survival'
+      reward: { coins: 30, xp: 300 }
+    }
+  ];
+
   // Variables del juego
   let birdY = 250;
   let gravity = 0.2;
@@ -136,6 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let lastPowerUpType = null;
   let difficultyLevel = 1;
   let survivalTime = 0;
+  let survivalStartTime = 0; // Nueva variable para medir tiempo real
   let maxSurvivalLevel = 0;
   let gameLoopId = null;
   let isInputActive = false;
@@ -195,6 +275,14 @@ document.addEventListener('DOMContentLoaded', () => {
     'trail-effect': null,
     'background': null
   };
+
+  // Estado de los logros
+  let achievementsState = JSON.parse(localStorage.getItem('achievements')) || {};
+  achievements.forEach(achievement => {
+    if (!achievementsState[achievement.id]) {
+      achievementsState[achievement.id] = { unlocked: false, claimed: false };
+    }
+  });
 
   // Sistema de niveles
   const levelThresholds = [
@@ -306,6 +394,105 @@ document.addEventListener('DOMContentLoaded', () => {
     return unlockedSomething;
   }
 
+  // Función para verificar y desbloquear logros
+  function checkAchievements() {
+    let newAchievements = false;
+    achievements.forEach(achievement => {
+      if (!achievementsState[achievement.id].unlocked && achievement.condition()) {
+        achievementsState[achievement.id].unlocked = true;
+        newAchievements = true;
+        localStorage.setItem('achievements', JSON.stringify(achievementsState));
+        showAchievementNotification(achievement.name);
+        console.log(`Logro desbloqueado: ${achievement.name}`);
+      }
+    });
+    if (newAchievements) {
+      updateAchievementsNotification();
+      setupAchievementsMenu();
+    }
+  }
+
+  // Función para mostrar notificación de logro
+  function showAchievementNotification(achievementName) {
+    if (!gameActive) return;
+    const notification = document.createElement('div');
+    notification.classList.add('achievement-notification');
+    notification.textContent = `¡Has desbloqueado ${achievementName}!`;
+    elements.gameArea.appendChild(notification);
+    setTimeout(() => notification.remove(), 2000);
+  }
+
+  // Función para actualizar la notificación en el botón de logros
+  function updateAchievementsNotification() {
+    const unclaimedAchievements = Object.keys(achievementsState).filter(
+      id => achievementsState[id].unlocked && !achievementsState[id].claimed
+    ).length;
+    if (unclaimedAchievements > 0) {
+      elements.achievementsNotification.textContent = unclaimedAchievements;
+      elements.achievementsNotification.classList.remove('hidden');
+    } else {
+      elements.achievementsNotification.classList.add('hidden');
+    }
+  }
+
+  // Configuración del menú de logros
+  function setupAchievementsMenu() {
+    if (!elements.achievementsItemsContainer) return;
+    elements.achievementsItemsContainer.innerHTML = '';
+    achievements.forEach(achievement => {
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'achievement-item';
+      const isUnlocked = achievementsState[achievement.id].unlocked;
+      const isClaimed = achievementsState[achievement.id].claimed;
+      if (!isUnlocked) {
+        itemDiv.classList.add('locked');
+      }
+      const statusText = isClaimed ? '<span class="completed">Reclamado</span>' : (isUnlocked ? '' : '');
+      itemDiv.innerHTML = `
+        <p>${achievement.name}: ${achievement.description}<br>
+        <span class="reward-text">Recompensa: ${achievement.reward.coins} monedas, ${achievement.reward.xp} XP</span>
+        ${statusText}</p>
+      `;
+      if (isUnlocked && !isClaimed) {
+        const claimButton = document.createElement('button');
+        claimButton.className = 'claim-button';
+        claimButton.textContent = 'Reclamar';
+        claimButton.addEventListener('click', () => {
+          achievementsState[achievement.id].claimed = true;
+          totalCoins += achievement.reward.coins;
+          playerXP += achievement.reward.xp;
+          localStorage.setItem('achievements', JSON.stringify(achievementsState));
+          localStorage.setItem('totalCoins', totalCoins);
+          localStorage.setItem('playerXP', playerXP);
+          updateLevel();
+          setupAchievementsMenu();
+          updateAchievementsNotification();
+          elements.shopCoinsDisplay.textContent = totalCoins;
+        });
+        itemDiv.appendChild(claimButton);
+      }
+      elements.achievementsItemsContainer.appendChild(itemDiv);
+    });
+  }
+
+  // Evento para abrir el menú de logros
+  if (elements.achievementsButton) {
+    elements.achievementsButton.addEventListener('click', () => {
+      elements.menu.classList.add('hidden');
+      elements.achievementsMenu.classList.remove('hidden');
+      setupAchievementsMenu();
+      updateAchievementsNotification();
+    });
+  }
+
+  // Evento para volver al menú principal desde logros
+  if (elements.backToMenuFromAchievements) {
+    elements.backToMenuFromAchievements.addEventListener('click', () => {
+      elements.achievementsMenu.classList.add('hidden');
+      elements.menu.classList.remove('hidden');
+    });
+  }
+
   // Función para actualizar nivel y desbloqueos
   function updateLevel() {
     const oldLevel = playerLevel;
@@ -315,7 +502,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (playerLevel > oldLevel) {
       showLevelUpNotification();
-      handleLevelUnlocks(); // Verificar desbloqueos inmediatamente al subir de nivel
+      handleLevelUnlocks();
     }
 
     // Actualizar UI
@@ -396,6 +583,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inicializar UI de nivel y XP
   updateLevel();
   setupProgressMenu();
+  setupAchievementsMenu();
+  updateAchievementsNotification();
 
   // Resto de las variables y configuraciones iniciales
   const predefinedCharacters = {
@@ -418,6 +607,7 @@ document.addEventListener('DOMContentLoaded', () => {
   elements.gameModeMenu.classList.add('hidden');
   elements.orientationLock.classList.add('hidden');
   if (elements.progressMenu) elements.progressMenu.classList.add('hidden');
+  if (elements.achievementsMenu) elements.achievementsMenu.classList.add('hidden');
 
   if (!hasSeenWelcomeScreen) {
     if (!isMobile || window.matchMedia("(orientation: landscape)").matches) {
@@ -524,6 +714,7 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.gameOverScreen.classList.add('hidden');
         elements.gameModeMenu.classList.add('hidden');
         if (elements.progressMenu) elements.progressMenu.classList.add('hidden');
+        if (elements.achievementsMenu) elements.achievementsMenu.classList.add('hidden');
       }
       return;
     }
@@ -540,6 +731,7 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.gameOverScreen.classList.add('hidden');
       elements.gameModeMenu.classList.add('hidden');
       if (elements.progressMenu) elements.progressMenu.classList.add('hidden');
+      if (elements.achievementsMenu) elements.achievementsMenu.classList.add('hidden');
     } else {
       elements.orientationLock.classList.add('hidden');
       adjustGameDimensions();
@@ -555,6 +747,7 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.gameOverScreen.classList.add('hidden');
         elements.gameModeMenu.classList.add('hidden');
         if (elements.progressMenu) elements.progressMenu.classList.add('hidden');
+        if (elements.achievementsMenu) elements.achievementsMenu.classList.add('hidden');
       } else {
         elements.gameContainer.classList.remove('hidden');
         elements.menu.classList.add('hidden');
@@ -889,10 +1082,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Ajuste: Eliminar estilos de posición absoluta para progressButton
+    // Ajuste: Eliminar estilos de posición absoluta para progressButton y achievementsButton
     elements.progressButton.style.position = '';
     elements.progressButton.style.top = '';
     elements.progressButton.style.left = '';
+    if (elements.achievementsButton) {
+      elements.achievementsButton.style.position = '';
+      elements.achievementsButton.style.top = '';
+      elements.achievementsButton.style.left = '';
+    }
 
     // Dentro de initializeModeButtons(), en la sección de estilos
     const styleSheet = document.createElement('style');
@@ -999,7 +1197,7 @@ document.addEventListener('DOMContentLoaded', () => {
         max-width: 600px;
         box-sizing: border-box;
       }
-      #progress-button {
+      #progress-button, #achievements-button {
         width: 120px;
         padding: 10px 20px;
         font-size: 0.9rem;
@@ -1011,12 +1209,12 @@ document.addEventListener('DOMContentLoaded', () => {
         box-sizing: border-box;
         transition: background 0.3s, transform 0.1s;
       }
-      #progress-button:hover {
+      #progress-button:hover, #achievements-button:hover {
         background-color: #FFD700;
         color: #ff4500;
         transform: scale(1.05);
       }
-      #progress-menu {
+      #progress-menu, #achievements-menu {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -1032,12 +1230,12 @@ document.addEventListener('DOMContentLoaded', () => {
         max-width: 400px;
         box-sizing: border-box;
       }
-      #progress-menu h2 {
+      #progress-menu h2, #achievements-menu h2 {
         margin: 0 0 10px;
         font-size: 24px;
         color: #ff4500;
       }
-      .progress-stats {
+      .progress-stats, .achievements-stats {
         width: 100%;
         text-align: center;
         margin-bottom: 10px;
@@ -1052,7 +1250,7 @@ document.addEventListener('DOMContentLoaded', () => {
         border-radius: 5px;
         max-width: 80%;
       }
-      .progress-item {
+      .progress-item, .achievement-item {
         width: 100%;
         padding: 5px;
         margin: 5px 0;
@@ -1062,15 +1260,19 @@ document.addEventListener('DOMContentLoaded', () => {
         justify-content: space-between;
         align-items: center;
       }
-      .progress-item.locked {
+      .progress-item.locked, .achievement-item.locked {
         opacity: 0.5;
         background: #ccc;
       }
-      .progress-item .completed {
+      .progress-item .completed, .achievement-item .completed {
         color: #4caf50;
         font-weight: bold;
       }
-      #back-to-menu-from-progress {
+      .reward-text {
+        color: #FFD700;
+        font-size: 0.8em;
+      }
+      #back-to-menu-from-progress, #back-to-menu-from-achievements {
         width: 120px;
         padding: 10px 20px;
         font-size: 0.9rem;
@@ -1082,7 +1284,7 @@ document.addEventListener('DOMContentLoaded', () => {
         box-sizing: border-box;
         transition: background 0.3s, transform 0.1s;
       }
-      #back-to-menu-from-progress:hover {
+      #back-to-menu-from-progress:hover, #back-to-menu-from-achievements:hover {
         background-color: #ff6347;
       }
       #unlock-message {
@@ -1100,27 +1302,30 @@ document.addEventListener('DOMContentLoaded', () => {
           max-width: 300px;
           padding: 10px;
         }
-        #progress-button {
+        #progress-button, #achievements-button {
           width: 15vmin;
           min-width: 12vmin;
           padding: 1.5vmin 3vmin;
           font-size: 1.2vmin;
         }
-        #progress-menu {
+        #progress-menu, #achievements-menu {
           width: 90%;
           max-width: 300px;
           padding: 10px;
         }
-        #progress-menu h2 {
+        #progress-menu h2, #achievements-menu h2 {
           font-size: 18px;
         }
         #progress-xp-bar {
           max-width: 90%;
         }
-        .progress-item {
+        .progress-item, .achievement-item {
           font-size: 14px;
         }
-        #back-to-menu-from-progress {
+        .reward-text {
+          font-size: 0.7em;
+        }
+        #back-to-menu-from-progress, #back-to-menu-from-achievements {
           width: 12vmin;
           min-width: 10vmin;
           padding: 1vmin 1.5vmin;
@@ -1256,12 +1461,13 @@ document.addEventListener('DOMContentLoaded', () => {
           coin.y += dy * 0.3;
           if (distance < 20) {
             coins += gameMode === 'survival' ? difficultyLevel : 1;
-            playerXP += 5; // Ganar 5 XP por moneda
+            playerXP += 5;
             localStorage.setItem('playerXP', playerXP);
             updateLevel();
             elements.coinsDisplay.textContent = coins;
             coin.element.remove();
             coinsInGame.splice(index, 1);
+            checkAchievements();
             return;
           }
         }
@@ -1278,12 +1484,13 @@ document.addEventListener('DOMContentLoaded', () => {
         birdRect.top < coinRect.bottom
       ) {
         coins += gameMode === 'survival' ? difficultyLevel : 1;
-        playerXP += 5; // Ganar 5 XP por moneda
+        playerXP += 5;
         localStorage.setItem('playerXP', playerXP);
         updateLevel();
         elements.coinsDisplay.textContent = coins;
         coin.element.remove();
         coinsInGame.splice(index, 1);
+        checkAchievements();
       }
       if (coin.x < -15) {
         coin.element.remove();
@@ -1425,32 +1632,32 @@ document.addEventListener('DOMContentLoaded', () => {
       const birdRect = elements.bird.getBoundingClientRect();
       const pipeTopRect = pipe.top.getBoundingClientRect();
       const pipeBottomRect = pipe.bottom.getBoundingClientRect();
-      if (
+      const isColliding =
         birdRect.right > pipeTopRect.left &&
         birdRect.left < pipeTopRect.right &&
-        (birdRect.top < pipeTopRect.bottom || birdRect.bottom > pipeBottomRect.top)
-      ) {
-        if (activeShield) {
-          activeShield = false;
-          elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
-          pipe.top.remove();
-          pipe.bottom.remove();
-          pipes.splice(index, 1);
-          return;
+        (birdRect.top < pipeTopRect.bottom || birdRect.bottom > pipeBottomRect.top);
+      if (isColliding && !activeShield) {
+        if (gameMode === 'power-ups') {
+          activeShield = true;
+          elements.bird.style.boxShadow = '0 0 15px #00BFFF';
+          setTimeout(() => {
+            activeShield = false;
+            elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+          }, 1000);
         } else {
           endGame();
-          return;
         }
       }
       if (pipe.x + pipeWidth < birdX && !pipe.passed) {
+        pipe.passed = true;
         score++;
-        playerXP += 10; // Ganar 10 XP por tubería
+        playerXP += 10;
         localStorage.setItem('playerXP', playerXP);
         updateLevel();
         elements.scoreDisplay.textContent = score;
-        pipe.passed = true;
+        checkAchievements();
       }
-      if (pipe.x + pipeWidth < -pipeWidth) {
+      if (pipe.x < -pipeWidth) {
         pipe.top.remove();
         pipe.bottom.remove();
         pipes.splice(index, 1);
@@ -1458,80 +1665,69 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function updateBird() {
-    if (!gameActive) return;
-
-    if (gameMode === 'inverse') {
-      if (isInputActive) {
-        velocity += gravity;
-      } else {
-        velocity -= 0.5;
-      }
-      hasInteractedInverse = true;
-    } else {
-      velocity += gravity;
-      if (isInputActive) {
-        velocity = jump;
-      }
-    }
-
-    if (velocity > maxVelocity) velocity = maxVelocity;
-    if (velocity < -maxVelocity) velocity = -maxVelocity;
-
-    birdY += velocity;
-    elements.bird.style.top = `${birdY}px`;
-
-    if (birdY <= 0 || birdY + birdSize >= gameHeight) {
-      if (activeShield) {
-        birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize));
-        velocity = 0;
-      } else {
-        endGame();
-        return;
-      }
-    }
-
-    if (gameActive && equippedItems['trail-effect'] && (!elements.bird.lastParticleTime || Date.now() - elements.bird.lastParticleTime > 100)) {
-      createParticle();
-      elements.bird.lastParticleTime = Date.now();
-    }
-  }
-
-  function jumpHandler(e) {
-    if (!gameActive) return;
-    e.preventDefault();
-    isInputActive = true;
-    if (gameMode === 'inverse') {
-      hasInteractedInverse = true;
-      velocity = gravity;
-    } else {
-      velocity = jump;
-    }
-  }
-
-  function releaseHandler(e) {
-    if (!gameActive) return;
-    e.preventDefault();
+  function endGame() {
+    gameActive = false;
     isInputActive = false;
-    if (gameMode === 'inverse') {
-      hasInteractedInverse = true;
-      velocity = -0.5;
+    cancelAnimationFrame(gameLoopId);
+    clearInterval(pipeInterval);
+    clearTimeout(elements.bird.shieldTimeout);
+    clearTimeout(elements.bird.speedTimeout);
+    clearTimeout(elements.bird.magnetTimeout);
+    elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+    activeShield = false;
+    speedBoostActive = false;
+    magnetActive = false;
+    totalCoins += coins;
+    localStorage.setItem('totalCoins', totalCoins);
+    updateLevel();
+    updateHighScores();
+    checkAchievements();
+    if (gameMode === 'survival' && maxSurvivalLevel >= 5) {
+      totalCoins += 5;
+      localStorage.setItem('totalCoins', totalCoins);
+      elements.unlockMessage.textContent = '¡Has alcanzado el nivel 5 en modo Supervivencia! Recompensa: 5 monedas.';
+      elements.unlockMessage.classList.remove('hidden');
+      setTimeout(() => elements.unlockMessage.classList.add('hidden'), 3000);
     }
+    elements.finalScoreDisplay.textContent = score;
+    elements.totalCoinsDisplay.textContent = totalCoins;
+    elements.gameContainer.classList.add('hidden');
+    elements.gameOverScreen.classList.remove('hidden');
+    elements.gameArea.innerHTML = '';
+    elements.bird.style.display = 'block';
+    pipes = [];
+    coinsInGame = [];
+    particles = [];
+    powerUps = [];
+    elements.difficultyLevelDisplay.style.display = 'none';
   }
 
-  document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space') jumpHandler(e);
-  });
-
-  document.addEventListener('keyup', (e) => {
-    if (e.code === 'Space') releaseHandler(e);
-  });
-
-  document.addEventListener('mousedown', jumpHandler);
-  document.addEventListener('mouseup', releaseHandler);
-
-  document.addEventListener('touchstart', jumpHandler, { passive: false });
-  document.addEventListener('touchend', releaseHandler, { passive: false });
+  function gameLoop(timestamp) {
+    if (!gameActive) return;
+    velocity += gravity;
+    if (velocity > maxVelocity) velocity = maxVelocity;
+    birdY += velocity;
+    birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize));
+    elements.bird.style.top = `${birdY}px`;
+    movePipes();
+    moveCoins();
+    movePowerUps();
+    updateParticles();
+    if (equippedItems['trail-effect'] && Math.random() < 0.1) createParticle();
+    if (birdY <= 0 || birdY >= gameHeight - birdSize) {
+      if (!activeShield) {
+        endGame();
+      } else {
+        velocity = 0;
+        birdY = birdY <= 0 ? 0 : gameHeight - birdSize;
+      }
+    }
+    // Actualizar survivalTime en todos los modos
+    survivalTime = Date.now() - survivalStartTime;
+    adjustDifficulty();
+    checkAchievements();
+    gameLoopId = requestAnimationFrame(gameLoop);
+  }
 
   function startGame() {
     if (!characterSelected) {
@@ -1540,148 +1736,115 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.menu.classList.remove('hidden');
       return;
     }
-    if (gameLoopId) {
-      cancelAnimationFrame(gameLoopId);
-      gameLoopId = null;
-    }
-    gameActive = true;
-    score = 0;
-    coins = 0;
-    survivalTime = 0;
-    difficultyLevel = 1;
-    maxSurvivalLevel = 0;
-    pipeSpeed = 2;
-    pipeGap = basePipeGap;
-    pipeIntervalTime = 2000;
-    if (isMobile) {
-      gravity = 0.1;
-      jump = -3;
-      maxVelocity = 5;
-    } else {
-      gravity = 0.2;
-      jump = -6;
-      maxVelocity = 8;
-    }
-    velocity = 0;
-    isInputActive = false;
-    hasInteractedInverse = false;
-    birdY = (gameHeight - birdSize) / 2;
-    birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize));
-    elements.bird.style.top = `${birdY}px`;
-    elements.bird.style.left = `${birdX}px`;
-    pipes = [];
-    coinsInGame = [];
-    particles = [];
-    powerUps = [];
-    activeShield = false;
-    speedBoostActive = false;
-    magnetActive = false;
-    lastPowerUpType = null;
-    elements.scoreDisplay.textContent = score;
-    elements.coinsDisplay.textContent = coins;
+    adjustGameDimensions();
+    applyCharacter();
+    applyBackground();
+    elements.gameModeMenu.classList.add('hidden');
+    elements.gameContainer.classList.remove('hidden');
     elements.gameArea.innerHTML = '';
     elements.gameArea.appendChild(elements.bird);
     if (gameMode === 'survival') {
       elements.difficultyLevelDisplay.style.display = 'block';
-      elements.difficultyLevelDisplay.textContent = `Nivel ${difficultyLevel}`;
       elements.gameArea.appendChild(elements.difficultyLevelDisplay);
     }
-    applyCharacter();
-    applyBackground();
-    updateLevel();
-    elements.gameModeMenu.classList.add('hidden');
-    elements.gameContainer.classList.remove('hidden');
-    elements.gameOverScreen.classList.add('hidden');
-    elements.gameArea.classList.remove('hidden');
-    if (pipeInterval) clearInterval(pipeInterval);
-    pipeInterval = setInterval(createPipe, pipeIntervalTime);
-    let lastTime = performance.now();
-    function gameLoop(currentTime) {
-      if (!gameActive) return;
-      const deltaTime = currentTime - lastTime;
-      lastTime = currentTime;
-
-      if (gameMode === 'survival') {
-        survivalTime += deltaTime;
-      }
-
-      updateBird();
-      movePipes();
-      moveCoins();
-      movePowerUps();
-      updateParticles();
-      adjustDifficulty();
-
-      gameLoopId = requestAnimationFrame(gameLoop);
-    }
-    gameLoopId = requestAnimationFrame(gameLoop);
-  }
-
-  function endGame() {
-    gameActive = false;
-    if (gameLoopId) {
-      cancelAnimationFrame(gameLoopId);
-      gameLoopId = null;
-    }
-    clearInterval(pipeInterval);
-    totalCoins += coins;
-    localStorage.setItem('totalCoins', totalCoins);
-    
-    // Asegurar que el nivel esté actualizado antes de verificar desbloqueos
-    updateLevel();
-
-    if (gameMode === 'survival' && maxSurvivalLevel >= 5) {
-      totalCoins += 5;
-      localStorage.setItem('totalCoins', totalCoins);
-      setTimeout(() => {
-        alert('¡Has ganado 5 monedas por llegar al nivel 5!');
-        elements.gameContainer.classList.remove('hidden');
-        elements.gameArea.classList.add('hidden');
-        elements.gameOverScreen.classList.remove('hidden');
-        elements.menu.classList.add('hidden');
-        handleLevelUnlocks();
-      }, 500);
-    } else {
-      elements.gameContainer.classList.remove('hidden');
-      elements.gameArea.classList.add('hidden');
-      elements.gameOverScreen.classList.remove('hidden');
-      elements.menu.classList.add('hidden');
-      handleLevelUnlocks();
-    }
-    
-    elements.finalScoreDisplay.textContent = score;
-    elements.totalCoinsDisplay.textContent = totalCoins;
-    updateHighScores();
-    pipes.forEach(pipe => { pipe.top.remove(); pipe.bottom.remove(); });
-    coinsInGame.forEach(coin => coin.element.remove());
-    particles.forEach(particle => particle.element.remove());
-    powerUps.forEach(powerUp => powerUp.element.remove());
+    gameActive = true;
+    isInputActive = true;
+    hasInteractedInverse = false;
+    score = 0;
+    coins = 0;
     pipes = [];
     coinsInGame = [];
     particles = [];
     powerUps = [];
-    activeShield = false;
-    speedBoostActive = false;
-    magnetActive = false;
-    clearTimeout(elements.bird.shieldTimeout);
-    clearTimeout(elements.bird.speedTimeout);
-    clearTimeout(elements.bird.magnetTimeout);
-    elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+    velocity = 0;
+    survivalTime = 0;
+    survivalStartTime = Date.now(); // Inicializar survivalStartTime
+    maxSurvivalLevel = 0;
+    difficultyLevel = 1;
+    pipeSpeed = 2;
+    pipeGap = basePipeGap;
+    pipeIntervalTime = 2000;
+    elements.scoreDisplay.textContent = score;
+    elements.coinsDisplay.textContent = coins;
+    elements.levelDisplay.textContent = playerLevel;
+    elements.bird.style.top = `${birdY}px`;
+    elements.bird.style.left = `${birdX}px`;
+    clearInterval(pipeInterval);
+    pipeInterval = setInterval(createPipe, pipeIntervalTime);
+    if (gameMode === 'survival') {
+      elements.difficultyLevelDisplay.textContent = `Nivel ${difficultyLevel}`;
+    }
+    gameLoopId = requestAnimationFrame(gameLoop);
   }
+
+  function handleJump() {
+    if (!gameActive || !isInputActive) return;
+    if (gameMode === 'inverse' && hasInteractedInverse) {
+      velocity = Math.min(velocity + 1, maxVelocity);
+    } else {
+      velocity = jump;
+    }
+  }
+
+  function handleRelease() {
+    if (!gameActive || !isInputActive) return;
+    if (gameMode === 'inverse' && hasInteractedInverse) {
+      velocity = jump;
+    }
+  }
+
+  function handleInputStart(e) {
+    e.preventDefault();
+    if (!gameActive || !isInputActive) return;
+    if (gameMode === 'inverse') hasInteractedInverse = true;
+    handleJump();
+  }
+
+  function handleInputEnd(e) {
+    e.preventDefault();
+    if (!gameActive || !isInputActive) return;
+    handleRelease();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      handleJump();
+    }
+  });
+
+  document.addEventListener('keyup', (e) => {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      handleRelease();
+    }
+  });
+
+  elements.gameArea.addEventListener('mousedown', handleInputStart);
+  elements.gameArea.addEventListener('mouseup', handleInputEnd);
+  elements.gameArea.addEventListener('touchstart', handleInputStart, { passive: false });
+  elements.gameArea.addEventListener('touchend', handleInputEnd, { passive: false });
 
   if (elements.restartButton) {
     elements.restartButton.addEventListener('click', () => {
       elements.gameOverScreen.classList.add('hidden');
-      elements.gameModeMenu.classList.remove('hidden');
-      if (elements.unlockMessage) elements.unlockMessage.classList.add('hidden');
+      elements.menu.classList.remove('hidden');
     });
   }
 
-  adjustGameDimensions();
-  checkOrientation();
+  elements.bird.style.left = `${birdX}px`;
+  elements.bird.style.top = `${birdY}px`;
+
   updateCharacterOptions();
   updateEquipOptions();
   applyCharacter();
   applyBackground();
-  updateCustomBirdPreview();
+  elements.menu.classList.remove('hidden');
+  elements.shopCoinsDisplay.textContent = totalCoins;
+  checkOrientation();
+  if (!hasSeenWelcomeScreen) {
+    startLoadingAnimation();
+  }
+
+  console.log('Script inicializado correctamente.');
 });

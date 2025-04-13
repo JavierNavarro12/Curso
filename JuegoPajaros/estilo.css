@@ -144,7 +144,8 @@ body {
 
 #customization-menu,
 #shop-menu,
-#progress-menu {
+#progress-menu,
+#achievements-menu {
   background: linear-gradient(135deg, #87CEEB, #4682B4);
   color: #FFD700;
   border: 4px solid #FF4500;
@@ -154,21 +155,24 @@ body {
 
 #customization-menu h2,
 #shop-menu h2,
-#progress-menu h2 {
+#progress-menu h2,
+#achievements-menu h2 {
   color: #FFD700;
   text-shadow: 1px 1px #000;
 }
 
 #customization-menu p,
 #shop-menu p,
-#progress-menu p {
+#progress-menu p,
+#achievements-menu p {
   color: #FFD700;
   text-shadow: 1px 1px #000;
 }
 
 #customization-menu label,
 #shop-menu label,
-#progress-menu label {
+#progress-menu label,
+#achievements-menu label {
   color: #FFD700;
   text-shadow: 1px 1px #000;
 }
@@ -251,6 +255,62 @@ body {
   border-radius: 3px;
 }
 
+/* Estilo para los ítems de logros */
+.achievement-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  border: 1px solid #FFD700;
+  margin-bottom: 5px;
+}
+
+.achievement-item p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #FFD700;
+  text-shadow: 1px 1px #000;
+}
+
+.achievement-item.locked p {
+  color: #999;
+}
+
+.achievement-item .completed {
+  color: #32CD32;
+  font-size: 0.7rem;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.achievement-item .claim-button {
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  background: #FF4500;
+  color: #FFF;
+  border: 2px solid #FFD700;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.achievement-item .claim-button:hover {
+  background: #FFD700;
+  color: #FF4500;
+  transform: scale(1.05);
+}
+
+.achievement-item .claim-button:disabled {
+  background: #555;
+  color: #999;
+  border-color: #999;
+  cursor: not-allowed;
+}
+
 /* Contenedor para los botones del menú */
 .menu-buttons {
   display: flex;
@@ -261,10 +321,28 @@ body {
   flex-wrap: wrap;
 }
 
+/* Estilo para la notificación en el botón de logros */
+.notification {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #FF4500;
+  color: #FFF;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.7rem;
+  border: 2px solid #FFD700;
+}
+
 /* Estilo base para los botones del menú principal */
 #play-button,
 #shop-button,
-#progress-button {
+#progress-button,
+#achievements-button {
   padding: 10px 20px;
   font-size: 0.9rem; /* Tamaño de fuente uniforme */
   width: 120px; /* Tamaño uniforme para todos los botones */
@@ -281,6 +359,7 @@ body {
   text-align: center;
   line-height: 1;
   box-sizing: border-box;
+  position: relative; /* Para la notificación */
 }
 
 #play-button:disabled {
@@ -293,7 +372,8 @@ body {
 /* Efecto hover para todos los botones */
 #play-button:hover:not(:disabled),
 #shop-button:hover,
-#progress-button:hover {
+#progress-button:hover,
+#achievements-button:hover {
   background: #FFD700;
   color: #FF4500;
   transform: scale(1.05);
@@ -310,7 +390,8 @@ body {
 #confirm-equip,
 #back-to-selection,
 #back-to-menu-from-shop,
-#back-to-menu-from-progress {
+#back-to-menu-from-progress,
+#back-to-menu-from-achievements {
   padding: 10px 20px;
   font-size: 0.9rem;
   width: 120px; /* Tamaño uniforme para los botones */
@@ -349,7 +430,8 @@ body {
 #confirm-equip:hover,
 #back-to-selection:hover,
 #back-to-menu-from-shop:hover,
-#back-to-menu-from-progress:hover {
+#back-to-menu-from-progress:hover,
+#back-to-menu-from-achievements:hover {
   background: #FFD700; /* Fondo amarillo al pasar el mouse */
   color: #FF4500; /* Texto cambia a color naranja */
   transform: scale(1.05);
@@ -1217,6 +1299,21 @@ button:hover {
   text-shadow: 0 0 5px #32CD32;
 }
 
+/* Notificación de logro desbloqueado */
+.achievement-notification {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #FFD700;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1rem;
+  z-index: 100;
+  animation: fadeOutUp 2s forwards;
+}
+
 /* Media Queries para dispositivos móviles */
 @media screen and (max-width: 1200px) and (orientation: landscape) {
   body {
@@ -1368,7 +1465,8 @@ button:hover {
   /* Ajustar botones del menú principal */
   #play-button,
   #shop-button,
-  #progress-button {
+  #progress-button,
+  #achievements-button {
     padding: 1.5vmin 3vmin;
     font-size: 1.5vmin !important; /* Forzamos el mismo tamaño de fuente */
     width: 15vmin; /* Tamaño uniforme en móvil */
@@ -1386,6 +1484,15 @@ button:hover {
     flex-wrap: nowrap; /* Evitar que los botones se envuelvan */
   }
 
+  /* Ajustar la notificación en el botón de logros */
+  .notification {
+    width: 3vmin;
+    height: 3vmin;
+    font-size: 1.5vmin;
+    top: -1vmin;
+    right: -1vmin;
+  }
+
   /* Ajustar otros botones */
   #classic-mode-button,
   #power-ups-mode-button,
@@ -1397,6 +1504,7 @@ button:hover {
   #back-to-selection,
   #back-to-menu-from-shop,
   #back-to-menu-from-progress,
+  #back-to-menu-from-achievements,
   button {
     padding: 2vmin 4vmin;
     font-size: 1.5vmin;
@@ -1421,6 +1529,14 @@ button:hover {
     font-size: 1.5vmin;
   }
 
+  /* Ajustar el botón "Volver" del menú de logros */
+  #back-to-menu-from-achievements {
+    width: 15vmin;
+    min-width: 12vmin;
+    padding: 1.5vmin 2vmin;
+    font-size: 1.5vmin;
+  }
+
   #customize-character-button {
     width: 20vmin;
     font-size: 1.5vmin;
@@ -1436,6 +1552,13 @@ button:hover {
   .equip-button,
   .unequip-button,
   .shop-item button {
+    padding: 1vmin 2vmin;
+    font-size: 1.8vmin;
+    min-width: 8vmin;
+    min-height: 5vmin;
+  }
+
+  .achievement-item .claim-button {
     padding: 1vmin 2vmin;
     font-size: 1.8vmin;
     min-width: 8vmin;
@@ -1552,6 +1675,29 @@ button:hover {
     font-size: 1.5vmin;
   }
 
+  /* Ajustar el menú de logros */
+  #achievements-menu {
+    width: 90vw;
+    max-width: 90vw;
+    padding: 2vmin;
+    box-sizing: border-box;
+  }
+
+  #achievements-items {
+    max-height: 50vh;
+    overflow-y: auto;
+    margin-bottom: 2vmin;
+    width: 100%;
+  }
+
+  .achievement-item p {
+    font-size: 1.8vmin;
+  }
+
+  .achievement-item .completed {
+    font-size: 1.5vmin;
+  }
+
   /* Ajustar el submenú de modos de juego */
   #game-mode-menu {
     width: 90vw;
@@ -1612,6 +1758,13 @@ button:hover {
     border: 1px solid #000;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
+
+  /* Ajustar notificaciones */
+  .level-up-notification,
+  .achievement-notification {
+    font-size: 2vmin;
+    padding: 2vmin 4vmin;
+  }
 }
 
 /* Temas de fondo */
@@ -1658,7 +1811,7 @@ button:hover {
 /* Notificación de subida de nivel */
 .level-up-notification {
   position: absolute;
-  top: 20%;
+  top : 20%;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.8);

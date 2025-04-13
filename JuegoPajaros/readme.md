@@ -24,7 +24,7 @@ Introduce efectos de clima que afecten la jugabilidad:
 Viento: Empuja al pájaro hacia la izquierda o derecha, haciendo que el jugador tenga que ajustar su vuelo.
 Lluvia: Reduce la visibilidad (puedes añadir un filtro semitransparente sobre .game-area).
 Nieve: Hace que el pájaro caiga más rápido (simulando peso extra).
-3. Sistema de Logros y Misiones
+~~3. Sistema de Logros y Misiones
 Un sistema de logros o misiones puede motivar a los jugadores a seguir jugando para alcanzar metas.
 
 Logros:
@@ -32,7 +32,7 @@ Añade un apartado de "Logros" en el menú principal donde los jugadores puedan 
 "Puntuación Novato": Alcanza 10 puntos.
 "Coleccionista": Recoge 50 monedas en total.
 "Superviviente": Sobrevive 1 minuto sin chocar.
-Cada logro desbloqueado podría dar una recompensa (monedas, ítems exclusivos, etc.).
+Cada logro desbloqueado podría dar una recompensa (monedas, ítems exclusivos, etc.).~~
 Misiones Diarias:
 Introduce misiones que cambien cada día, como:
 "Recoge 10 monedas en una partida."
@@ -59,9 +59,9 @@ Añade más estilos de tuberías que el jugador pueda desbloquear:
 Tuberías de Lava: Con un efecto de lava brillante.
 Tuberías Futuristas: Con luces de neón.
 Tuberías de Hielo: Con un efecto de escarcha.
+
 ~~5. Sistema de Niveles y Progresión
 Introduce un sistema de progresión para que los jugadores sientan que están avanzando.
-
 Niveles del Jugador:
 Añade un sistema de experiencia (XP). Por ejemplo:
 Ganas XP por cada tubería que pasas o moneda que recoges.
@@ -72,4 +72,4 @@ Divide el juego en "mundos" con diferentes temas visuales y dificultades:
 Mundo 1: Cielo Claro (el actual).
 Mundo 2: Tormenta (con lluvia y viento).
 Mundo 3: Espacio (con gravedad reducida y obstáculos como meteoritos).
-Para desbloquear un mundo, el jugador debe alcanzar una puntuación mínima en el mundo anterior. me puedes añadir todo esto? usa la ultima version que me has pasado de todo y vuelve a pasarme los documentos completos con las nuevas cosas añadidas, IMPORTANTE no toques nada de la funcionalidad anterior y haz que se vea bien en movil
+Para desbloquear un mundo, el jugador debe alcanzar una puntuación mínima en el mundo anterior. 
