@@ -1793,6 +1793,40 @@ function gameLoop() {
   gameLoopId = requestAnimationFrame(gameLoop);
 }
 
+function createPipe() {
+  const minHeight = 50;
+  const maxHeight = gameHeight - pipeGap - 50;
+  // Usar el mismo rango aleatorio para escritorio y móvil
+  const pipeHeight = Math.random() * (maxHeight - minHeight) + minHeight;
+  const pipeTop = document.createElement('div');
+  pipeTop.classList.add('pipe', 'top');
+  pipeTop.style.height = `${pipeHeight}px`;
+  pipeTop.style.left = `${gameWidth}px`;
+  const pipeBottom = document.createElement('div');
+  pipeBottom.classList.add('pipe', 'bottom');
+  pipeBottom.style.height = `${gameHeight - pipeHeight - pipeGap}px`;
+  pipeBottom.style.left = `${gameWidth}px`;
+  if (equippedItems['pipe-style']) {
+      const style = shopItems[equippedItems['pipe-style']].value;
+      if (style === 'metallic') {
+          pipeTop.classList.add('pipe-style-1');
+          pipeBottom.classList.add('pipe-style-1');
+      } else if (style === 'crystal') {
+          pipeTop.classList.add('pipe-style-2');
+          pipeBottom.classList.add('pipe-style-2');
+      } else if (style === 'wood') {
+          pipeTop.classList.add('pipe-style-3');
+          pipeBottom.classList.add('pipe-style-3');
+      }
+  }
+  let isMoving = pipeSpeed >= 50 && Math.random() < 0.3;
+  elements.gameArea.appendChild(pipeTop);
+  elements.gameArea.appendChild(pipeBottom);
+  pipes.push({ top: pipeTop, bottom: pipeBottom, x: gameWidth, passed: false, isMoving: isMoving, baseHeight: pipeHeight, moveOffset: 0, moveTime: Date.now() });
+  if (Math.random() > 0.5) createCoin(gameWidth, pipeHeight);
+  createPowerUp(gameWidth, pipeHeight);
+}
+
 function handleInput() {
   if (!gameActive) return;
   if (gameMode === 'inverse') {
