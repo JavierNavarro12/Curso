@@ -1664,155 +1664,203 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 
 function endGame() {
-    gameActive = false;
-    isInputActive = false;
-    cancelAnimationFrame(gameLoopId);
-    clearInterval(pipeInterval);
-    clearTimeout(elements.bird.shieldTimeout);
-    clearTimeout(elements.bird.speedTimeout);
-    clearTimeout(elements.bird.magnetTimeout);
-    elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
-    activeShield = false;
-    speedBoostActive = false;
-    magnetActive = false;
-    totalCoins += coins;
-    localStorage.setItem('totalCoins', totalCoins);
-    updateLevel();
-    updateHighScores();
-    checkAchievements();
-    if (gameMode === 'survival' && maxSurvivalLevel >= 5) {
-        totalCoins += 5;
-        localStorage.setItem('totalCoins', totalCoins);
-        elements.unlockMessage.textContent = '¡Has ganado 5 monedas por alcanzar el nivel 5 en modo Supervivencia!';
-        elements.unlockMessage.classList.remove('hidden');
-    }
-    elements.finalScoreDisplay.textContent = score;
-    elements.totalCoinsDisplay.textContent = totalCoins;
-    elements.gameContainer.classList.add('hidden');
-    elements.gameOverScreen.classList.remove('hidden');
-    elements.unlockMessage.classList.remove('hidden');
-    setTimeout(() => {
-        elements.unlockMessage.classList.add('hidden');
-    }, 5000);
+  gameActive = false;
+  isInputActive = false;
+  cancelAnimationFrame(gameLoopId);
+  clearInterval(pipeInterval);
+  clearTimeout(elements.bird.shieldTimeout);
+  clearTimeout(elements.bird.speedTimeout);
+  clearTimeout(elements.bird.magnetTimeout);
+  elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+  activeShield = false;
+  speedBoostActive = false;
+  magnetActive = false;
+  totalCoins += coins;
+  localStorage.setItem('totalCoins', totalCoins);
+  updateLevel();
+  updateHighScores();
+  checkAchievements();
+  if (gameMode === 'survival' && maxSurvivalLevel >= 5) {
+      totalCoins += 5;
+      localStorage.setItem('totalCoins', totalCoins);
+      elements.unlockMessage.textContent = '¡Has ganado 5 monedas por alcanzar el nivel 5 en modo Supervivencia!';
+      elements.unlockMessage.classList.remove('hidden');
+  }
+  elements.finalScoreDisplay.textContent = score;
+  elements.totalCoinsDisplay.textContent = totalCoins;
+  elements.gameContainer.classList.add('hidden');
+  elements.gameOverScreen.classList.remove('hidden');
+  elements.unlockMessage.classList.remove('hidden');
 }
 
-  function gameLoop() {
-    if (!gameActive) return;
-    velocity += gravity;
-    velocity = Math.min(velocity, maxVelocity);
-    birdY += velocity;
-    if (birdY > gameHeight - birdSize || birdY < 0) {
-      endGame();
-      return;
-    }
-    elements.bird.style.top = `${birdY}px`;
-    if (Math.random() < 0.3) createParticle();
-    updateParticles();
-    movePipes();
-    moveCoins();
-    movePowerUps();
-    adjustDifficulty();
-    if (gameMode === 'survival') {
-      survivalTime = Date.now() - survivalStartTime;
-    }
-    gameLoopId = requestAnimationFrame(gameLoop);
-  }
+function resetGame() {
+  birdY = (gameHeight - birdSize) / 2;
+  velocity = gameMode === 'inverse' ? jump : 0; // Iniciar con impulso hacia arriba en modo inverse
+  score = 0;
+  coins = 0;
+  survivalTime = 0;
+  maxSurvivalLevel = 0;
+  difficultyLevel = 1;
+  pipeSpeed = 2;
+  pipeGap = basePipeGap;
+  pipeIntervalTime = 2000;
+  elements.scoreDisplay.textContent = score;
+  elements.coinsDisplay.textContent = coins;
+  elements.bird.style.top = `${birdY}px`;
+  pipes.forEach(pipe => {
+      pipe.top.remove();
+      pipe.bottom.remove();
+  });
+  coinsInGame.forEach(coin => coin.element.remove());
+  powerUps.forEach(powerUp => powerUp.element.remove());
+  particles.forEach(particle => particle.element.remove());
+  pipes = [];
+  coinsInGame = [];
+  powerUps = [];
+  particles = [];
+  elements.difficultyLevelDisplay.style.display = 'none';
+  clearInterval(pipeInterval);
+  clearTimeout(elements.bird.shieldTimeout);
+  clearTimeout(elements.bird.speedTimeout);
+  clearTimeout(elements.bird.magnetTimeout);
+  elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+  activeShield = false;
+  speedBoostActive = false;
+  magnetActive = false;
+  lastPowerUpType = null;
+  isInputActive = false;
+}
 
-  function startGame() {
-    if (!characterSelected) {
+function startGame() {
+  if (!characterSelected) {
       alert('Por favor, selecciona o personaliza un personaje antes de jugar.');
       elements.gameModeMenu.classList.add('hidden');
       elements.menu.classList.remove('hidden');
       return;
-    }
-    adjustGameDimensions();
-    elements.gameModeMenu.classList.add('hidden');
-    elements.gameContainer.classList.remove('hidden');
-    elements.scoreDisplay.textContent = score = 0;
-    elements.coinsDisplay.textContent = coins = 0;
-    elements.levelDisplay.textContent = playerLevel;
-    elements.xpBar.style.width = '0%';
-    birdY = (gameHeight - birdSize) / 2;
-    velocity = 0;
-    pipes.forEach(pipe => {
-      pipe.top.remove();
-      pipe.bottom.remove();
-    });
-    coinsInGame.forEach(coin => coin.element.remove());
-    powerUps.forEach(powerUp => powerUp.element.remove());
-    particles.forEach(particle => particle.element.remove());
-    pipes = [];
-    coinsInGame = [];
-    powerUps = [];
-    particles = [];
-    activeShield = false;
-    speedBoostActive = false;
-    magnetActive = false;
-    lastPowerUpType = null;
-    pipeSpeed = 2;
-    pipeGap = basePipeGap;
-    pipeIntervalTime = 2000;
-    difficultyLevel = 1;
-    survivalTime = 0;
-    maxSurvivalLevel = 0;
-    elements.difficultyLevelDisplay.textContent = `Nivel ${difficultyLevel}`;
-    if (gameMode === 'survival') {
-      elements.gameArea.appendChild(elements.difficultyLevelDisplay);
-      elements.difficultyLevelDisplay.style.display = 'block';
-    } else {
-      elements.difficultyLevelDisplay.style.display = 'none';
-    }
-    clearInterval(pipeInterval);
-    pipeInterval = setInterval(createPipe, pipeIntervalTime);
-    applyCharacter();
-    applyBackground();
-    gameActive = true;
-    isInputActive = true;
-    hasInteractedInverse = false;
-    survivalStartTime = Date.now();
-    gameLoopId = requestAnimationFrame(gameLoop);
   }
-
-  function handleInput(e) {
-    if (!isInputActive || !gameActive) return;
-    e.preventDefault();
-    if (gameMode === 'inverse') {
-      hasInteractedInverse = true;
-    } else {
-      velocity = jump;
-    }
-  }
-
-  function handleInputEnd(e) {
-    if (!isInputActive || !gameActive || gameMode !== 'inverse') return;
-    e.preventDefault();
-    if (hasInteractedInverse) {
-      velocity = jump;
-    }
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space') handleInput(e);
-  });
-
-  document.addEventListener('mousedown', handleInput);
-  document.addEventListener('touchstart', handleInput, { passive: false });
-
-  document.addEventListener('mouseup', handleInputEnd);
-  document.addEventListener('touchend', handleInputEnd, { passive: false });
-
-  if (elements.restartButton) {
-    elements.restartButton.addEventListener('click', () => {
-      elements.gameOverScreen.classList.add('hidden');
-      elements.gameModeMenu.classList.remove('hidden');
-    });
-  }
-
-  updateCharacterOptions();
-  updateEquipOptions();
-  updateShop();
+  resetGame();
+  elements.gameModeMenu.classList.add('hidden');
+  elements.gameContainer.classList.remove('hidden');
+  elements.gameOverScreen.classList.add('hidden');
+  elements.unlockMessage.classList.add('hidden');
+  gameActive = true;
   applyCharacter();
   applyBackground();
-  checkOrientation();
-  handleLevelUnlocks();
+  elements.gameArea.appendChild(elements.difficultyLevelDisplay);
+  if (gameMode === 'survival') {
+      elements.difficultyLevelDisplay.style.display = 'block';
+      elements.difficultyLevelDisplay.textContent = `Nivel ${difficultyLevel}`;
+      survivalStartTime = Date.now();
+  }
+  pipeInterval = setInterval(createPipe, pipeIntervalTime);
+  gameLoopId = requestAnimationFrame(gameLoop);
+}
+
+function gameLoop() {
+  if (!gameActive) return;
+  // En modo inverso, la velocidad se controla completamente por handleInput/handleInputEnd
+  if (gameMode !== 'inverse') {
+      velocity += gravity;
+  } else if (!isInputActive) {
+      // En modo inverso, sin input activo, el pájaro tiende a subir
+      velocity = jump; // Mantener impulso hacia arriba cuando no se presiona
+  }
+  velocity = Math.min(velocity, maxVelocity);
+  birdY += velocity;
+  birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize));
+  elements.bird.style.top = `${birdY}px`;
+  if (birdY <= 0 || birdY >= gameHeight - birdSize) {
+      if (gameMode === 'power-ups' && activeShield) {
+          activeShield = false;
+          elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+          velocity = 0;
+          birdY = birdY <= 0 ? 0 : gameHeight - birdSize;
+      } else {
+          endGame();
+          return;
+      }
+  }
+  movePipes();
+  moveCoins();
+  movePowerUps();
+  updateParticles();
+  createParticle();
+  if (gameMode === 'survival') {
+      survivalTime = Date.now() - survivalStartTime;
+      checkAchievements();
+  }
+  adjustDifficulty();
+  gameLoopId = requestAnimationFrame(gameLoop);
+}
+
+function handleInput() {
+  if (!gameActive) return;
+  if (gameMode === 'inverse') {
+      isInputActive = true;
+      velocity = gravity * 15; // Velocidad constante hacia abajo mientras se presiona
+  } else {
+      velocity = jump;
+  }
+}
+
+function handleInputEnd() {
+  if (!gameActive) return;
+  if (gameMode === 'inverse') {
+      isInputActive = false;
+      velocity = jump; // Impulso hacia arriba al soltar
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') {
+      e.preventDefault();
+      handleInput();
+  }
+});
+
+document.addEventListener('keyup', (e) => {
+  if (e.code === 'Space') {
+      handleInputEnd();
+  }
+});
+
+elements.gameArea.addEventListener('mousedown', (e) => {
+  e.preventDefault();
+  handleInput();
+});
+
+elements.gameArea.addEventListener('mouseup', (e) => {
+  handleInputEnd();
+});
+
+elements.gameArea.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  handleInput();
+}, { passive: false });
+
+elements.gameArea.addEventListener('touchend', (e) => {
+  handleInputEnd();
+}, { passive: false });
+
+if (elements.restartButton) {
+  elements.restartButton.addEventListener('click', () => {
+      elements.gameOverScreen.classList.add('hidden');
+      elements.gameModeMenu.classList.remove('hidden');
+  });
+}
+
+checkOrientation();
+adjustGameDimensions();
+updateCharacterOptions();
+updateEquipOptions();
+updateShop();
+applyCharacter();
+applyBackground();
+updateCustomBirdPreview();
+updateLevel();
+setupProgressMenu();
+setupAchievementsMenu();
+updateAchievementsNotification();
+
+console.log('Script inicializado correctamente');
 });
