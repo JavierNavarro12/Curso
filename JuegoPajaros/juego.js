@@ -1794,9 +1794,9 @@ function gameLoop() {
 }
 
 function createPipe() {
-  const minHeight = 50;
-  const maxHeight = gameHeight - pipeGap - 50;
-  // Usar el mismo rango aleatorio para escritorio y móvil
+  const minHeight = 20; // Reducir para permitir huecos más arriba
+  const maxHeight = gameHeight - pipeGap - 20; // Reducir para permitir huecos más abajo
+  // Asegurar que el rango sea lo suficientemente amplio para variabilidad
   const pipeHeight = Math.random() * (maxHeight - minHeight) + minHeight;
   const pipeTop = document.createElement('div');
   pipeTop.classList.add('pipe', 'top');
