@@ -284,63 +284,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Sistema de niveles
-  const levelThresholds = [
-    { level: 1, xp: 0 },
-    { level: 2, xp: 100 },
-    { level: 3, xp: 250 },
-    { level: 4, xp: 500 },
-    { level: 5, xp: 1000 },
-    { level: 6, xp: 1750 },
-    { level: 7, xp: 2750 },
-    { level: 8, xp: 4000 },
-    { level: 9, xp: 5500 },
-    { level: 10, xp: 7250 },
-    { level: 11, xp: 9250 },
-    { level: 12, xp: 11500 },
-    { level: 13, xp: 14000 },
-    { level: 14, xp: 16750 },
-    { level: 15, xp: 19750 },
-    { level: 16, xp: 23000 },
-    { level: 17, xp: 26500 },
-    { level: 18, xp: 30250 },
-    { level: 19, xp: 34250 },
-    { level: 20, xp: 38500 },
-    { level: 21, xp: 43000 },
-    { level: 22, xp: 47750 },
-    { level: 23, xp: 52750 },
-    { level: 24, xp: 58000 },
-    { level: 25, xp: 63500 },
-    { level: 26, xp: 69250 },
-    { level: 27, xp: 75250 },
-    { level: 28, xp: 81500 },
-    { level: 29, xp: 88000 },
-    { level: 30, xp: 94750 },
-  ];
+  // Sistema de niveles dinámico (eliminamos levelThresholds)
+  // Fórmula: XP requerido para nivel n = 100 * n
+  // Nivel 1: 100 XP, Nivel 2: 200 XP (total 300 XP), Nivel 3: 300 XP (total 600 XP), etc.
+  
+  // Función para calcular el XP acumulado necesario para un nivel
+  function getCumulativeXPForLevel(level) {
+    if (level <= 0) return 0;
+    // Suma de serie aritmética: XP acumulado hasta nivel n = (n * (n + 1) / 2) * 100
+    return (level * (level + 1) / 2) * 100;
+  }
 
   // Función para obtener XP requerida para el siguiente nivel
   function getNextLevelXP(currentLevel) {
-    const nextLevel = levelThresholds.find(threshold => threshold.level === currentLevel + 1);
-    return nextLevel ? nextLevel.xp : levelThresholds[levelThresholds.length - 1].xp;
+    // XP necesario para pasar al siguiente nivel (nivel actual + 1)
+    return getCumulativeXPForLevel(currentLevel + 1);
   }
 
   // Función para calcular el nivel basado en XP
   function calculateLevelFromXP(xp) {
-    if (xp === 0) {
-      return 0;
+    let level = 0;
+    let cumulativeXP = 0;
+    while (xp >= cumulativeXP) {
+      level++;
+      cumulativeXP = getCumulativeXPForLevel(level);
     }
-    
-    let newLevel = 0;
-    for (let i = 0; i < levelThresholds.length; i++) {
-      if (xp < levelThresholds[i].xp) {
-        newLevel = i;
-        break;
-      }
-      if (i === levelThresholds.length - 1 && xp >= levelThresholds[i].xp) {
-        newLevel = levelThresholds.length;
-      }
-    }
-    return newLevel;
+    return level - 1; // Restamos 1 porque el último nivel no fue alcanzado
   }
 
   // Inicialización de playerLevel y playerXP
@@ -505,17 +474,21 @@ document.addEventListener('DOMContentLoaded', () => {
       handleLevelUnlocks();
     }
 
+    // Calcular el progreso hacia el siguiente nivel
+    const currentLevelXP = getCumulativeXPForLevel(playerLevel);
+    const nextLevelXP = getCumulativeXPForLevel(playerLevel + 1);
+    const xpSinceLastLevel = playerXP - currentLevelXP;
+    const xpNeededForNextLevel = nextLevelXP - currentLevelXP;
+    const xpProgress = (xpSinceLastLevel / xpNeededForNextLevel) * 100;
+
     // Actualizar UI
     elements.levelDisplay.textContent = playerLevel;
     elements.menuLevelDisplay.textContent = playerLevel;
     elements.menuXpDisplay.textContent = playerXP;
     if (elements.progressLevelDisplay) elements.progressLevelDisplay.textContent = playerLevel;
-    if (elements.progressXpDisplay) elements.progressXpDisplay.textContent = `${playerXP}/${getNextLevelXP(playerLevel)}`;
+    if (elements.progressXpDisplay) elements.progressXpDisplay.textContent = `${playerXP}/${nextLevelXP}`;
 
     // Actualizar barra de XP
-    const currentLevelXP = playerLevel === 0 ? 0 : levelThresholds[playerLevel - 1]?.xp || 0;
-    const nextLevelXP = getNextLevelXP(playerLevel);
-    const xpProgress = nextLevelXP > currentLevelXP ? ((playerXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100 : 100;
     elements.xpBar.style.width = `${xpProgress}%`;
     if (elements.progressXpBar) elements.progressXpBar.style.width = `${xpProgress}%`;
   }
@@ -552,8 +525,8 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.progressLevelDisplay.textContent = playerLevel;
     elements.progressXpDisplay.textContent = `${playerXP}/${getNextLevelXP(playerLevel)}`;
     
-    const currentLevelXP = playerLevel === 0 ? 0 : levelThresholds[playerLevel - 1]?.xp || 0;
-    const nextLevelXP = getNextLevelXP(playerLevel);
+    const currentLevelXP = getCumulativeXPForLevel(playerLevel);
+    const nextLevelXP = getCumulativeXPForLevel(playerLevel + 1);
     const xpProgress = nextLevelXP > currentLevelXP 
       ? Math.min(100, ((playerXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100)
       : 100;
@@ -1461,7 +1434,7 @@ document.addEventListener('DOMContentLoaded', () => {
           coin.y += dy * 0.3;
           if (distance < 20) {
             coins += gameMode === 'survival' ? difficultyLevel : 1;
-            playerXP += 5;
+            playerXP += 1; // Ganar 1 XP por moneda recolectada
             localStorage.setItem('playerXP', playerXP);
             updateLevel();
             elements.coinsDisplay.textContent = coins;
@@ -1484,7 +1457,7 @@ document.addEventListener('DOMContentLoaded', () => {
         birdRect.top < coinRect.bottom
       ) {
         coins += gameMode === 'survival' ? difficultyLevel : 1;
-        playerXP += 5;
+        playerXP += 1; // Ganar 1 XP por moneda recolectada
         localStorage.setItem('playerXP', playerXP);
         updateLevel();
         elements.coinsDisplay.textContent = coins;
@@ -1528,30 +1501,30 @@ document.addEventListener('DOMContentLoaded', () => {
     clearTimeout(elements.bird.magnetTimeout);
     elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
     if (type === 'shield') {
-        activeShield = true;
-        elements.bird.style.boxShadow = '0 0 15px #00BFFF';
+      activeShield = true;
+      elements.bird.style.boxShadow = '0 0 15px #00BFFF';
     } else if (type === 'speed') {
-        speedBoostActive = true;
-        const originalSpeed = pipeSpeed;
-        pipeSpeed = originalSpeed * 1.5;
-        elements.bird.speedTimeout = setTimeout(() => {
-            speedBoostActive = false;
-            pipeSpeed = originalSpeed;
-            if (gameMode === 'survival') {
-                pipeSpeed = 2 + difficultyLevel * 0.5;
-            }
-        }, powerUpDuration);
+      speedBoostActive = true;
+      const originalSpeed = pipeSpeed;
+      pipeSpeed = originalSpeed * 1.5;
+      elements.bird.speedTimeout = setTimeout(() => {
+        speedBoostActive = false;
+        pipeSpeed = originalSpeed;
+        if (gameMode === 'survival') {
+          pipeSpeed = 2 + difficultyLevel * 0.5;
+        }
+      }, powerUpDuration);
     } else if (type === 'magnet') {
-        magnetActive = true;
-        elements.bird.magnetTimeout = setTimeout(() => {
-            magnetActive = false;
-        }, powerUpDuration);
+      magnetActive = true;
+      elements.bird.magnetTimeout = setTimeout(() => {
+        magnetActive = false;
+      }, powerUpDuration);
     }
   }
 
   function createPipe() {
-    const minHeight = 50;
-    const maxHeight = gameHeight - pipeGap - 50;
+    const minHeight = 20;
+    const maxHeight = gameHeight - pipeGap - 20;
     const pipeHeight = Math.random() * (maxHeight - minHeight) + minHeight;
     const pipeTop = document.createElement('div');
     pipeTop.classList.add('pipe', 'top');
@@ -1574,7 +1547,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pipeBottom.classList.add('pipe-style-3');
       }
     }
-    let isMoving = pipeSpeed >= 50 && Math.random() < 0.4;
+    let isMoving = score >= 50 && Math.random() < 0.3;
     elements.gameArea.appendChild(pipeTop);
     elements.gameArea.appendChild(pipeBottom);
     pipes.push({ top: pipeTop, bottom: pipeBottom, x: gameWidth, passed: false, isMoving: isMoving, baseHeight: pipeHeight, moveOffset: 0, moveTime: Date.now() });
@@ -1612,234 +1585,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function movePipes() {
     pipes.forEach((pipe, index) => {
-        pipe.x -= pipeSpeed;
-        pipe.top.style.left = `${pipe.x}px`;
-        pipe.bottom.style.left = `${pipe.x}px`;
-        if (pipe.isMoving) {
-            const elapsedTime = (Date.now() - pipe.moveTime) % 2000;
-            const progress = elapsedTime / 2000;
-            pipe.moveOffset = 50 * Math.sin(progress * 2 * Math.PI);
-            const newTopHeight = pipe.baseHeight + pipe.moveOffset;
-            const newBottomHeight = gameHeight - newTopHeight - pipeGap;
-            if (newTopHeight >= 50 && newBottomHeight >= 50) {
-                pipe.top.style.height = `${newTopHeight}px`;
-                pipe.bottom.style.height = `${newBottomHeight}px`;
-            }
-        }
-        const birdRect = elements.bird.getBoundingClientRect();
-        const pipeTopRect = pipe.top.getBoundingClientRect();
-        const pipeBottomRect = pipe.bottom.getBoundingClientRect();
-        const isColliding =
-            birdRect.right > pipeTopRect.left &&
-            birdRect.left < pipeTopRect.right &&
-            (birdRect.top < pipeTopRect.bottom || birdRect.bottom > pipeBottomRect.top);
-        if (isColliding) {
-            if (gameMode === 'power-ups' && activeShield) {
-                activeShield = false;
-                elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
-                pipe.top.remove();
-                pipe.bottom.remove();
-                pipes.splice(index, 1);
-                return; // Evita cualquier acción adicional para esta tubería
-            } else {
-                endGame();
-                return;
-            }
-        }
-        if (pipe.x + pipeWidth < birdX && !pipe.passed) {
-            pipe.passed = true;
-            score++;
-            playerXP += 10;
-            localStorage.setItem('playerXP', playerXP);
-            updateLevel();
-            elements.scoreDisplay.textContent = score;
-            checkAchievements();
-        }
-        if (pipe.x < -pipeWidth) {
-            pipe.top.remove();
-            pipe.bottom.remove();
-            pipes.splice(index, 1);
-        }
-    });
-}
-
-function endGame() {
-  gameActive = false;
-  isInputActive = false;
-  cancelAnimationFrame(gameLoopId);
-  clearInterval(pipeInterval);
-  clearTimeout(elements.bird.shieldTimeout);
-  clearTimeout(elements.bird.speedTimeout);
-  clearTimeout(elements.bird.magnetTimeout);
-  elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
-  activeShield = false;
-  speedBoostActive = false;
-  magnetActive = false;
-  totalCoins += coins;
-  localStorage.setItem('totalCoins', totalCoins);
-  updateLevel();
-  updateHighScores();
-  checkAchievements();
-  if (gameMode === 'survival' && maxSurvivalLevel >= 5) {
-      totalCoins += 5;
-      localStorage.setItem('totalCoins', totalCoins);
-      elements.unlockMessage.textContent = '¡Has ganado 5 monedas por alcanzar el nivel 5 en modo Supervivencia!';
-      elements.unlockMessage.classList.remove('hidden');
-  }
-  elements.finalScoreDisplay.textContent = score;
-  elements.totalCoinsDisplay.textContent = totalCoins;
-  elements.gameContainer.classList.add('hidden');
-  elements.gameOverScreen.classList.remove('hidden');
-  elements.unlockMessage.classList.remove('hidden');
-}
-
-function resetGame() {
-  birdY = (gameHeight - birdSize) / 2;
-  velocity = gameMode === 'inverse' ? jump : 0; // Iniciar con impulso hacia arriba en modo inverse
-  score = 0;
-  coins = 0;
-  survivalTime = 0;
-  maxSurvivalLevel = 0;
-  difficultyLevel = 1;
-  pipeSpeed = 2;
-  pipeGap = basePipeGap;
-  pipeIntervalTime = 2000;
-  elements.scoreDisplay.textContent = score;
-  elements.coinsDisplay.textContent = coins;
-  elements.bird.style.top = `${birdY}px`;
-  pipes.forEach(pipe => {
-      pipe.top.remove();
-      pipe.bottom.remove();
-  });
-  coinsInGame.forEach(coin => coin.element.remove());
-  powerUps.forEach(powerUp => powerUp.element.remove());
-  particles.forEach(particle => particle.element.remove());
-  pipes = [];
-  coinsInGame = [];
-  powerUps = [];
-  particles = [];
-  elements.difficultyLevelDisplay.style.display = 'none';
-  clearInterval(pipeInterval);
-  clearTimeout(elements.bird.shieldTimeout);
-  clearTimeout(elements.bird.speedTimeout);
-  clearTimeout(elements.bird.magnetTimeout);
-  elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
-  activeShield = false;
-  speedBoostActive = false;
-  magnetActive = false;
-  lastPowerUpType = null;
-  isInputActive = false;
-}
-
-function startGame() {
-  if (!characterSelected) {
-      alert('Por favor, selecciona o personaliza un personaje antes de jugar.');
-      elements.gameModeMenu.classList.add('hidden');
-      elements.menu.classList.remove('hidden');
-      return;
-  }
-  resetGame();
-  elements.gameModeMenu.classList.add('hidden');
-  elements.gameContainer.classList.remove('hidden');
-  elements.gameOverScreen.classList.add('hidden');
-  elements.unlockMessage.classList.add('hidden');
-  gameActive = true;
-  applyCharacter();
-  applyBackground();
-  elements.gameArea.appendChild(elements.difficultyLevelDisplay);
-  if (gameMode === 'survival') {
-      elements.difficultyLevelDisplay.style.display = 'block';
-      elements.difficultyLevelDisplay.textContent = `Nivel ${difficultyLevel}`;
-      survivalStartTime = Date.now();
-  }
-  pipeInterval = setInterval(createPipe, pipeIntervalTime);
-  gameLoopId = requestAnimationFrame(gameLoop);
-}
-
-function gameLoop() {
-  if (!gameActive) return;
-  // En modo inverso, la velocidad se controla completamente por handleInput/handleInputEnd
-  if (gameMode !== 'inverse') {
-      velocity += gravity;
-  } else if (!isInputActive) {
-      // En modo inverso, sin input activo, el pájaro tiende a subir
-      velocity = jump; // Mantener impulso hacia arriba cuando no se presiona
-  }
-  velocity = Math.min(velocity, maxVelocity);
-  birdY += velocity;
-  birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize));
-  elements.bird.style.top = `${birdY}px`;
-  if (birdY <= 0 || birdY >= gameHeight - birdSize) {
-      if (gameMode === 'power-ups' && activeShield) {
-          activeShield = false;
-          elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
-          velocity = 0;
-          birdY = birdY <= 0 ? 0 : gameHeight - birdSize;
-      } else {
-          endGame();
-          return;
-      }
-  }
-  movePipes();
-  moveCoins();
-  movePowerUps();
-  updateParticles();
-  createParticle();
-  if (gameMode === 'survival') {
-      survivalTime = Date.now() - survivalStartTime;
-      checkAchievements();
-  }
-  adjustDifficulty();
-  gameLoopId = requestAnimationFrame(gameLoop);
-}
-
-function createPipe() {
-  const minHeight = 20;
-  const maxHeight = gameHeight - pipeGap - 20;
-  const pipeHeight = Math.random() * (maxHeight - minHeight) + minHeight;
-  const pipeTop = document.createElement('div');
-  pipeTop.classList.add('pipe', 'top');
-  pipeTop.style.height = `${pipeHeight}px`;
-  pipeTop.style.left = `${gameWidth}px`;
-  const pipeBottom = document.createElement('div');
-  pipeBottom.classList.add('pipe', 'bottom');
-  pipeBottom.style.height = `${gameHeight - pipeHeight - pipeGap}px`;
-  pipeBottom.style.left = `${gameWidth}px`;
-  if (equippedItems['pipe-style']) {
-      const style = shopItems[equippedItems['pipe-style']].value;
-      if (style === 'metallic') {
-          pipeTop.classList.add('pipe-style-1');
-          pipeBottom.classList.add('pipe-style-1');
-      } else if (style === 'crystal') {
-          pipeTop.classList.add('pipe-style-2');
-          pipeBottom.classList.add('pipe-style-2');
-      } else if (style === 'wood') {
-          pipeTop.classList.add('pipe-style-3');
-          pipeBottom.classList.add('pipe-style-3');
-      }
-  }
-  // Usar score en lugar de pipeSpeed para determinar si la tubería se mueve verticalmente
-  let isMoving = score >= 50 && Math.random() < 0.3;
-  elements.gameArea.appendChild(pipeTop);
-  elements.gameArea.appendChild(pipeBottom);
-  pipes.push({ top: pipeTop, bottom: pipeBottom, x: gameWidth, passed: false, isMoving: isMoving, baseHeight: pipeHeight, moveOffset: 0, moveTime: Date.now() });
-  if (Math.random() > 0.5) createCoin(gameWidth, pipeHeight);
-  createPowerUp(gameWidth, pipeHeight);
-}
-
-function movePipes() {
-  pipes.forEach((pipe, index) => {
       pipe.x -= pipeSpeed;
       pipe.top.style.left = `${pipe.x}px`;
       pipe.bottom.style.left = `${pipe.x}px`;
 
       // Movimiento vertical para tuberías marcadas como isMoving
       if (pipe.isMoving) {
-          const elapsed = (Date.now() - pipe.moveTime) / 1000; // Tiempo en segundos
-          pipe.moveOffset = Math.sin(elapsed * 3) * 30; // Oscilación: amplitud de 30px, velocidad ajustada
-          const newHeight = pipe.baseHeight + pipe.moveOffset;
-          pipe.top.style.height = `${newHeight}px`;
-          pipe.bottom.style.height = `${gameHeight - newHeight - pipeGap}px`;
+        const elapsed = (Date.now() - pipe.moveTime) / 1000;
+        pipe.moveOffset = Math.sin(elapsed * 3) * 30;
+        const newHeight = pipe.baseHeight + pipe.moveOffset;
+        pipe.top.style.height = `${newHeight}px`;
+        pipe.bottom.style.height = `${gameHeight - newHeight - pipeGap}px`;
       }
 
       // Colisión con el pájaro
@@ -1851,97 +1607,309 @@ function movePipes() {
       const birdYRelative = birdRect.top - gameAreaRect.top;
 
       if (
-          (birdXRelative + birdSize > pipe.x && birdXRelative < pipe.x + pipeWidth) &&
-          (birdYRelative < pipeTopRect.height || birdYRelative + birdSize > pipeBottomRect.top - gameAreaRect.top)
+        (birdXRelative + birdSize > pipe.x && birdXRelative < pipe.x + pipeWidth) &&
+        (birdYRelative < pipeTopRect.height || birdYRelative + birdSize > pipeBottomRect.top - gameAreaRect.top)
       ) {
-          endGame();
-          return;
+        endGame();
+        return;
       }
 
-      // Incrementar puntuación
+      // Incrementar puntuación y XP
       if (!pipe.passed && pipe.x + pipeWidth < birdX) {
-          score++;
-          pipe.passed = true;
-          elements.scoreDisplay.textContent = score;
+        score++;
+        pipe.passed = true;
+        playerXP += 10; // Ganar 10 XP por tubería pasada
+        localStorage.setItem('playerXP', playerXP);
+        elements.scoreDisplay.textContent = score;
+        updateLevel();
+        checkAchievements();
       }
 
       // Eliminar tuberías fuera de pantalla
       if (pipe.x < -pipeWidth) {
-          pipe.top.remove();
-          pipe.bottom.remove();
-          pipes.splice(index, 1);
+        pipe.top.remove();
+        pipe.bottom.remove();
+        pipes.splice(index, 1);
       }
-  });
-}
+    });
+  }
 
-function handleInput() {
-  if (!gameActive) return;
-  if (gameMode === 'inverse') {
-      isInputActive = true;
-      velocity = gravity * 15; // Velocidad constante hacia abajo mientras se presiona
-  } else {
+  function endGame() {
+    gameActive = false;
+    isInputActive = false;
+    cancelAnimationFrame(gameLoopId);
+    clearInterval(pipeInterval);
+    clearTimeout(elements.bird.shieldTimeout);
+    clearTimeout(elements.bird.speedTimeout);
+    clearTimeout(elements.bird.magnetTimeout);
+    elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+    activeShield = false;
+    speedBoostActive = false;
+    magnetActive = false;
+    totalCoins += coins;
+    localStorage.setItem('totalCoins', totalCoins);
+    updateLevel();
+    updateHighScores();
+    checkAchievements();
+    if (gameMode === 'survival' && maxSurvivalLevel >= 5) {
+      totalCoins += 5;
+      localStorage.setItem('totalCoins', totalCoins);
+      elements.unlockMessage.textContent = '¡Has ganado 5 monedas por alcanzar el nivel 5 en modo Supervivencia!';
+      elements.unlockMessage.classList.remove('hidden');
+    }
+    elements.finalScoreDisplay.textContent = score;
+    elements.totalCoinsDisplay.textContent = totalCoins;
+    elements.gameContainer.classList.add('hidden');
+    elements.gameOverScreen.classList.remove('hidden');
+    elements.unlockMessage.classList.remove('hidden');
+  }
+
+  function resetGame() {
+    birdY = (gameHeight - birdSize) / 2;
+    velocity = gameMode === 'inverse' ? jump : 0;
+    score = 0;
+    coins = 0;
+    survivalTime = 0;
+    maxSurvivalLevel = 0;
+    difficultyLevel = 1;
+    pipeSpeed = 2;
+    pipeGap = basePipeGap;
+    pipeIntervalTime = 2000;
+    elements.scoreDisplay.textContent = score;
+    elements.coinsDisplay.textContent = coins;
+    elements.bird.style.top = `${birdY}px`;
+    pipes.forEach(pipe => {
+      pipe.top.remove();
+      pipe.bottom.remove();
+    });
+    coinsInGame.forEach(coin => coin.element.remove());
+    powerUps.forEach(powerUp => powerUp.element.remove());
+    particles.forEach(particle => particle.element.remove());
+    pipes = [];
+    coinsInGame = [];
+    powerUps = [];
+    particles = [];
+    elements.difficultyLevelDisplay.style.display = 'none';
+    clearInterval(pipeInterval);
+    clearTimeout(elements.bird.shieldTimeout);
+    clearTimeout(elements.bird.speedTimeout);
+    clearTimeout(elements.bird.magnetTimeout);
+    elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+    activeShield = false;
+    speedBoostActive = false;
+    magnetActive = false;
+    lastPowerUpType = null;
+    isInputActive = false;
+  }
+
+  function startGame() {
+    if (!characterSelected) {
+      alert('Por favor, selecciona o personaliza un personaje antes de jugar.');
+      elements.gameModeMenu.classList.add('hidden');
+      elements.menu.classList.remove('hidden');
+      return;
+    }
+    resetGame();
+    elements.gameModeMenu.classList.add('hidden');
+    elements.gameContainer.classList.remove('hidden');
+    elements.gameOverScreen.classList.add('hidden');
+    elements.unlockMessage.classList.add('hidden');
+    gameActive = true;
+    applyCharacter();
+    applyBackground();
+    elements.gameArea.appendChild(elements.difficultyLevelDisplay);
+    if (gameMode === 'survival') {
+      elements.difficultyLevelDisplay.style.display = 'block';
+      elements.difficultyLevelDisplay.textContent = `Nivel ${difficultyLevel}`;
+      survivalStartTime = Date.now();
+    }
+    pipeInterval = setInterval(createPipe, pipeIntervalTime);
+    gameLoopId = requestAnimationFrame(gameLoop);
+  }
+
+  function gameLoop() {
+    if (!gameActive) return;
+    if (gameMode !== 'inverse') {
+      velocity += gravity;
+    } else if (!isInputActive) {
       velocity = jump;
+    }
+    velocity = Math.min(velocity, maxVelocity);
+    birdY += velocity;
+    birdY = Math.max(0, Math.min(birdY, gameHeight - birdSize));
+    elements.bird.style.top = `${birdY}px`;
+    if (birdY <= 0 || birdY >= gameHeight - birdSize) {
+      if (gameMode === 'power-ups' && activeShield) {
+        activeShield = false;
+        elements.bird.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+        velocity = 0;
+        birdY = birdY <= 0 ? 0 : gameHeight - birdSize;
+      } else {
+        endGame();
+        return;
+      }
+    }
+    movePipes();
+    moveCoins();
+    movePowerUps();
+    updateParticles();
+    createParticle();
+    if (gameMode === 'survival') {
+      survivalTime = Date.now() - survivalStartTime;
+      checkAchievements();
+    }
+    adjustDifficulty();
+    gameLoopId = requestAnimationFrame(gameLoop);
   }
-}
 
-function handleInputEnd() {
-  if (!gameActive) return;
-  if (gameMode === 'inverse') {
+  function createPipe() {
+    const minHeight = 20;
+    const maxHeight = gameHeight - pipeGap - 20;
+    const pipeHeight = Math.random() * (maxHeight - minHeight) + minHeight;
+    const pipeTop = document.createElement('div');
+    pipeTop.classList.add('pipe', 'top');
+    pipeTop.style.height = `${pipeHeight}px`;
+    pipeTop.style.left = `${gameWidth}px`;
+    const pipeBottom = document.createElement('div');
+    pipeBottom.classList.add('pipe', 'bottom');
+    pipeBottom.style.height = `${gameHeight - pipeHeight - pipeGap}px`;
+    pipeBottom.style.left = `${gameWidth}px`;
+    if (equippedItems['pipe-style']) {
+      const style = shopItems[equippedItems['pipe-style']].value;
+      if (style === 'metallic') {
+        pipeTop.classList.add('pipe-style-1');
+        pipeBottom.classList.add('pipe-style-1');
+      } else if (style === 'crystal') {
+        pipeTop.classList.add('pipe-style-2');
+        pipeBottom.classList.add('pipe-style-2');
+      } else if (style === 'wood') {
+        pipeTop.classList.add('pipe-style-3');
+        pipeBottom.classList.add('pipe-style-3');
+      }
+    }
+    let isMoving = score >= 50 && Math.random() < 0.3;
+    elements.gameArea.appendChild(pipeTop);
+    elements.gameArea.appendChild(pipeBottom);
+    pipes.push({ top: pipeTop, bottom: pipeBottom, x: gameWidth, passed: false, isMoving: isMoving, baseHeight: pipeHeight, moveOffset: 0, moveTime: Date.now() });
+    if (Math.random() > 0.5) createCoin(gameWidth, pipeHeight);
+    createPowerUp(gameWidth, pipeHeight);
+  }
+
+  function movePipes() {
+    pipes.forEach((pipe, index) => {
+      pipe.x -= pipeSpeed;
+      pipe.top.style.left = `${pipe.x}px`;
+      pipe.bottom.style.left = `${pipe.x}px`;
+
+      if (pipe.isMoving) {
+        const elapsed = (Date.now() - pipe.moveTime) / 1000;
+        pipe.moveOffset = Math.sin(elapsed * 3) * 30;
+        const newHeight = pipe.baseHeight + pipe.moveOffset;
+        pipe.top.style.height = `${newHeight}px`;
+        pipe.bottom.style.height = `${gameHeight - newHeight - pipeGap}px`;
+      }
+
+      const birdRect = elements.bird.getBoundingClientRect();
+      const pipeTopRect = pipe.top.getBoundingClientRect();
+      const pipeBottomRect = pipe.bottom.getBoundingClientRect();
+      const gameAreaRect = elements.gameArea.getBoundingClientRect();
+      const birdXRelative = birdRect.left - gameAreaRect.left;
+      const birdYRelative = birdRect.top - gameAreaRect.top;
+
+      if (
+        (birdXRelative + birdSize > pipe.x && birdXRelative < pipe.x + pipeWidth) &&
+        (birdYRelative < pipeTopRect.height || birdYRelative + birdSize > pipeBottomRect.top - gameAreaRect.top)
+      ) {
+        endGame();
+        return;
+      }
+
+      if (!pipe.passed && pipe.x + pipeWidth < birdX) {
+        score++;
+        pipe.passed = true;
+        playerXP += 10; // Ganar 10 XP por tubería pasada
+        localStorage.setItem('playerXP', playerXP);
+        elements.scoreDisplay.textContent = score;
+        updateLevel();
+        checkAchievements();
+      }
+
+      if (pipe.x < -pipeWidth) {
+        pipe.top.remove();
+        pipe.bottom.remove();
+        pipes.splice(index, 1);
+      }
+    });
+  }
+
+  function handleInput() {
+    if (!gameActive) return;
+    if (gameMode === 'inverse') {
+      isInputActive = true;
+      velocity = gravity * 15;
+    } else {
+      velocity = jump;
+    }
+  }
+
+  function handleInputEnd() {
+    if (!gameActive) return;
+    if (gameMode === 'inverse') {
       isInputActive = false;
-      velocity = jump; // Impulso hacia arriba al soltar
+      velocity = jump;
+    }
   }
-}
 
-document.addEventListener('keydown', (e) => {
-  if (e.code === 'Space') {
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
       e.preventDefault();
       handleInput();
-  }
-});
+    }
+  });
 
-document.addEventListener('keyup', (e) => {
-  if (e.code === 'Space') {
+  document.addEventListener('keyup', (e) => {
+    if (e.code === 'Space') {
       handleInputEnd();
-  }
-});
+    }
+  });
 
-elements.gameArea.addEventListener('mousedown', (e) => {
-  e.preventDefault();
-  handleInput();
-});
+  elements.gameArea.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    handleInput();
+  });
 
-elements.gameArea.addEventListener('mouseup', (e) => {
-  handleInputEnd();
-});
+  elements.gameArea.addEventListener('mouseup', (e) => {
+    handleInputEnd();
+  });
 
-elements.gameArea.addEventListener('touchstart', (e) => {
-  e.preventDefault();
-  handleInput();
-}, { passive: false });
+  elements.gameArea.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    handleInput();
+  }, { passive: false });
 
-elements.gameArea.addEventListener('touchend', (e) => {
-  handleInputEnd();
-}, { passive: false });
+  elements.gameArea.addEventListener('touchend', (e) => {
+    handleInputEnd();
+  }, { passive: false });
 
-if (elements.restartButton) {
-  elements.restartButton.addEventListener('click', () => {
+  if (elements.restartButton) {
+    elements.restartButton.addEventListener('click', () => {
       elements.gameOverScreen.classList.add('hidden');
       elements.gameModeMenu.classList.remove('hidden');
-  });
-}
+    });
+  }
 
-checkOrientation();
-adjustGameDimensions();
-updateCharacterOptions();
-updateEquipOptions();
-updateShop();
-applyCharacter();
-applyBackground();
-updateCustomBirdPreview();
-updateLevel();
-setupProgressMenu();
-setupAchievementsMenu();
-updateAchievementsNotification();
+  checkOrientation();
+  adjustGameDimensions();
+  updateCharacterOptions();
+  updateEquipOptions();
+  updateShop();
+  applyCharacter();
+  applyBackground();
+  updateCustomBirdPreview();
+  updateLevel();
+  setupProgressMenu();
+  setupAchievementsMenu();
+  updateAchievementsNotification();
 
-console.log('Script inicializado correctamente');
+  console.log('Script inicializado correctamente');
 });
