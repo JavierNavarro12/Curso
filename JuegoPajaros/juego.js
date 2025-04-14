@@ -1574,7 +1574,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pipeBottom.classList.add('pipe-style-3');
       }
     }
-    let isMoving = pipeSpeed >= 50 && Math.random() < 0.3;
+    let isMoving = pipeSpeed >= 50 && Math.random() < 0.4;
     elements.gameArea.appendChild(pipeTop);
     elements.gameArea.appendChild(pipeBottom);
     pipes.push({ top: pipeTop, bottom: pipeBottom, x: gameWidth, passed: false, isMoving: isMoving, baseHeight: pipeHeight, moveOffset: 0, moveTime: Date.now() });
@@ -1794,9 +1794,8 @@ function gameLoop() {
 }
 
 function createPipe() {
-  const minHeight = 20; // Reducir para permitir huecos más arriba
-  const maxHeight = gameHeight - pipeGap - 20; // Reducir para permitir huecos más abajo
-  // Asegurar que el rango sea lo suficientemente amplio para variabilidad
+  const minHeight = 20;
+  const maxHeight = gameHeight - pipeGap - 20;
   const pipeHeight = Math.random() * (maxHeight - minHeight) + minHeight;
   const pipeTop = document.createElement('div');
   pipeTop.classList.add('pipe', 'top');
@@ -1819,12 +1818,60 @@ function createPipe() {
           pipeBottom.classList.add('pipe-style-3');
       }
   }
-  let isMoving = pipeSpeed >= 50 && Math.random() < 0.3;
+  // Usar score en lugar de pipeSpeed para determinar si la tubería se mueve verticalmente
+  let isMoving = score >= 50 && Math.random() < 0.3;
   elements.gameArea.appendChild(pipeTop);
   elements.gameArea.appendChild(pipeBottom);
   pipes.push({ top: pipeTop, bottom: pipeBottom, x: gameWidth, passed: false, isMoving: isMoving, baseHeight: pipeHeight, moveOffset: 0, moveTime: Date.now() });
   if (Math.random() > 0.5) createCoin(gameWidth, pipeHeight);
   createPowerUp(gameWidth, pipeHeight);
+}
+
+function movePipes() {
+  pipes.forEach((pipe, index) => {
+      pipe.x -= pipeSpeed;
+      pipe.top.style.left = `${pipe.x}px`;
+      pipe.bottom.style.left = `${pipe.x}px`;
+
+      // Movimiento vertical para tuberías marcadas como isMoving
+      if (pipe.isMoving) {
+          const elapsed = (Date.now() - pipe.moveTime) / 1000; // Tiempo en segundos
+          pipe.moveOffset = Math.sin(elapsed * 3) * 30; // Oscilación: amplitud de 30px, velocidad ajustada
+          const newHeight = pipe.baseHeight + pipe.moveOffset;
+          pipe.top.style.height = `${newHeight}px`;
+          pipe.bottom.style.height = `${gameHeight - newHeight - pipeGap}px`;
+      }
+
+      // Colisión con el pájaro
+      const birdRect = elements.bird.getBoundingClientRect();
+      const pipeTopRect = pipe.top.getBoundingClientRect();
+      const pipeBottomRect = pipe.bottom.getBoundingClientRect();
+      const gameAreaRect = elements.gameArea.getBoundingClientRect();
+      const birdXRelative = birdRect.left - gameAreaRect.left;
+      const birdYRelative = birdRect.top - gameAreaRect.top;
+
+      if (
+          (birdXRelative + birdSize > pipe.x && birdXRelative < pipe.x + pipeWidth) &&
+          (birdYRelative < pipeTopRect.height || birdYRelative + birdSize > pipeBottomRect.top - gameAreaRect.top)
+      ) {
+          endGame();
+          return;
+      }
+
+      // Incrementar puntuación
+      if (!pipe.passed && pipe.x + pipeWidth < birdX) {
+          score++;
+          pipe.passed = true;
+          elements.scoreDisplay.textContent = score;
+      }
+
+      // Eliminar tuberías fuera de pantalla
+      if (pipe.x < -pipeWidth) {
+          pipe.top.remove();
+          pipe.bottom.remove();
+          pipes.splice(index, 1);
+      }
+  });
 }
 
 function handleInput() {
